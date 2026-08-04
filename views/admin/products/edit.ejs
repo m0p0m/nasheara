@@ -1,0 +1,182 @@
+<h1 class="text-3xl font-bold text-[#1E293B] mb-2">ویرایش محصول: <%= product.name %></h1>
+<p class="text-[#6B7280] mb-8">هر تغییری در این صفحه بلافاصله پس از ذخیره روی وب‌سایت نمایش داده می‌شود.</p>
+
+<form action="/admin/products/edit/<%= product.id %>" method="POST" enctype="multipart/form-data" class="space-y-8">
+
+    <!-- Main Product Info -->
+    <div class="card-modern">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-xl font-semibold text-[#1E293B]">اطلاعات اصلی</h2>
+                <p class="text-sm text-[#6B7280] mt-1">نام، دسته‌بندی و وضعیت موجودی را در صورت نیاز تغییر دهید.</p>
+            </div>
+            <div class="hidden lg:flex items-center gap-2 text-xs text-[#2563EB] bg-[#F0F9FF] px-3 py-1 rounded-full">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                اطلاعات ضروری
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <label for="name" class="block text-sm font-semibold text-[#1E293B]">نام محصول *</label>
+                <input type="text" id="name" name="name" value="<%= product.name %>" required class="input-field">
+            </div>
+            <div class="space-y-2">
+                <label for="slug" class="block text-sm font-semibold text-[#1E293B]">نامک (Slug)</label>
+                <input type="text" id="slug" name="slug" dir="ltr" value="<%= product.slug || '' %>" placeholder="مثلاً: کاشی-شمسه-آبی" class="input-field">
+                <p class="text-xs text-[#6B7280]">در صورت خالی بودن، نامک یکتا به‌صورت خودکار از نام محصول ساخته می‌شود.</p>
+            </div>
+            <div class="space-y-2">
+                <label for="category" class="block text-sm font-semibold text-[#1E293B]">دسته‌بندی *</label>
+                <select id="category" name="category" required class="w-full h-12 px-4 border-2 border-[#2563EB]/20 rounded-xl focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-white">
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category.name %>" <%= product.category === category.name ? 'selected' : '' %>>
+                            <%= category.name %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="space-y-2 md:col-span-2 lg:col-span-1">
+                <label for="stock" class="block text-sm font-semibold text-[#1E293B]">موجودی</label>
+                <input type="number" id="stock" name="stock" min="0" value="<%= typeof product.stock === 'number' ? product.stock : '' %>" placeholder="مثلاً ۱۲" class="input-field">
+                <p class="text-xs text-[#6B7280] leading-5">
+                    خالی گذاشتن این فیلد معادل <span class="font-semibold text-[#2563EB]">«موجود»</span> بودن محصول است.
+                    وارد کردن عدد مقدار دقیق موجودی را نشان می‌دهد و عدد صفر یعنی <span class="font-semibold text-red-500">ناموجود</span>.
+                </p>
+            </div>
+            <div class="md:col-span-2 space-y-2">
+                <label for="description" class="block text-sm font-semibold text-[#1E293B]">توضیحات</label>
+                <textarea id="description" name="description" rows="5" class="input-field resize-y" placeholder="توضیح کوتاه درباره محصول..."><%= product.description || '' %></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tile Details -->
+    <div class="card-modern">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-[#1E293B]">ویژگی‌های کاشی</h2>
+            <p class="text-sm text-[#6B7280] mt-1">طرح، رنگ، جنس، ابعاد و محل‌های مناسب استفاده را ویرایش کنید.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <label for="patternName" class="block text-sm font-semibold text-[#1E293B]">نام طرح</label>
+                <input type="text" id="patternName" name="patternName" value="<%= product.patternName || '' %>" placeholder="مثلاً شمسه یا اشکی" class="input-field">
+            </div>
+            <div class="space-y-2">
+                <label for="color" class="block text-sm font-semibold text-[#1E293B]">رنگ</label>
+                <input type="text" id="color" name="color" value="<%= product.color || '' %>" placeholder="مثلاً فیروزه‌ای و لاجوردی" class="input-field">
+            </div>
+            <div class="space-y-2">
+                <label for="material" class="block text-sm font-semibold text-[#1E293B]">جنس</label>
+                <input type="text" id="material" name="material" value="<%= product.material || '' %>" placeholder="مثلاً سرامیک یا سفال" class="input-field">
+            </div>
+            <div class="space-y-2">
+                <label for="dimensions" class="block text-sm font-semibold text-[#1E293B]">ابعاد</label>
+                <input type="text" id="dimensions" name="dimensions" value="<%= product.dimensions || '' %>" placeholder="مثلاً ۲۰ × ۲۰ سانتی‌متر" class="input-field">
+            </div>
+            <div class="space-y-2 md:col-span-2">
+                <label for="usageArea" class="block text-sm font-semibold text-[#1E293B]">محل استفاده (با کاما جدا کنید)</label>
+                <input type="text" id="usageArea" name="usageArea" value="<%= Array.isArray(product.usageArea) ? product.usageArea.join('، ') : (product.usageArea || '') %>" placeholder="کف، دیوار، حیاط، استخر، آشپزخانه، سرویس بهداشتی" class="input-field">
+            </div>
+        </div>
+    </div>
+
+    <!-- Images -->
+    <div class="card-modern">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-[#1E293B]">تصاویر</h2>
+            <p class="text-sm text-[#6B7280] mt-1">برای حفظ کیفیت ظاهری سایت از تصاویر روشن و باکیفیت استفاده کنید.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-[#1E293B] mb-2">تصویر اصلی فعلی</label>
+                    <% if (product.mainImage) { %>
+                        <img src="<%= product.mainImage %>" alt="<%= product.name %>" class="w-32 h-32 object-cover rounded-xl border border-gray-200">
+                    <% } else { %>
+                        <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl">تصویری ثبت نشده است.</p>
+                    <% } %>
+                </div>
+                <div class="space-y-2">
+                    <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]">بارگذاری تصویر اصلی جدید</label>
+                    <input type="file" id="mainImage" name="mainImage" accept="image/*" class="input-field border-dashed">
+                    <p class="text-xs text-[#6B7280]">در صورت انتخاب تصویر جدید، تصویر قبلی حذف می‌شود.</p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-[#1E293B] mb-2">تصاویر گالری فعلی</label>
+                    <div class="flex flex-wrap gap-3">
+                        <% if (product.galleryImages && product.galleryImages.length > 0) { %>
+                            <% product.galleryImages.forEach(image => { %>
+                                <img src="<%= image %>" alt="Gallery Image" class="w-24 h-24 object-cover rounded-xl border border-gray-200">
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl">تصویری موجود نیست.</p>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label for="galleryImages" class="block text-sm font-semibold text-[#1E293B]">افزودن تصاویر بیشتر</label>
+                    <input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed">
+                    <p class="text-xs text-[#6B7280]">می‌توانید تا ۵ تصویر جدید اضافه کنید.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEO -->
+    <div class="card-modern">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-[#1E293B]">تنظیمات سئو</h2>
+            <p class="text-sm text-[#6B7280] mt-1">اطلاعات این بخش برای بهبود نتایج جست‌وجو در گوگل استفاده می‌شود.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <label for="metaTitle" class="block text-sm font-semibold text-[#1E293B]">عنوان متا</label>
+                <input type="text" id="metaTitle" name="metaTitle" value="<%= product.metaTitle || '' %>" placeholder="مثلاً: دستگاه تصفیه آب خانگی مدل RO" class="input-field">
+            </div>
+            <div class="space-y-2">
+                <label for="keywords" class="block text-sm font-semibold text-[#1E293B]">کلمات کلیدی (با کاما جدا کنید)</label>
+                <input type="text" id="keywords" name="keywords" value="<%= product.keywords && product.keywords.length ? product.keywords.join(', ') : '' %>" placeholder="تصفیه آب, فیلتر آب, RO" class="input-field">
+            </div>
+        </div>
+        <div class="mt-6 space-y-2">
+            <label for="metaDescription" class="block text-sm font-semibold text-[#1E293B]">توضیحات متا</label>
+            <textarea id="metaDescription" name="metaDescription" rows="3" class="input-field resize-y" placeholder="در ۱۵۰ کاراکتر توضیح دهید که محصول چه مزیتی دارد..."><%= product.metaDescription || '' %></textarea>
+        </div>
+    </div>
+
+    <!-- Flags & Specs -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card-modern">
+            <h2 class="text-xl font-semibold text-[#1E293B] mb-4">برچسب‌ها</h2>
+            <div class="space-y-3">
+                <label class="flex items-center gap-3 text-sm text-[#1E293B]">
+                    <input type="checkbox" id="isNew" name="isNew" value="true" <%= product.isNew ? 'checked' : '' %> class="w-4 h-4 rounded border-[#2563EB]/30 text-[#2563EB] focus:ring-[#2563EB]">
+                    محصول جدید (NEW)
+                </label>
+                <label class="flex items-center gap-3 text-sm text-[#1E293B]">
+                    <input type="checkbox" id="isBestSeller" name="isBestSeller" value="true" <%= product.isBestSeller ? 'checked' : '' %> class="w-4 h-4 rounded border-[#2563EB]/30 text-[#2563EB] focus:ring-[#2563EB]">
+                    پرفروش (Best Seller)
+                </label>
+            </div>
+        </div>
+        <div class="card-modern">
+            <h2 class="text-xl font-semibold text-[#1E293B] mb-4">مشخصات فنی</h2>
+            <label for="specs" class="block text-sm font-semibold text-[#1E293B] mb-2">مشخصات (هر خط یک مشخصه به صورت کلید:مقدار)</label>
+            <textarea id="specs" name="specs" rows="5" class="input-field resize-y"><% if (product.specs && typeof product.specs === 'object') { %><%= Object.entries(product.specs).map(([k,v]) => k + ':' + v).join('\n') %><% } else { %><%= product.specs || '' %><% } %></textarea>
+            <p class="text-xs text-[#6B7280] mt-2">مثال هر خط: <code>ولتاژ:20</code>. این ورودی به صورت خودکار به فرمت ساختاری تبدیل می‌شود.</p>
+        </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-end gap-3">
+        <a href="/admin/products" class="btn-secondary h-12">
+            بازگشت
+        </a>
+        <button type="submit" class="btn-primary px-8 h-12">
+            ذخیره تغییرات
+        </button>
+    </div>
+</form>

@@ -1,0 +1,7 @@
+node_modules
+.env
+
+data/
+categories.json
+products.json
+consultations.json

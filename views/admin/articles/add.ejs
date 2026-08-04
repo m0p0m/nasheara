@@ -1,0 +1,89 @@
+<h1 class="text-3xl font-bold text-[#1E293B] mb-2">افزودن مقاله جدید</h1>
+<p class="text-[#6B7280] mb-8">مشخصات مقاله را وارد کنید تا در سایت نمایش داده شود. فیلدهای ستاره‌دار الزامی هستند.</p>
+
+<form action="/admin/articles/add" method="POST" enctype="multipart/form-data" class="space-y-8">
+
+    <!-- Main Article Info -->
+    <div class="card-modern">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-xl font-semibold text-[#1E293B]">اطلاعات اصلی</h2>
+                <p class="text-sm text-[#6B7280] mt-1">عنوان و محتوای مقاله را وارد کنید.</p>
+            </div>
+            <div class="hidden lg:flex items-center gap-2 text-xs text-[#2563EB] bg-[#F0F9FF] px-3 py-1 rounded-full">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                اطلاعات ضروری
+            </div>
+        </div>
+        <div class="space-y-6">
+            <div class="space-y-2">
+                <label for="title" class="block text-sm font-semibold text-[#1E293B]">عنوان مقاله *</label>
+                <input type="text" id="title" name="title" required class="input-field" placeholder="عنوان مقاله را وارد کنید">
+            </div>
+            <div class="space-y-2">
+                <label for="excerpt" class="block text-sm font-semibold text-[#1E293B]">خلاصه مقاله</label>
+                <textarea id="excerpt" name="excerpt" rows="3" class="input-field resize-y" placeholder="خلاصه کوتاه مقاله (حدود 200 کاراکتر)"></textarea>
+                <p class="text-xs text-[#6B7280]">این متن در لیست مقالات و کارت‌های مقاله نمایش داده می‌شود.</p>
+            </div>
+            <div class="space-y-2">
+                <label for="content" class="block text-sm font-semibold text-[#1E293B]">محتوای مقاله *</label>
+                <textarea id="content" name="content" required rows="15" class="input-field resize-y" placeholder="محتوای کامل مقاله را اینجا بنویسید..."></textarea>
+            </div>
+            <div class="space-y-2">
+                <label class="flex items-center gap-3 text-sm text-[#1E293B]">
+                    <input type="checkbox" id="published" name="published" value="on" class="w-4 h-4 rounded border-[#2563EB]/30 text-[#2563EB] focus:ring-[#2563EB]">
+                    منتشر کردن مقاله
+                </label>
+                <p class="text-xs text-[#6B7280]">اگر این گزینه را فعال کنید، مقاله بلافاصله در سایت نمایش داده می‌شود.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image -->
+    <div class="card-modern">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-[#1E293B]">تصویر شاخص</h2>
+            <p class="text-sm text-[#6B7280] mt-1">تصویر اصلی مقاله را بارگذاری کنید.</p>
+        </div>
+        <div class="space-y-2">
+            <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]">تصویر اصلی (حداکثر ۵ مگابایت)</label>
+            <input type="file" id="mainImage" name="mainImage" accept="image/*" class="input-field border-dashed">
+            <p class="text-xs text-[#6B7280]">این تصویر در لیست مقالات و بالای صفحه مقاله نمایش داده می‌شود.</p>
+        </div>
+    </div>
+
+    <!-- SEO -->
+    <div class="card-modern">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-[#1E293B]">تنظیمات سئو</h2>
+            <p class="text-sm text-[#6B7280] mt-1">برای بهبود نمایش در نتایج جست‌وجوی گوگل، این بخش را تکمیل کنید.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <label for="metaTitle" class="block text-sm font-semibold text-[#1E293B]">عنوان متا</label>
+                <input type="text" id="metaTitle" name="metaTitle" placeholder="عنوان برای موتورهای جستجو" class="input-field">
+                <p class="text-xs text-[#6B7280]">اگر خالی بگذارید، عنوان مقاله استفاده می‌شود.</p>
+            </div>
+            <div class="space-y-2">
+                <label for="metaKeywords" class="block text-sm font-semibold text-[#1E293B]">کلمات کلیدی (با کاما جدا کنید)</label>
+                <input type="text" id="metaKeywords" name="metaKeywords" placeholder="تصفیه آب, فیلتر آب, RO" class="input-field">
+            </div>
+        </div>
+        <div class="mt-6 space-y-2">
+            <label for="metaDescription" class="block text-sm font-semibold text-[#1E293B]">توضیحات متا</label>
+            <textarea id="metaDescription" name="metaDescription" rows="3" class="input-field resize-y" placeholder="در ۱۵۰-۱۶۰ کاراکتر توضیح دهید که مقاله درباره چیست..."></textarea>
+            <p class="text-xs text-[#6B7280]">اگر خالی بگذارید، از خلاصه مقاله استفاده می‌شود.</p>
+        </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-end gap-3">
+        <a href="/admin/articles" class="btn-secondary h-12">
+            انصراف
+        </a>
+        <button type="submit" class="btn-primary px-8 h-12">
+            ذخیره مقاله
+        </button>
+    </div>
+</form>

@@ -1,0 +1,142 @@
+<div class="mb-8">
+    <div class="flex flex-col xl:flex-row justify-between items-start gap-4 mb-6">
+        <div>
+            <h1 class="text-4xl font-bold text-slate-900 mb-2">مدیریت محصولات</h1>
+            <p class="text-slate-500">مشاهده، ویرایش و انتشار محصولات فروشگاه</p>
+        </div>
+        <a href="/admin/products/add" class="inline-flex items-center gap-2 btn-primary">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            افزودن محصول جدید
+        </a>
+    </div>
+    <% const safeProducts = Array.isArray(products) ? products : []; %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+        <% const noImageCount = safeProducts.filter(product => !product.mainImage).length; %>
+        <div class="card-modern">
+            <p class="text-sm text-slate-500">تعداد محصولات</p>
+            <p class="mt-3 text-3xl font-bold text-slate-900"><%= safeProducts.length %></p>
+        </div>
+        <div class="card-modern">
+            <p class="text-sm text-slate-500">وضعیت فیلتر</p>
+            <p class="mt-3 text-xl font-semibold text-slate-900"><%= q ? 'فیلتر روشن است' : 'همه محصولات نمایش داده می‌شوند' %></p>
+        </div>
+        <div class="card-modern">
+            <p class="text-sm text-slate-500">محصولات بدون تصویر</p>
+            <p class="mt-3 text-3xl font-bold text-slate-900"><%= noImageCount %></p>
+        </div>
+    </div>
+    <!-- Search -->
+    <form action="/admin/products" method="GET" class="mb-6">
+        <div class="flex gap-3">
+            <input type="text" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>" placeholder="جستجو در نام، توضیحات یا دسته..." class="input-field h-12">
+            <button class="h-12 px-6 bg-slate-50 text-slate-700 rounded-xl hover:shadow-lg transition-all">جستجو</button>
+            <% if (q) { %>
+                <a href="/admin/products" class="h-12 px-4 inline-flex items-center text-[#2563EB] hover:underline">حذف فیلتر</a>
+            <% } %>
+        </div>
+    </form>
+</div>
+
+<div class="card-modern !p-0 overflow-hidden">
+    <% if (products && products.length > 0) { %>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50 text-slate-700">
+                    <tr>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">تصویر</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">نام محصول</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">دسته‌بندی</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">موجودی</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">وضعیت</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-slate-700 uppercase tracking-wider">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% products.forEach(product => { %>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100">
+                                    <% if (product.mainImage) { %>
+                                        <img src="<%= product.mainImage %>" alt="<%= product.name %>" class="w-full h-full object-cover">
+                                    <% } else { %>
+                                        <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-semibold text-[#1E293B]"><%= product.name %></div>
+                                <div class="text-xs text-[#6B7280] mt-1 line-clamp-2"><%= product.description ? product.description.substring(0, 60) : '' %>...</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 text-xs font-medium bg-[#F0F9FF] text-[#2563EB] rounded-full"><%= product.category || 'بدون دسته' %></span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <%
+                                    const hasNumericStock = typeof product.stock === 'number' && !Number.isNaN(product.stock);
+                                    const stockValue = hasNumericStock ? product.stock : null;
+                                %>
+                                <% if (stockValue === null) { %>
+                                    <span class="px-3 py-1 text-xs font-medium bg-[#F0F9FF] text-[#2563EB] rounded-full">موجود</span>
+                                <% } else if (stockValue > 0) { %>
+                                    <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full"><%= stockValue %> عدد</span>
+                                <% } else { %>
+                                    <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">ناموجود</span>
+                                <% } %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex gap-2">
+                                    <% if (product.isNew) { %>
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded">جدید</span>
+                                    <% } %>
+                                    <% if (product.isBestSeller) { %>
+                                        <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded">پرفروش</span>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="/admin/products/edit/<%= product.id %>" class="btn-secondary !py-2 !px-3 text-xs">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        ویرایش
+                                    </a>
+                                    <form action="/admin/products/delete/<%= product.id %>" method="POST" class="inline" onsubmit="return confirm('آیا از حذف این محصول اطمینان دارید؟');">
+                                        <button type="submit" class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                            حذف
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div class="text-center py-20">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#F0F9FF] mb-6">
+                <svg class="w-10 h-10 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-[#1E293B] mb-4">محصولی یافت نشد</h3>
+            <p class="text-[#6B7280] mb-8">هنوز محصولی اضافه نشده است.</p>
+            <a href="/admin/products/add" class="btn-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                افزودن اولین محصول
+            </a>
+        </div>
+    <% } %>
+</div>

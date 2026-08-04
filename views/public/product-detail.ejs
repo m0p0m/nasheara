@@ -1,0 +1,189 @@
+<!-- Product Detail Page -->
+<section class="py-24 bg-[var(--bg-milky)] relative overflow-hidden pt-32">
+    <div class="container mx-auto px-4 relative z-10">
+        <% if (product) { %>
+            <div class="max-w-7xl mx-auto">
+                <!-- Breadcrumb -->
+                <nav class="mb-6 flex items-center gap-2 text-sm text-slate-500">
+                    <a href="/" class="hover:text-primary transition-colors">خانه</a>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <a href="/products" class="hover:text-primary transition-colors">محصولات</a>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-slate-900"><%= product.name %></span>
+                </nav>
+
+                <!-- Quick Search -->
+                <form action="/products" method="GET" class="mb-10">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input type="text" name="q" placeholder="جستجو در سایر محصولات..." class="md:col-span-2 h-12 px-4 rounded-xl border-2 border-[var(--primary)]/20 focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 text-slate-900">
+                        <button class="btn-primary flex">جستجو</button>
+                    </div>
+                </form>
+
+                <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                    <!-- Product Images -->
+                    <div class="space-y-4">
+                        <div class="relative bg-white rounded-3xl p-8 shadow-xl border border-gray-100 aspect-square overflow-hidden">
+                            <img src="<%= product.mainImage || '/placeholder.jpg' %>" alt="<%= product.name %>" class="w-full h-full object-cover rounded-2xl" id="mainImage">
+                            <% if (product.isNew) { %>
+                                <div class="absolute top-4 right-4 bg-primary text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">جدید</div>
+                            <% } %>
+                            <% if (product.isBestSeller) { %>
+                                <div class="absolute top-4 left-4 bg-[var(--cta)] text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">پرفروش</div>
+                            <% } %>
+                        </div>
+                        <% if (product.galleryImages && product.galleryImages.length > 0) { %>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="relative cursor-pointer border-2 border-transparent hover:border-[var(--primary)] rounded-xl overflow-hidden transition-all" onclick="changeMainImage('<%= product.mainImage %>')">
+                                    <img src="<%= product.mainImage %>" alt="<%= product.name %>" class="w-full aspect-square object-cover">
+                                </div>
+                                <% product.galleryImages.slice(0, 3).forEach((img, index) => { %>
+                                    <div class="relative cursor-pointer border-2 border-transparent hover:border-[var(--primary)] rounded-xl overflow-hidden transition-all" onclick="changeMainImage('<%= img %>')">
+                                        <img src="<%= img %>" alt="<%= product.name %> - تصویر <%= index + 2 %>" class="w-full aspect-square object-cover">
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="space-y-6">
+                        <div>
+                            <% if (product.category) { %>
+                                <span class="inline-flex items-center gap-3 px-4 py-2 bg-[var(--bg-milky)] text-primary rounded-full text-sm font-medium mb-4">
+                                    <% const categoryImage = (typeof categories !== 'undefined' && categories.find && categories.find(c => c.name === product.category) && categories.find(c => c.name === product.category).mainImage) || null; %>
+                                    <% if (categoryImage) { %>
+                                        <img src="<%= categoryImage %>" alt="<%= product.category %>" class="w-6 h-6 rounded-full object-cover">
+                                    <% } %>
+                                    <span><%= product.category %></span>
+                                </span>
+                            <% } %>
+                            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4"><%= product.name %></h1>
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="inline-flex items-center gap-3 px-4 py-2 bg-[var(--bg-milky)] text-primary rounded-full text-sm font-medium">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    ساخت شرکت: <span class="font-semibold text-slate-900 mr-2"><%= product.manufacturer || 'صبا تصفیه' %></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prose max-w-none">
+                            <h3 class="text-xl font-bold text-slate-900 mb-4">توضیحات محصول</h3>
+                            <p class="text-slate-500 leading-relaxed text-lg"><%= product.description || 'توضیحات محصول در دسترس نیست.' %></p>
+                        </div>
+
+                        <% if (product.specs && Object.keys(product.specs).length > 0) { %>
+                            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                                <h3 class="text-xl font-bold text-slate-900 mb-6">مشخصات فنی</h3>
+                                <dl class="space-y-4">
+                                    <% Object.entries(product.specs).forEach(([key, value]) => { %>
+                                        <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+                                            <dt class="text-slate-500 font-medium"><%= key %></dt>
+                                            <dd class="text-slate-900 font-semibold"><%= value %></dd>
+                                        </div>
+                                    <% }); %>
+                                </dl>
+                            </div>
+                        <% } %>
+
+                        <div class="flex-col sm:flex-row gap-4 pt-6">
+                            <a href="/consultation?product=<%= encodeURIComponent(product.name) %>" class="flex-1 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-cta flex ">
+                                <span class="text-lg">درخواست مشاوره رایگان</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left w-6 h-6 mr-3 group-hover:-translate-x-2 transition-transform">
+                                    <path d="m12 19-7-7 7-7"></path>
+                                    <path d="M19 12H5"></path>
+                                </svg>
+                            </a>
+                            <a href="/products" class="flex-1 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-secondary flex">
+                                مشاهده سایر محصولات
+                            </a>
+                        </div>
+
+                        <!-- Features -->
+                        <div class="grid grid-cols-2 gap-4 pt-6">
+                            <div class="flex items-center gap-3 p-4 bg-[var(--bg-milky)] rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-slate-900">گارانتی ۱۸ ماهه</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-4 bg-[var(--bg-milky)] rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-slate-900">نصب رایگان</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-4 bg-[var(--bg-milky)] rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-slate-900">پشتیبانی ۲۴/۷</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-4 bg-[var(--bg-milky)] rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-slate-900">کیفیت تضمینی</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="text-center py-20">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 mb-6">
+                    <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">محصول یافت نشد</h3>
+                <p class="text-slate-500 mb-8">محصول مورد نظر شما وجود ندارد یا حذف شده است.</p>
+                <a href="/products" class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-primary flex">
+                    مشاهده تمام محصولات
+                </a>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Related Products -->
+<% if (relatedProducts && relatedProducts.length) { %>
+<section class="py-16 bg-[var(--bg-milky)]">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900">محصولات مشابه</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <% relatedProducts.forEach(rp => { %>
+                <a href="/product/<%= encodeURIComponent(rp.slug) %>" class="card-modern group">
+                    <div class="relative mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-[var(--bg-milky)] to-white aspect-square">
+                        <img src="<%= rp.mainImage || '/placeholder.jpg' %>" alt="<%= rp.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 mb-1 line-clamp-2"><%= rp.name %></h3>
+                    <% if (rp.category) { %><p class="text-xs text-primary"><%= rp.category %></p><% } %>
+                </a>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<script>
+    function changeMainImage(src) {
+        document.getElementById('mainImage').src = src;
+    }
+</script>

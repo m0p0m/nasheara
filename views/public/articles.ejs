@@ -1,0 +1,122 @@
+<!-- Hero Section -->
+<section class="relative overflow-hidden pt-24 pb-10 bg-gradient-to-br from-[var(--bg-milky)] via-white to-[var(--bg-milky)]">
+  <div class="container mx-auto px-4 relative z-10">
+    <div class="text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-[var(--primary)]/10 shadow-sm mb-4 md:mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-[var(--accent)]">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span class="text-sm text-slate-500">مقالات و راهنما</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-4 md:mb-6 leading-tight">
+        مقالات و راهنماها
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl text-slate-500 leading-relaxed">
+        مقالات تخصصی و راهنمای خرید و نگهداری دستگاه‌های تصفیه آب
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Articles Grid -->
+<section class="py-10 md:py-24 bg-white relative overflow-hidden">
+  <div class="container mx-auto px-4 relative z-10">
+    <% if (articles && articles.length > 0) { %>
+
+    <!-- Mobile: horizontal scroll -->
+    <div class="md:hidden">
+      <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory -mx-4 px-4" style="scrollbar-width:none;-ms-overflow-style:none;">
+        <% articles.forEach(function(article) { %>
+        <a href="/article/<%= article.slug %>"
+          class="group flex-shrink-0 w-[78vw] max-w-[300px] snap-start bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
+          <div class="relative aspect-[16/10] bg-[var(--bg-milky)] overflow-hidden">
+            <% if (article.mainImage) { %>
+            <img src="<%= article.mainImage %>" alt="<%= article.title %>" class="w-full h-full object-cover">
+            <% } else { %>
+            <div class="w-full h-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text text-primary opacity-30">
+                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                <path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>
+              </svg>
+            </div>
+            <% } %>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-sm font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors"><%= article.title %></h3>
+            <p class="text-xs text-slate-500 mb-3 line-clamp-2"><%= article.excerpt ? article.excerpt : (article.content ? article.content.substring(0, 80) + '...' : '') %></p>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-500"><%= new Date(article.createdAt).toLocaleDateString('fa-IR') %></span>
+              <span class="text-primary font-semibold">بیشتر ←</span>
+            </div>
+          </div>
+        </a>
+        <% }); %>
+        <div class="flex-shrink-0 w-4"></div>
+      </div>
+      <p class="text-center text-xs text-slate-500 mt-3 opacity-60">← برای دیدن بیشتر اسکرول کنید</p>
+    </div>
+
+    <!-- Tablet & Desktop grid -->
+    <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% articles.forEach(function(article) { %>
+      <a href="/article/<%= article.slug %>"
+        class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 flex-col h-full">
+        <div class="relative aspect-video overflow-hidden bg-gradient-to-br from-[var(--bg-milky)] to-white">
+          <% if (article.mainImage) { %>
+          <img src="<%= article.mainImage %>" alt="<%= article.title %>"
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <% } else { %>
+          <div class="w-full h-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-file-text text-primary opacity-30">
+              <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+              <path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>
+            </svg>
+          </div>
+          <% } %>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+        </div>
+        <div class="p-6 flex-grow flex-col">
+          <h3 class="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+            <%= article.title %>
+          </h3>
+          <p class="text-sm text-slate-500 mb-4 line-clamp-3 flex-grow">
+            <%= article.excerpt ? article.excerpt : (article.content ? article.content.substring(0, 120) + '...' : 'مقاله‌ای جدید آماده است.') %>
+          </p>
+          <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+            <span class="text-xs text-slate-500">
+              <%= new Date(article.createdAt).toLocaleDateString('fa-IR') %>
+            </span>
+            <span class="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all">
+              مطالعه بیشتر
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-arrow-left group-hover:-translate-x-1 transition-transform">
+                <path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+
+    <% } else { %>
+    <div class="text-center py-20">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[var(--bg-milky)] mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open text-primary">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-bold text-slate-900 mb-4">مقاله‌ای یافت نشد</h3>
+      <p class="text-slate-500">در حال حاضر مقاله‌ای برای نمایش وجود ندارد.</p>
+    </div>
+    <% } %>
+  </div>
+</section>

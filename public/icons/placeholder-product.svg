@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-labelledby="title desc">
+  <title id="title">Product placeholder</title>
+  <desc id="desc">Neutral local placeholder for products without an image</desc>
+  <rect width="600" height="600" fill="#F0F9FF"/>
+  <circle cx="300" cy="300" r="150" fill="#fff" opacity=".85"/>
+  <path d="M210 250l90-52 90 52v104l-90 52-90-52V250z" fill="none" stroke="#2563EB" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M210 250l90 52 90-52M300 302v104" fill="none" stroke="#0D9488" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

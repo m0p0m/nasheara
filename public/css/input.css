@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/vazirmatn/Vazirmatn-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/vazirmatn/Vazirmatn-Bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+@theme {
+  --color-primary: #0B74DA;
+  --color-secondary: #1ECFD0;
+  --color-cta: #FF7A3D;
+  --color-dark: #05315b;
+  --color-gray-soft: #6B7280;
+  --color-bg-milky: #FDFDFD;
+
+  --font-vazir: "Vazirmatn", sans-serif;
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+@layer base {
+  * {
+    font-family: var(--font-vazir);
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+
+  body {
+    direction: rtl;
+    text-align: right;
+    background-color: #f5eff4;
+    color: var(--color-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-xl px-6 py-2 h-12 font-bold text-white transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0;
+    background-color: var(--color-primary);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-xl px-6 py-2 h-12 font-bold transition-all duration-300 border-2;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background-color: transparent;
+  }
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  }
+
+  .btn-cta {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-xl px-6 py-2 h-12 font-bold text-white transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 active:translate-y-0;
+    background-color: var(--color-cta);
+  }
+
+  .card-modern {
+    @apply bg-white rounded-3xl p-6 border border-slate-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:border-slate-200;
+  }
+
+  .hero-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-12 items-center;
+  }
+
+  .input-field {
+    @apply w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  }
+}
+
+@layer utilities {
+  .text-primary { color: var(--color-primary); }
+  .text-secondary { color: var(--color-secondary); }
+  .text-cta { color: var(--color-cta); }
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-secondary { background-color: var(--color-secondary); }
+  .bg-cta { background-color: var(--color-cta); }
+
+  .ltr-text {
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: embed;
+  }
+}
+
+/* Animations from layout.ejs moved here for performance */
+@keyframes particle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+  50% { transform: translateY(-15px) translateX(5px); opacity: 0.8; }
+}
+
+[class^="particle-"] {
+  animation: particle 3s ease-in-out infinite;
+}
+
+.particle-1 { animation-delay: 0.3s; }
+.particle-2 { animation-delay: 0.6s; }
+.particle-3 { animation-delay: 0.9s; }
+.particle-4 { animation-delay: 1.2s; }
+.particle-5 { animation-delay: 1.5s; }
+.particle-6 { animation-delay: 1.8s; }
+.particle-7 { animation-delay: 2.1s; }
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+  display: flex;
+  width: fit-content;
+}
+.animate-scroll:hover { animation-play-state: paused; }

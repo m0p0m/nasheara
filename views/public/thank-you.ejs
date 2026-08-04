@@ -1,0 +1,28 @@
+<section class="min-h-[60vh] flex items-center py-20 bg-slate-50">
+  <div class="container mx-auto px-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-xl text-center border border-slate-100">
+      <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
+        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-4">
+        <%= typeof heading !== 'undefined' ? heading : 'عملیات با موفقیت انجام شد' %>
+      </h1>
+
+      <p class="text-lg text-slate-600 mb-10 leading-relaxed">
+        <%= typeof message !== 'undefined' ? message : 'درخواست شما با موفقیت ثبت شد. در اسرع وقت با شما تماس خواهیم گرفت.' %>
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/" class="btn-primary">
+          بازگشت به صفحه اصلی
+        </a>
+        <a href="/products" class="btn-secondary">
+          مشاهده محصولات
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,89 @@
+<div class="mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-4xl font-bold text-[#1E293B] mb-2">مدیریت دسته‌بندی‌ها</h1>
+            <p class="text-[#6B7280]">مدیریت و ویرایش دسته‌بندی محصولات</p>
+        </div>
+        <a href="/admin/categories/add" class="btn-primary">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            افزودن دسته‌بندی جدید
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <% if (categories && categories.length > 0) { %>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-primary">
+                    <tr>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">نام دسته‌بندی</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">توضیحات</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% categories.forEach(category => { %>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <% if (category.mainImage) { %>
+                                        <div class="w-10 h-10 rounded-lg overflow-hidden border bg-white flex items-center justify-center">
+                                            <img src="<%= category.mainImage %>" alt="<%= category.name %>" class="w-full h-full object-cover">
+                                        </div>
+                                    <% } else { %>
+                                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#2563EB] to-[#0D9488] flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                            </svg>
+                                        </div>
+                                    <% } %>
+                                    <div class="text-sm font-semibold text-[#1E293B]"><%= category.name %></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-[#6B7280]"><%= category.description || 'بدون توضیحات' %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="/admin/categories/edit/<%= category.id %>" class="btn-secondary !py-2 !px-3 text-xs">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        ویرایش
+                                    </a>
+                                    <form action="/admin/categories/delete/<%= category.id %>" method="POST" class="inline" onsubmit="return confirm('آیا از حذف این دسته‌بندی اطمینان دارید؟');">
+                                        <button type="submit" class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                            حذف
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div class="text-center py-20">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#F0F9FF] mb-6">
+                <svg class="w-10 h-10 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-[#1E293B] mb-4">دسته‌بندی‌ای یافت نشد</h3>
+            <p class="text-[#6B7280] mb-8">هنوز دسته‌بندی‌ای اضافه نشده است.</p>
+            <a href="/admin/categories/add" class="btn-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                افزودن اولین دسته‌بندی
+            </a>
+        </div>
+    <% } %>
+</div>
