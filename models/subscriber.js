@@ -1,55 +1,20 @@
-const fs = require('fs').promises;
-const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const prisma = require('../lib/prisma');
 
-const dataPath = path.join(__dirname, '..', 'data', 'subscribers.json');
+const getAll = () => prisma.newsletterSubscriber.findMany({ orderBy: { subscribedAt: 'desc' } });
 
-const getAll = async () => {
-    try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            await fs.mkdir(path.dirname(dataPath), { recursive: true }).catch(() => {});
-            await fs.writeFile(dataPath, '[]');
-            return [];
-        }
-        throw error;
-    }
-};
-
-const saveAll = async (subscribers) => {
-    const tempPath = dataPath + '.tmp';
-    await fs.mkdir(path.dirname(dataPath), { recursive: true }).catch(() => {});
-    await fs.writeFile(tempPath, JSON.stringify(subscribers, null, 2));
-    await fs.rename(tempPath, dataPath);
-};
-
-const deleteById = async (id) => {
-    const subscribers = await getAll();
-    const filtered = subscribers.filter(s => s.id !== id);
-    if (subscribers.length !== filtered.length) {
-        await saveAll(filtered);
-    }
-};
-
-const subscribe = async (email) => {
-    const subscribers = await getAll();
-    if (subscribers.find(s => s.email === email)) {
-        return { success: true, message: 'Already subscribed' };
-    }
-    const newSubscriber = {
-        id: uuidv4(),
-        email,
-        subscribedAt: new Date().toISOString()
-    };
-    subscribers.push(newSubscriber);
-    await saveAll(subscribers);
+const subscribe = async email => {
+    const normalizedEmail = String(email).trim().toLowerCase();
+    await prisma.newsletterSubscriber.upsert({
+        where: { email: normalizedEmail },
+        update: {},
+        create: { id: uuidv4(), email: normalizedEmail, subscribedAt: new Date() }
+    });
     return { success: true, message: 'Subscribed successfully' };
 };
 
-module.exports = {
-    getAll,
-    subscribe,
-    delete: deleteById
+const deleteById = async id => {
+    await prisma.newsletterSubscriber.deleteMany({ where: { id } });
 };
+
+module.exports = { getAll, subscribe, delete: deleteById };

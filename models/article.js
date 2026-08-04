@@ -1,93 +1,54 @@
-const fs = require('fs').promises;
-const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const prisma = require('../lib/prisma');
+const slugify = require('../utils/slugify');
 
-const dataPath = path.join(__dirname, '..', 'data', 'articles.json');
-
-// Read all articles from the file
-const getAll = async () => {
-    try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        if (error.code === 'ENOENT') return [];
-        throw error;
+const uniqueSlug = async (value, excludedId = null) => {
+    const base = slugify(value);
+    let candidate = base;
+    let suffix = 2;
+    while (await prisma.article.findFirst({ where: { slug: candidate, ...(excludedId ? { id: { not: excludedId } } : {}) } })) {
+        candidate = `${base}-${suffix++}`;
     }
+    return candidate;
 };
 
-// Save all articles to the file
-const saveAll = async (articles) => {
-    await fs.writeFile(dataPath, JSON.stringify(articles, null, 2));
-};
+const getAll = () => prisma.article.findMany({ orderBy: { createdAt: 'desc' } });
+const findById = id => prisma.article.findUnique({ where: { id } });
+const findBySlug = slug => prisma.article.findUnique({ where: { slug: slugify(slug) } });
 
-// Get a single article by ID
-const findById = async (id) => {
-    const articles = await getAll();
-    return articles.find(a => a.id === id);
-};
-
-// Get articles by slug
-const findBySlug = async (slug) => {
-    const articles = await getAll();
-    return articles.find(a => a.slug === slug);
-};
-
-// Create a new article
-const create = async (articleData) => {
-    const articles = await getAll();
-    const newArticle = { 
-        id: uuidv4(), 
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        ...articleData 
-    };
-    articles.push(newArticle);
-    await saveAll(articles);
-    return newArticle;
-};
-
-// Update an existing article
-const update = async (id, updatedData) => {
-    let articles = await getAll();
-    const index = articles.findIndex(a => a.id === id);
-    if (index === -1) {
-        return null;
+const create = async input => prisma.article.create({
+    data: {
+        id: uuidv4(), title: input.title, slug: await uniqueSlug(input.slug || input.title),
+        content: input.content || '', excerpt: input.excerpt || null,
+        metaTitle: input.metaTitle || null, metaDescription: input.metaDescription || null,
+        metaKeywords: input.metaKeywords || null, published: Boolean(input.published),
+        mainImage: input.mainImage || null,
+        galleryImages: Array.isArray(input.galleryImages) ? input.galleryImages : [],
+        createdAt: input.createdAt ? new Date(input.createdAt) : new Date(),
+        updatedAt: input.updatedAt ? new Date(input.updatedAt) : new Date()
     }
-    articles[index] = { 
-        ...articles[index], 
-        ...updatedData,
-        updatedAt: new Date().toISOString()
-    };
-    await saveAll(articles);
-    return articles[index];
-};
+});
 
-// Delete an article
-const remove = async (id) => {
-    const articles = await getAll();
-    const filteredArticles = articles.filter(a => a.id !== id);
-    if (filteredArticles.length === articles.length) {
-        return null;
+const update = async (id, input) => {
+    const current = await findById(id);
+    if (!current) return null;
+    const data = {};
+    for (const field of ['title', 'content', 'excerpt', 'metaTitle', 'metaDescription', 'metaKeywords', 'published', 'mainImage', 'galleryImages']) {
+        if (Object.prototype.hasOwnProperty.call(input, field)) data[field] = input[field];
     }
-    await saveAll(filteredArticles);
+    if (Object.prototype.hasOwnProperty.call(input, 'slug') || input.title) {
+        data.slug = await uniqueSlug(input.slug || input.title || current.title, id);
+    }
+    return prisma.article.update({ where: { id }, data });
 };
 
-// Get published articles
-const getPublished = async (limit = null) => {
-    const articles = await getAll();
-    const published = articles
-        .filter(a => a.published === true)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    return limit ? published.slice(0, limit) : published;
+const remove = async id => {
+    const result = await prisma.article.deleteMany({ where: { id } });
+    return result.count ? undefined : null;
 };
 
-module.exports = {
-    getAll,
-    findById,
-    findBySlug,
-    create,
-    update,
-    remove,
-    getPublished
-};
+const getPublished = limit => prisma.article.findMany({
+    where: { published: true }, orderBy: { createdAt: 'desc' }, ...(limit ? { take: limit } : {})
+});
 
+module.exports = { getAll, findById, findBySlug, create, update, remove, getPublished };

@@ -1,71 +1,77 @@
-const fs = require('fs').promises;
-const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const { slugify } = require('./product');
+const prisma = require('../lib/prisma');
+const slugify = require('../utils/slugify');
 
-const dataPath = path.join(__dirname, '..', 'data', 'projects.json');
-
-const getAll = async () => {
-    try {
-        return JSON.parse(await fs.readFile(dataPath, 'utf8'));
-    } catch (error) {
-        if (error.code === 'ENOENT') return [];
-        throw error;
-    }
+const toProject = record => {
+    if (!record) return record;
+    const { relatedProducts = [], ...project } = record;
+    return { ...project, relatedProductIds: relatedProducts.map(relation => relation.product.id) };
 };
 
-const saveAll = async projects => fs.writeFile(dataPath, JSON.stringify(projects, null, 2));
+const includeProducts = { relatedProducts: { include: { product: true } } };
 
-const uniqueSlug = (value, projects, excludedId = null) => {
+const uniqueSlug = async (value, excludedId = null) => {
     const base = slugify(value);
-    const used = new Set(projects.filter(p => p.id !== excludedId).map(p => p.slug));
-    if (!used.has(base)) return base;
+    let candidate = base;
     let suffix = 2;
-    while (used.has(`${base}-${suffix}`)) suffix += 1;
-    return `${base}-${suffix}`;
+    while (await prisma.project.findFirst({ where: { slug: candidate, ...(excludedId ? { id: { not: excludedId } } : {}) } })) {
+        candidate = `${base}-${suffix++}`;
+    }
+    return candidate;
 };
 
-const findById = async id => (await getAll()).find(project => project.id === id);
-
-const findBySlug = async slug => {
-    const normalizedSlug = slugify(slug);
-    return (await getAll()).find(project => project.slug === normalizedSlug);
+const resolveProductIds = async references => {
+    const values = Array.isArray(references) ? references.filter(Boolean).map(String) : [];
+    if (!values.length) return [];
+    const products = await prisma.product.findMany({
+        where: { OR: [{ id: { in: values } }, { slug: { in: values } }] },
+        select: { id: true }
+    });
+    return [...new Set(products.map(product => product.id))];
 };
 
-const create = async projectData => {
-    const projects = await getAll();
-    const project = {
-        id: uuidv4(),
-        ...projectData,
-        slug: uniqueSlug(projectData.slug || projectData.title, projects),
-        galleryImages: Array.isArray(projectData.galleryImages) ? projectData.galleryImages : [],
-        relatedProductIds: Array.isArray(projectData.relatedProductIds) ? projectData.relatedProductIds : [],
-        createdAt: projectData.createdAt || new Date().toISOString()
-    };
-    projects.push(project);
-    await saveAll(projects);
-    return project;
+const getAll = async () => (await prisma.project.findMany({ include: includeProducts, orderBy: { createdAt: 'desc' } })).map(toProject);
+const findById = async id => toProject(await prisma.project.findUnique({ where: { id }, include: includeProducts }));
+const findBySlug = async slug => toProject(await prisma.project.findUnique({ where: { slug: slugify(slug) }, include: includeProducts }));
+
+const create = async input => {
+    const productIds = await resolveProductIds(input.relatedProductIds);
+    return toProject(await prisma.project.create({
+        data: {
+            id: uuidv4(), title: input.title, slug: await uniqueSlug(input.slug || input.title),
+            location: input.location || null, description: input.description || null,
+            coverImage: input.coverImage || null,
+            galleryImages: Array.isArray(input.galleryImages) ? input.galleryImages : [],
+            createdAt: input.createdAt ? new Date(input.createdAt) : new Date(),
+            relatedProducts: { create: productIds.map(productId => ({ product: { connect: { id: productId } } })) }
+        },
+        include: includeProducts
+    }));
 };
 
-const update = async (id, updatedData) => {
-    const projects = await getAll();
-    const index = projects.findIndex(project => project.id === id);
-    if (index === -1) return null;
-    const current = projects[index];
-    const slugSource = Object.prototype.hasOwnProperty.call(updatedData, 'slug')
-        ? (updatedData.slug || updatedData.title || current.title)
-        : current.slug;
-    projects[index] = { ...current, ...updatedData, slug: uniqueSlug(slugSource, projects, id) };
-    await saveAll(projects);
-    return projects[index];
+const update = async (id, input) => {
+    const current = await prisma.project.findUnique({ where: { id } });
+    if (!current) return null;
+    const data = {};
+    for (const field of ['title', 'location', 'description', 'coverImage', 'galleryImages']) {
+        if (Object.prototype.hasOwnProperty.call(input, field)) data[field] = input[field];
+    }
+    if (Object.prototype.hasOwnProperty.call(input, 'slug')) {
+        data.slug = await uniqueSlug(input.slug || input.title || current.title, id);
+    }
+    if (Object.prototype.hasOwnProperty.call(input, 'relatedProductIds')) {
+        const productIds = await resolveProductIds(input.relatedProductIds);
+        data.relatedProducts = {
+            deleteMany: {},
+            create: productIds.map(productId => ({ product: { connect: { id: productId } } }))
+        };
+    }
+    return toProject(await prisma.project.update({ where: { id }, data, include: includeProducts }));
 };
 
 const remove = async id => {
-    const projects = await getAll();
-    const remaining = projects.filter(project => project.id !== id);
-    if (remaining.length === projects.length) return null;
-    await saveAll(remaining);
-    return true;
+    const result = await prisma.project.deleteMany({ where: { id } });
+    return result.count ? true : null;
 };
 
 module.exports = { getAll, findById, findBySlug, create, update, remove };

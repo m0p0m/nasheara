@@ -1,68 +1,43 @@
-const fs = require('fs').promises;
-const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const prisma = require('../lib/prisma');
+const slugify = require('../utils/slugify');
 
-const dataPath = path.join(__dirname, '..', 'data', 'categories.json');
-
-// Read all categories from the file
-const getAll = async () => {
-    try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        // If the file doesn't exist or is empty, return an empty array
-        if (error.code === 'ENOENT') return [];
-        throw error;
+const uniqueSlug = async (value, excludedId = null) => {
+    const base = slugify(value);
+    let candidate = base;
+    let suffix = 2;
+    while (await prisma.category.findFirst({ where: { slug: candidate, ...(excludedId ? { id: { not: excludedId } } : {}) } })) {
+        candidate = `${base}-${suffix++}`;
     }
+    return candidate;
 };
 
-// Save all categories to the file
-const saveAll = async (categories) => {
-    await fs.writeFile(dataPath, JSON.stringify(categories, null, 2));
-};
+const getAll = () => prisma.category.findMany();
+const findById = id => prisma.category.findUnique({ where: { id } });
 
-// Get a single category by ID
-const findById = async (id) => {
-    const categories = await getAll();
-    return categories.find(c => c.id === id);
-};
-
-// Create a new category
-const create = async (categoryData) => {
-    const categories = await getAll();
-    const newCategory = { id: uuidv4(), ...categoryData };
-    categories.push(newCategory);
-    await saveAll(categories);
-    return newCategory;
-};
-
-// Update an existing category
-const update = async (id, updatedData) => {
-    const categories = await getAll();
-    const index = categories.findIndex(c => c.id === id);
-    if (index === -1) {
-        return null; // Or throw an error
+const create = async input => prisma.category.create({
+    data: {
+        id: uuidv4(), name: input.name, slug: await uniqueSlug(input.slug || input.name),
+        description: input.description || null, mainImage: input.mainImage || null
     }
-    const updatedCategory = { ...categories[index], ...updatedData };
-    categories[index] = updatedCategory;
-    await saveAll(categories);
-    return updatedCategory;
-};
+});
 
-// Delete a category
-const remove = async (id) => {
-    const categories = await getAll();
-    const filteredCategories = categories.filter(c => c.id !== id);
-    if (filteredCategories.length === categories.length) {
-        return null; // Or throw an error if not found
+const update = async (id, input) => {
+    const current = await findById(id);
+    if (!current) return null;
+    const data = {};
+    for (const field of ['name', 'description', 'mainImage']) {
+        if (Object.prototype.hasOwnProperty.call(input, field)) data[field] = input[field];
     }
-    await saveAll(filteredCategories);
+    if (Object.prototype.hasOwnProperty.call(input, 'slug') || input.name) {
+        data.slug = await uniqueSlug(input.slug || input.name || current.name, id);
+    }
+    return prisma.category.update({ where: { id }, data });
 };
 
-module.exports = {
-    getAll,
-    findById,
-    create,
-    update,
-    remove,
+const remove = async id => {
+    const result = await prisma.category.deleteMany({ where: { id } });
+    return result.count ? undefined : null;
 };
+
+module.exports = { getAll, findById, create, update, remove };

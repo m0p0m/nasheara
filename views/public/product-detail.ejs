@@ -1,7 +1,22 @@
 <!-- Product Detail Page -->
 <section class="py-24 bg-[var(--bg-milky)] relative overflow-hidden pt-32">
     <div class="container mx-auto px-4 relative z-10">
-        <% if (product) { %>
+<% if (product) { %>
+<%
+    const productImages = [product.mainImage, ...(product.galleryImages || [])]
+        .filter(Boolean)
+        .map(image => image.startsWith('http') ? image : siteUrl + image);
+    const productStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        image: productImages,
+        description: product.metaDescription || product.description || undefined,
+        category: product.category || undefined,
+        url: siteUrl + '/product/' + encodeURIComponent(product.slug)
+    };
+%>
+<script type="application/ld+json"><%- JSON.stringify(productStructuredData).replace(/</g, '\\u003c') %></script>
             <div class="max-w-7xl mx-auto">
                 <!-- Breadcrumb -->
                 <nav class="mb-6 flex items-center gap-2 text-sm text-slate-500">

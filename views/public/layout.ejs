@@ -5,35 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        <%= typeof title !=='undefined' ? title : 'شرکت تصفیه آب صبا - سیستم‌های تصفیه آب خانگی و صنعتی' %>
+        <%= typeof title !=='undefined' ? title : 'کاشی طرح‌دار ایرانی | کاشی سنتی و دکوراتیو' %>
     </title>
     <meta name="description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'شرکت صبا تصفیه، پیشرو در ارائه تجهیزات و سیستم‌های تصفیه آب خانگی، نیمه‌صنعتی و صنعتی با بیش از ۱۵ سال تجربه. فروش و خدمات پس از فروش دستگاه‌های RO و فیلترهای آب.' %>">
+        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'طراحی و تولید کاشی‌های طرح‌دار ایرانی برای کف، دیوار، حیاط، استخر، آشپزخانه و فضاهای معماری.' %>">
     <meta name="keywords"
-        content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : 'تصفیه آب, دستگاه تصفیه آب, تصفیه آب خانگی, تصفیه آب صنعتی, تصفیه آب نیمه صنعتی, RO, فیلتر آب, صبا تصفیه' %>">
-    <meta name="author" content="صبا تصفیه">
+        content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : 'کاشی طرح‌دار, کاشی سنتی, کاشی دکوراتیو, کاشی کف, کاشی دیوار' %>">
+    <meta name="author" content="شرکت کاشی طرح‌دار">
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'شرکت تصفیه آب صبا' %>">
+    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'کاشی طرح‌دار ایرانی' %>">
     <meta property="og:description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'پیشرو در ارائه تجهیزات و سیستم‌های تصفیه آب خانگی و صنعتی' %>">
+        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'طراحی و تولید کاشی‌های طرح‌دار ایرانی برای فضاهای معماری' %>">
     <meta property="og:type" content="website">
     <meta property="og:url"
-        content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://sabatasfiyeh.com' + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
-    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : 'https://sabatasfiyeh.com/icons/log.png' %>">
+        content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
+    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/log.png' %>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : 'لوگو شرکت صبا تصفیه' %>">
+    <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : 'لوگو شرکت کاشی طرح‌دار' %>">
     <meta property="og:locale" content="fa_IR">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'شرکت تصفیه آب صبا' %>">
+    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'کاشی طرح‌دار ایرانی' %>">
     <meta name="twitter:description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'پیشرو در ارائه تجهیزات و سیستم‌های تصفیه آب خانگی و صنعتی' %>">
-    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : 'https://sabatasfiyeh.com/icons/log.png' %>">
+        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'طراحی و تولید کاشی‌های طرح‌دار ایرانی' %>">
+    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/log.png' %>">
 
-    <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://sabatasfiyeh.com' %>">
+    <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
 
     <!-- Favicon and Logo -->
     <link rel="icon" href="/icons/log.png" type="image/png">
@@ -44,13 +44,11 @@
     {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "صبا تصفیه",
-        "alternateName": "شرکت تصفیه آب صبا",
-        "url": "https://sabatasfiyeh.com",
-        "logo": "https://sabatasfiyeh.com/icons/log.png",
-        "description": "شرکت صبا تصفیه، پیشرو در ارائه تجهیزات و سیستم‌های تصفیه آب خانگی و صنعتی با بیش از ۱۵ سال تجربه",
-        "foundingDate": "2009",
-        "founder": "صبا تصفیه",
+        "name": "شرکت کاشی طرح‌دار",
+        "alternateName": "تولیدکننده کاشی طرح‌دار ایرانی",
+        "url": "<%= siteUrl %>",
+        "logo": "<%= siteUrl %>/icons/log.png",
+        "description": "طراحی و تولید کاشی‌های طرح‌دار، سنتی و دکوراتیو برای فضاهای داخلی و خارجی",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "بلوار کوه سفید، کوچه ۲۲، پلاک ۵",
@@ -82,12 +80,6 @@
                 "availableLanguage": ["Persian"]
             }
         ],
-        "email": "info@sabatasfiyeh.com",
-        "sameAs": [
-            "https://www.instagram.com/sabatasfiyeh",
-            "https://www.linkedin.com/company/sabatasfiyeh",
-            "https://t.me/sabatasfiyeh"
-        ],
         "openingHoursSpecification": [
             {
                 "@type": "OpeningHoursSpecification",
@@ -109,18 +101,16 @@
             "name": "Iran"
         },
         "knowsAbout": [
-            "تصفیه آب صنعتی",
-            "تصفیه آب خانگی",
-            "سیستم RO",
-            "فیلترهای آب",
-            "پمپ تصفیه آب",
-            "دستگاه تصفیه آب"
+            "کاشی طرح‌دار",
+            "کاشی سنتی ایرانی",
+            "کاشی دکوراتیو",
+            "کاشی کف و دیوار",
+            "طراحی الگوهای کاشی"
         ],
         "makesOffer": [
-            "نصب و راه‌اندازی سیستم تصفیه آب",
-            "خدمات پس از فروش",
-            "مشاوره رایگان",
-            "گارانتی محصولات"
+            "طراحی و تولید کاشی سفارشی",
+            "تأمین کاشی پروژه‌های معماری",
+            "مشاوره انتخاب طرح و رنگ"
         ]
     }
     </script>
@@ -129,11 +119,10 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "شرکت تصفیه آب صبا",
-        "image": "https://sabatasfiyeh.com/icons/log.png",
+        "@type": "HomeAndConstructionBusiness",
+        "name": "شرکت کاشی طرح‌دار",
+        "image": "<%= siteUrl %>/icons/log.png",
         "telephone": "+982536550672",
-        "email": "info@sabatasfiyeh.com",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "بلوار کوه سفید، کوچه ۲۲، پلاک ۵",

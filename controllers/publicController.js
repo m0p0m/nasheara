@@ -83,10 +83,14 @@ const getProductDetail = async (req, res) => {
         const relatedProducts = allProducts
             .filter(p => p.id !== product.id && p.category && product.category && p.category === product.category)
             .slice(0, 4);
+        const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
         res.render('public/product-detail', {
-            title: `${product.name} - شرکت تصفیه آب صبا`,
-            metaDescription: product.description ? product.description.substring(0, 160) : undefined,
-            ogImage: product.mainImage ? `https://sabatasfiyeh.com${product.mainImage}` : undefined,
+            title: product.metaTitle || product.name,
+            metaDescription: product.metaDescription || (product.description ? product.description.substring(0, 160) : `معرفی ${product.name}`),
+            metaKeywords: Array.isArray(product.keywords) ? product.keywords.join(', ') : product.keywords,
+            canonicalUrl: `${siteUrl}/product/${encodeURIComponent(product.slug)}`,
+            ogImage: product.mainImage ? `${siteUrl}${product.mainImage}` : undefined,
+            siteUrl,
             product: product,
             relatedProducts,
             layout: 'public/layout',
@@ -127,10 +131,13 @@ const getProjectDetail = async (req, res) => {
         const relatedProducts = references
             .map(reference => products.find(product => product.id === reference || product.slug === reference))
             .filter((product, index, list) => product && list.findIndex(item => item.id === product.id) === index);
+        const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
         res.render('public/project-detail', {
             title: project.title,
-            metaDescription: project.description ? project.description.substring(0, 160) : undefined,
-            ogImage: project.coverImage,
+            metaDescription: project.description ? project.description.substring(0, 160) : `معرفی نمونه‌کار ${project.title}`,
+            canonicalUrl: `${siteUrl}/project/${encodeURIComponent(project.slug)}`,
+            ogImage: project.coverImage ? `${siteUrl}${project.coverImage}` : undefined,
+            siteUrl,
             project, relatedProducts, layout: 'public/layout', currentPath: req.path
         });
     } catch (error) {

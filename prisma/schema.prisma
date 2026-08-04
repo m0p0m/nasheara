@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @db.VarChar(191)
+  name        String    @unique @db.VarChar(191)
+  slug        String    @unique @db.VarChar(191)
+  description String?   @db.Text
+  mainImage   String?   @db.VarChar(500)
+  products    Product[]
+}
+
+model Product {
+  id              String           @id @db.VarChar(191)
+  slug            String           @unique @db.VarChar(191)
+  name            String           @db.VarChar(255)
+  categoryId      String?          @db.VarChar(191)
+  categoryRecord  Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  stock           Int?
+  description     String?          @db.LongText
+  mainImage       String?          @db.VarChar(500)
+  galleryImages   Json
+  metaTitle       String?          @db.VarChar(255)
+  metaDescription String?          @db.Text
+  keywords        Json
+  isNew           Boolean          @default(false)
+  isBestSeller    Boolean          @default(false)
+  specs           Json
+  patternName     String?          @db.VarChar(191)
+  color           String?          @db.VarChar(191)
+  material        String?          @db.VarChar(191)
+  dimensions      String?          @db.VarChar(191)
+  usageArea       Json
+  projects        ProjectProduct[]
+
+  @@index([categoryId])
+}
+
+model Project {
+  id              String           @id @db.VarChar(191)
+  title           String           @db.VarChar(255)
+  slug            String           @unique @db.VarChar(191)
+  location        String?          @db.VarChar(255)
+  description     String?          @db.LongText
+  coverImage      String?          @db.VarChar(500)
+  galleryImages   Json
+  createdAt       DateTime         @default(now())
+  relatedProducts ProjectProduct[]
+}
+
+model ProjectProduct {
+  projectId String  @db.VarChar(191)
+  productId String  @db.VarChar(191)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, productId])
+  @@index([productId])
+}
+
+model Article {
+  id              String   @id @db.VarChar(191)
+  title           String   @db.VarChar(255)
+  slug            String   @unique @db.VarChar(191)
+  content         String   @db.LongText
+  excerpt         String?  @db.Text
+  metaTitle       String?  @db.VarChar(255)
+  metaDescription String?  @db.Text
+  metaKeywords    String?  @db.Text
+  published       Boolean  @default(false)
+  mainImage       String?  @db.VarChar(500)
+  galleryImages   Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Consultation {
+  id                  String    @id @db.VarChar(191)
+  name                String    @db.VarChar(191)
+  phone               String    @db.VarChar(50)
+  interestedInProduct String?   @db.VarChar(255)
+  contactTime         String?   @db.VarChar(191)
+  email               String?   @db.VarChar(255)
+  projectType         String?   @db.VarChar(191)
+  message             String?   @db.LongText
+  contacted           Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  submittedAt         DateTime?
+
+  @@index([phone])
+  @@index([contacted])
+}
+
+model NewsletterSubscriber {
+  id           String   @id @db.VarChar(191)
+  email        String   @unique @db.VarChar(255)
+  subscribedAt DateTime @default(now())
+}
