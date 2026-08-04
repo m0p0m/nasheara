@@ -13,6 +13,9 @@ router.get('/products', publicController.getAllProducts);
 // GET /product/:slug - Show product detail page
 router.get('/product/:slug', publicController.getProductDetail);
 
+router.get('/projects', publicController.getAllProjects);
+router.get('/project/:slug', publicController.getProjectDetail);
+
 // GET /about - Show about page
 router.get('/about', publicController.getAboutPage);
 
@@ -21,6 +24,9 @@ router.get('/articles', require('../controllers/articleController').getAllArticl
 
 // GET /article/:slug - Show article detail
 router.get('/article/:slug', require('../controllers/articleController').getArticleDetail);
+
+router.get('/sitemap.xml', publicController.getSitemap);
+router.get('/robots.txt', publicController.getRobots);
 
 // GET /contact - Show contact page
 router.get('/contact', publicController.getContactPage);

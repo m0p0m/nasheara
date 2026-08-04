@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const Category = require('../models/category');
 const Article = require('../models/article');
+const Project = require('../models/project');
 
 // Display the home page with limited products (8-10)
 const getHomePage = async (req, res) => {
@@ -97,6 +98,84 @@ const getProductDetail = async (req, res) => {
     }
 };
 
+// Display all completed projects
+const getAllProjects = async (req, res) => {
+    try {
+        const projects = (await Project.getAll())
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        res.render('public/projects', {
+            title: 'نمونه‌کارها', projects, layout: 'public/layout', currentPath: req.path
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('خطایی در بارگذاری نمونه‌کارها رخ داد.');
+    }
+};
+
+// Display a completed project and its related products
+const getProjectDetail = async (req, res) => {
+    try {
+        const project = await Project.findBySlug(req.params.slug);
+        if (!project) {
+            return res.status(404).render('public/project-detail', {
+                title: 'نمونه‌کار یافت نشد', project: null, relatedProducts: [],
+                layout: 'public/layout', currentPath: req.path
+            });
+        }
+        const products = await Product.getAll();
+        const references = project.relatedProductIds || [];
+        const relatedProducts = references
+            .map(reference => products.find(product => product.id === reference || product.slug === reference))
+            .filter((product, index, list) => product && list.findIndex(item => item.id === product.id) === index);
+        res.render('public/project-detail', {
+            title: project.title,
+            metaDescription: project.description ? project.description.substring(0, 160) : undefined,
+            ogImage: project.coverImage,
+            project, relatedProducts, layout: 'public/layout', currentPath: req.path
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('خطایی در بارگذاری نمونه‌کار رخ داد.');
+    }
+};
+
+const xmlEscape = value => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+const getSitemap = async (req, res) => {
+    try {
+        const baseUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+        const [products, projects, articles] = await Promise.all([
+            Product.getAll(), Project.getAll(), Article.getAll()
+        ]);
+        const paths = [
+            '/', '/products', '/projects', '/articles', '/about', '/contact',
+            ...products.map(product => `/product/${encodeURIComponent(product.slug)}`),
+            ...projects.map(project => `/project/${encodeURIComponent(project.slug)}`),
+            ...articles.map(article => `/article/${encodeURIComponent(article.slug)}`)
+        ];
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+            `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+            paths.map(urlPath => `  <url><loc>${xmlEscape(`${baseUrl}${urlPath}`)}</loc></url>`).join('\n') +
+            '\n</urlset>';
+        res.type('application/xml').send(xml);
+    } catch (error) {
+        console.error('Failed to generate sitemap:', error);
+        res.status(500).send('Cannot generate sitemap');
+    }
+};
+
+const getRobots = (req, res) => {
+    const baseUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+    res.type('text/plain').send(
+        `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${baseUrl}/sitemap.xml\n`
+    );
+};
+
 // Display about page
 const getAboutPage = async (req, res) => {
     try {
@@ -129,6 +208,10 @@ module.exports = {
     getHomePage,
     getAllProducts,
     getProductDetail,
+    getAllProjects,
+    getProjectDetail,
+    getSitemap,
+    getRobots,
     getAboutPage,
     getContactPage
 };

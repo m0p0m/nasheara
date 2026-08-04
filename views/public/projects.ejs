@@ -1,0 +1,32 @@
+<section class="pt-32 pb-16 bg-gradient-to-br from-[var(--bg-milky)] via-white to-[var(--bg-milky)]">
+    <div class="container mx-auto px-4 text-center">
+        <span class="inline-flex px-4 py-2 bg-white rounded-full border text-sm text-primary mb-5">پروژه‌های اجراشده</span>
+        <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-5">نمونه‌کارهای ما</h1>
+        <p class="text-lg text-slate-500 max-w-2xl mx-auto">بخشی از فضاهایی که با کاشی‌های طرح‌دار ما جان تازه گرفته‌اند.</p>
+    </div>
+</section>
+
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <% if (projects && projects.length) { %>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% projects.forEach(project => { %>
+                    <a href="/project/<%= encodeURIComponent(project.slug) %>" class="group card-modern !p-0 overflow-hidden">
+                        <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
+                            <% if (project.coverImage) { %>
+                                <img src="<%= project.coverImage %>" alt="<%= project.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <% } %>
+                        </div>
+                        <div class="p-6">
+                            <% if (project.location) { %><p class="text-sm text-primary mb-2"><%= project.location %></p><% } %>
+                            <h2 class="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors"><%= project.title %></h2>
+                            <p class="text-sm text-slate-500 mt-3 line-clamp-2"><%= project.description || '' %></p>
+                        </div>
+                    </a>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-20"><h2 class="text-2xl font-bold text-slate-900">نمونه‌کاری برای نمایش وجود ندارد.</h2></div>
+        <% } %>
+    </div>
+</section>

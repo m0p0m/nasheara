@@ -35,6 +35,7 @@ const upload = multer({
     }
 }).fields([
     { name: 'mainImage', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 },
     { name: 'galleryImages', maxCount: 5 }
 ]);
 
