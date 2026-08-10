@@ -16,7 +16,7 @@ const projectStructuredData = {
 <script type="application/ld+json"><%- JSON.stringify(projectStructuredData).replace(/</g, '\\u003c') %></script>
 <section class="pt-28 pb-16 bg-white">
     <div class="container mx-auto px-4">
-        <nav class="text-sm text-slate-500 mb-8"><a href="/projects" class="hover:text-primary">نمونه‌کارها</a> / <span><%= project.title %></span></nav>
+        <nav class="text-sm text-slate-500 mb-8"><a href="/<%= locale %>/projects" class="hover:text-primary"><%= t('auto.k_b08b4dd634e4') %></a> / <span><%= project.title %></span></nav>
         <div class="grid lg:grid-cols-2 gap-12 items-start">
             <div class="space-y-4">
                 <div class="aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100 shadow-xl">
@@ -26,7 +26,7 @@ const projectStructuredData = {
                     <div class="grid grid-cols-4 gap-3">
                         <% project.galleryImages.forEach(image => { %>
                             <button type="button" onclick="document.getElementById('projectMainImage').src=this.firstElementChild.src" class="aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-primary">
-                                <img src="<%= image %>" alt="گالری <%= project.title %>" class="w-full h-full object-cover">
+                                <img src="<%= image %>" alt="<%= t('auto.k_cfa05a15cb54') %> <%= project.title %>" class="w-full h-full object-cover">
                             </button>
                         <% }); %>
                     </div>
@@ -36,7 +36,7 @@ const projectStructuredData = {
                 <% if (project.location) { %><span class="inline-flex px-4 py-2 rounded-full bg-[var(--bg-milky)] text-primary mb-5"><%= project.location %></span><% } %>
                 <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6"><%= project.title %></h1>
                 <p class="text-lg text-slate-600 leading-9 whitespace-pre-line"><%= project.description || '' %></p>
-                <p class="mt-8 text-sm text-slate-400">تاریخ ثبت: <%= new Date(project.createdAt).toLocaleDateString('fa-IR') %></p>
+                <p class="mt-8 text-sm text-slate-400"><%= t('auto.k_15d3766f8c21') %> <%= new Date(project.createdAt).toLocaleDateString('fa-IR') %></p>
             </div>
         </div>
     </div>
@@ -45,10 +45,10 @@ const projectStructuredData = {
 <% if (relatedProducts && relatedProducts.length) { %>
 <section class="py-16 bg-[var(--bg-milky)]">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-slate-900 text-center mb-10">محصولات استفاده‌شده در این پروژه</h2>
+        <h2 class="text-3xl font-bold text-slate-900 text-center mb-10"><%= t('auto.k_292370b64c5e') %></h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <% relatedProducts.forEach(product => { %>
-                <a href="/product/<%= encodeURIComponent(product.slug) %>" class="card-modern group">
+                <a href="/<%= locale %>/product/<%= encodeURIComponent(product.slug) %>" class="card-modern group">
                     <div class="aspect-square rounded-xl overflow-hidden bg-white mb-4"><img src="<%= product.mainImage || '/placeholder.jpg' %>" alt="<%= product.name %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform"></div>
                     <h3 class="font-bold text-slate-900"><%= product.name %></h3>
                 </a>
@@ -58,5 +58,5 @@ const projectStructuredData = {
 </section>
 <% } %>
 <% } else { %>
-<section class="py-32 bg-white text-center"><h1 class="text-3xl font-bold mb-6">نمونه‌کار یافت نشد</h1><a href="/projects" class="btn-primary">بازگشت به نمونه‌کارها</a></section>
+<section class="py-32 bg-white text-center"><h1 class="text-3xl font-bold mb-6"><%= t('auto.k_e5e8c42f15c0') %></h1><a href="/<%= locale %>/projects" class="btn-primary"><%= t('auto.k_eb3ddb4b0db1') %></a></section>
 <% } %>

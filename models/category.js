@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const prisma = require('../lib/prisma');
 const slugify = require('../utils/slugify');
+const { buildTranslations, localizeRecord } = require('../utils/translations');
 
 const uniqueSlug = async (value, excludedId = null) => {
     const base = slugify(value);
@@ -12,18 +13,23 @@ const uniqueSlug = async (value, excludedId = null) => {
     return candidate;
 };
 
-const getAll = () => prisma.category.findMany();
-const findById = id => prisma.category.findUnique({ where: { id } });
+const getAll = async (locale = 'fa') => (await prisma.category.findMany())
+    .map(category => localizeRecord(category, ['name', 'description'], locale));
+const findById = async (id, locale = 'fa') => localizeRecord(
+    await prisma.category.findUnique({ where: { id } }), ['name', 'description'], locale
+);
 
-const create = async input => prisma.category.create({
-    data: {
+const create = async input => {
+    const translations = buildTranslations(input, ['name', 'description']);
+    const fa = translations.fa || {};
+    return prisma.category.create({ data: {
         id: uuidv4(), name: input.name, slug: await uniqueSlug(input.slug || input.name),
-        description: input.description || null, mainImage: input.mainImage || null
-    }
-});
+        description: input.description || null, mainImage: input.mainImage || null, translations
+    } });
+};
 
 const update = async (id, input) => {
-    const current = await findById(id);
+    const current = await prisma.category.findUnique({ where: { id } });
     if (!current) return null;
     const data = {};
     for (const field of ['name', 'description', 'mainImage']) {
@@ -32,6 +38,10 @@ const update = async (id, input) => {
     if (Object.prototype.hasOwnProperty.call(input, 'slug') || input.name) {
         data.slug = await uniqueSlug(input.slug || input.name || current.name, id);
     }
+    const translations = buildTranslations(input, ['name', 'description'], current.translations || {});
+    data.translations = translations;
+    if (translations.fa.name !== undefined) data.name = translations.fa.name;
+    if (translations.fa.description !== undefined) data.description = translations.fa.description || null;
     return prisma.category.update({ where: { id }, data });
 };
 

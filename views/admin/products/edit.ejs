@@ -1,5 +1,5 @@
-<h1 class="text-3xl font-bold text-[#1E293B] mb-2">ویرایش محصول: <%= product.name %></h1>
-<p class="text-[#6B7280] mb-8">هر تغییری در این صفحه بلافاصله پس از ذخیره روی وب‌سایت نمایش داده می‌شود.</p>
+<h1 class="text-3xl font-bold text-[#1E293B] mb-2"><%= t('auto.k_ef82b716766b') %> <%= product.name %></h1>
+<p class="text-[#6B7280] mb-8"><%= t('auto.k_4a5b1a54a4e4') %></p>
 
 <form action="/admin/products/edit/<%= product.id %>" method="POST" enctype="multipart/form-data" class="space-y-8">
 
@@ -7,28 +7,28 @@
     <div class="card-modern">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-xl font-semibold text-[#1E293B]">اطلاعات اصلی</h2>
-                <p class="text-sm text-[#6B7280] mt-1">نام، دسته‌بندی و وضعیت موجودی را در صورت نیاز تغییر دهید.</p>
+                <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_4e703f2368ec') %></h2>
+                <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_46613de26fee') %></p>
             </div>
             <div class="hidden lg:flex items-center gap-2 text-xs text-[#2563EB] bg-[#F0F9FF] px-3 py-1 rounded-full">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                اطلاعات ضروری
+                <%= t('auto.k_2bd2d577705d') %>
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-                <label for="name" class="block text-sm font-semibold text-[#1E293B]">نام محصول *</label>
-                <input type="text" id="name" name="name" value="<%= product.name %>" required class="input-field">
+                <label for="name" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_430308963fce') %> *</label>
+                <input type="text" id="name" name="translations[fa][name]" value="<%= product.translations?.fa?.name || product.name %>" required class="input-field">
             </div>
             <div class="space-y-2">
-                <label for="slug" class="block text-sm font-semibold text-[#1E293B]">نامک (Slug)</label>
-                <input type="text" id="slug" name="slug" dir="ltr" value="<%= product.slug || '' %>" placeholder="مثلاً: کاشی-شمسه-آبی" class="input-field">
-                <p class="text-xs text-[#6B7280]">در صورت خالی بودن، نامک یکتا به‌صورت خودکار از نام محصول ساخته می‌شود.</p>
+                <label for="slug" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_3a580488f409') %></label>
+                <input type="text" id="slug" name="slug" dir="ltr" value="<%= product.slug || '' %>" placeholder="<%= t('auto.k_95338bc2e5ae') %>" class="input-field">
+                <p class="text-xs text-[#6B7280]"><%= t('auto.k_90970838d35b') %></p>
             </div>
             <div class="space-y-2">
-                <label for="category" class="block text-sm font-semibold text-[#1E293B]">دسته‌بندی *</label>
+                <label for="category" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_a4dfaeb7ad8e') %> *</label>
                 <select id="category" name="category" required class="w-full h-12 px-4 border-2 border-[#2563EB]/20 rounded-xl focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-white">
                     <% categories.forEach(category => { %>
                         <option value="<%= category.name %>" <%= product.category === category.name ? 'selected' : '' %>>
@@ -38,16 +38,15 @@
                 </select>
             </div>
             <div class="space-y-2 md:col-span-2 lg:col-span-1">
-                <label for="stock" class="block text-sm font-semibold text-[#1E293B]">موجودی</label>
-                <input type="number" id="stock" name="stock" min="0" value="<%= typeof product.stock === 'number' ? product.stock : '' %>" placeholder="مثلاً ۱۲" class="input-field">
+                <label for="stock" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_55645b2c6d92') %></label>
+                <input type="number" id="stock" name="stock" min="0" value="<%= typeof product.stock === 'number' ? product.stock : '' %>" placeholder="<%= t('auto.k_8862f658ab55') %>" class="input-field">
                 <p class="text-xs text-[#6B7280] leading-5">
-                    خالی گذاشتن این فیلد معادل <span class="font-semibold text-[#2563EB]">«موجود»</span> بودن محصول است.
-                    وارد کردن عدد مقدار دقیق موجودی را نشان می‌دهد و عدد صفر یعنی <span class="font-semibold text-red-500">ناموجود</span>.
+                    <%= t('auto.k_40703d4e2088') %> <span class="font-semibold text-[#2563EB]">«<%= t('auto.k_ca2b3aa7ba1f') %></span> <%= t('auto.k_59dc4e43a858') %> <span class="font-semibold text-red-500"><%= t('auto.k_c42b8336fca5') %></span>.
                 </p>
             </div>
             <div class="md:col-span-2 space-y-2">
-                <label for="description" class="block text-sm font-semibold text-[#1E293B]">توضیحات</label>
-                <textarea id="description" name="description" rows="5" class="input-field resize-y" placeholder="توضیح کوتاه درباره محصول..."><%= product.description || '' %></textarea>
+                <label for="description" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_55bbd4b9a85f') %></label>
+                <textarea id="description" name="translations[fa][description]" rows="5" class="input-field resize-y"><%= product.translations?.fa?.description || product.description || '' %></textarea>
             </div>
         </div>
     </div>
@@ -55,72 +54,91 @@
     <!-- Tile Details -->
     <div class="card-modern">
         <div class="mb-6">
-            <h2 class="text-xl font-semibold text-[#1E293B]">ویژگی‌های کاشی</h2>
-            <p class="text-sm text-[#6B7280] mt-1">طرح، رنگ، جنس، ابعاد و محل‌های مناسب استفاده را ویرایش کنید.</p>
+            <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_c85bb2c1d9bd') %></h2>
+            <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_f6e4c4bed70b') %></p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-                <label for="patternName" class="block text-sm font-semibold text-[#1E293B]">نام طرح</label>
-                <input type="text" id="patternName" name="patternName" value="<%= product.patternName || '' %>" placeholder="مثلاً شمسه یا اشکی" class="input-field">
+                <label for="patternName" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_4ddb7f5464bb') %></label>
+                <input type="text" id="patternName" name="translations[fa][patternName]" value="<%= product.translations?.fa?.patternName || product.patternName || '' %>" class="input-field">
             </div>
             <div class="space-y-2">
-                <label for="color" class="block text-sm font-semibold text-[#1E293B]">رنگ</label>
-                <input type="text" id="color" name="color" value="<%= product.color || '' %>" placeholder="مثلاً فیروزه‌ای و لاجوردی" class="input-field">
+                <label for="color" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_3f13b5cf1544') %></label>
+                <input type="text" id="color" name="translations[fa][color]" value="<%= product.translations?.fa?.color || product.color || '' %>" class="input-field">
             </div>
             <div class="space-y-2">
-                <label for="material" class="block text-sm font-semibold text-[#1E293B]">جنس</label>
-                <input type="text" id="material" name="material" value="<%= product.material || '' %>" placeholder="مثلاً سرامیک یا سفال" class="input-field">
+                <label for="material" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_7e4d6e47aa8b') %></label>
+                <input type="text" id="material" name="translations[fa][material]" value="<%= product.translations?.fa?.material || product.material || '' %>" class="input-field">
             </div>
             <div class="space-y-2">
-                <label for="dimensions" class="block text-sm font-semibold text-[#1E293B]">ابعاد</label>
-                <input type="text" id="dimensions" name="dimensions" value="<%= product.dimensions || '' %>" placeholder="مثلاً ۲۰ × ۲۰ سانتی‌متر" class="input-field">
+                <label for="dimensions" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_32624786c6df') %></label>
+                <input type="text" id="dimensions" name="translations[fa][dimensions]" value="<%= product.translations?.fa?.dimensions || product.dimensions || '' %>" class="input-field">
             </div>
             <div class="space-y-2 md:col-span-2">
-                <label for="usageArea" class="block text-sm font-semibold text-[#1E293B]">محل استفاده (با کاما جدا کنید)</label>
-                <input type="text" id="usageArea" name="usageArea" value="<%= Array.isArray(product.usageArea) ? product.usageArea.join('، ') : (product.usageArea || '') %>" placeholder="کف، دیوار، حیاط، استخر، آشپزخانه، سرویس بهداشتی" class="input-field">
+                <label for="usageArea" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_63f4397820d3') %></label>
+                <input type="text" id="usageArea" name="translations[fa][usageArea]" value="<%= Array.isArray(product.translations?.fa?.usageArea || product.usageArea) ? (product.translations?.fa?.usageArea || product.usageArea).join('، ') : '' %>" class="input-field">
             </div>
         </div>
     </div>
 
+    <% ['en', 'ar'].forEach(language => { const translation = product.translations?.[language] || {}; %>
+    <div class="card-modern" dir="<%= language === 'en' ? 'ltr' : 'rtl' %>">
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4ba3e969a5bb') %> <%= language === 'en' ? 'English' : t('auto.k_9970632f55af') %></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_430308963fce') %></label><input name="translations[<%= language %>][name]" value="<%= translation.name || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_4ddb7f5464bb') %></label><input name="translations[<%= language %>][patternName]" value="<%= translation.patternName || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_3f13b5cf1544') %></label><input name="translations[<%= language %>][color]" value="<%= translation.color || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_7e4d6e47aa8b') %></label><input name="translations[<%= language %>][material]" value="<%= translation.material || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_32624786c6df') %></label><input name="translations[<%= language %>][dimensions]" value="<%= translation.dimensions || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_765d7912c658') %></label><input name="translations[<%= language %>][usageArea]" value="<%= (translation.usageArea || []).join(', ') %>" class="input-field"></div>
+            <div class="md:col-span-2 space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_55bbd4b9a85f') %></label><textarea name="translations[<%= language %>][description]" rows="5" class="input-field resize-y"><%= translation.description || '' %></textarea></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_0f2bad2af0b2') %></label><input name="translations[<%= language %>][metaTitle]" value="<%= translation.metaTitle || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_88c6a2a285c8') %></label><input name="translations[<%= language %>][keywords]" value="<%= (translation.keywords || []).join(', ') %>" class="input-field"></div>
+            <div class="md:col-span-2 space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_7d6ba4bee034') %></label><textarea name="translations[<%= language %>][metaDescription]" rows="3" class="input-field resize-y"><%= translation.metaDescription || '' %></textarea></div>
+            <div class="md:col-span-2 space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_7baf717d7093') %></label><textarea name="translations[<%= language %>][specs]" rows="4" class="input-field resize-y"><%= Object.entries(translation.specs || {}).map(([key,value]) => key + ':' + value).join('\n') %></textarea></div>
+        </div>
+    </div>
+    <% }); %>
+
     <!-- Images -->
     <div class="card-modern">
         <div class="mb-6">
-            <h2 class="text-xl font-semibold text-[#1E293B]">تصاویر</h2>
-            <p class="text-sm text-[#6B7280] mt-1">برای حفظ کیفیت ظاهری سایت از تصاویر روشن و باکیفیت استفاده کنید.</p>
+            <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_2ca319622ebe') %></h2>
+            <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_992db4bebb80') %></p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-[#1E293B] mb-2">تصویر اصلی فعلی</label>
+                    <label class="block text-sm font-semibold text-[#1E293B] mb-2"><%= t('auto.k_22f26305fffb') %></label>
                     <% if (product.mainImage) { %>
                         <img src="<%= product.mainImage %>" alt="<%= product.name %>" class="w-32 h-32 object-cover rounded-xl border border-gray-200">
                     <% } else { %>
-                        <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl">تصویری ثبت نشده است.</p>
+                        <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl"><%= t('auto.k_70f56653b7c6') %></p>
                     <% } %>
                 </div>
                 <div class="space-y-2">
-                    <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]">بارگذاری تصویر اصلی جدید</label>
+                    <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_a48e5f245095') %></label>
                     <input type="file" id="mainImage" name="mainImage" accept="image/*" class="input-field border-dashed">
-                    <p class="text-xs text-[#6B7280]">در صورت انتخاب تصویر جدید، تصویر قبلی حذف می‌شود.</p>
+                    <p class="text-xs text-[#6B7280]"><%= t('auto.k_6af709581be4') %></p>
                 </div>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-[#1E293B] mb-2">تصاویر گالری فعلی</label>
+                    <label class="block text-sm font-semibold text-[#1E293B] mb-2"><%= t('auto.k_cca2ca177fc4') %></label>
                     <div class="flex flex-wrap gap-3">
                         <% if (product.galleryImages && product.galleryImages.length > 0) { %>
                             <% product.galleryImages.forEach(image => { %>
                                 <img src="<%= image %>" alt="Gallery Image" class="w-24 h-24 object-cover rounded-xl border border-gray-200">
                             <% }); %>
                         <% } else { %>
-                            <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl">تصویری موجود نیست.</p>
+                            <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl"><%= t('auto.k_f059271f2a95') %></p>
                         <% } %>
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <label for="galleryImages" class="block text-sm font-semibold text-[#1E293B]">افزودن تصاویر بیشتر</label>
+                    <label for="galleryImages" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_f5f76d8a2553') %></label>
                     <input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed">
-                    <p class="text-xs text-[#6B7280]">می‌توانید تا ۵ تصویر جدید اضافه کنید.</p>
+                    <p class="text-xs text-[#6B7280]"><%= t('auto.k_af0657cc52c0') %></p>
                 </div>
             </div>
         </div>
@@ -129,54 +147,54 @@
     <!-- SEO -->
     <div class="card-modern">
         <div class="mb-6">
-            <h2 class="text-xl font-semibold text-[#1E293B]">تنظیمات سئو</h2>
-            <p class="text-sm text-[#6B7280] mt-1">اطلاعات این بخش برای بهبود نتایج جست‌وجو در گوگل استفاده می‌شود.</p>
+            <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_0f10eb61122f') %></h2>
+            <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_4fa47e650df1') %></p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-                <label for="metaTitle" class="block text-sm font-semibold text-[#1E293B]">عنوان متا</label>
-                <input type="text" id="metaTitle" name="metaTitle" value="<%= product.metaTitle || '' %>" placeholder="مثلاً: دستگاه تصفیه آب خانگی مدل RO" class="input-field">
+                <label for="metaTitle" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_0f2bad2af0b2') %></label>
+                <input type="text" id="metaTitle" name="translations[fa][metaTitle]" value="<%= product.translations?.fa?.metaTitle || product.metaTitle || '' %>" class="input-field">
             </div>
             <div class="space-y-2">
-                <label for="keywords" class="block text-sm font-semibold text-[#1E293B]">کلمات کلیدی (با کاما جدا کنید)</label>
-                <input type="text" id="keywords" name="keywords" value="<%= product.keywords && product.keywords.length ? product.keywords.join(', ') : '' %>" placeholder="تصفیه آب, فیلتر آب, RO" class="input-field">
+                <label for="keywords" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_1fbcc4f71104') %></label>
+                <input type="text" id="keywords" name="translations[fa][keywords]" value="<%= (product.translations?.fa?.keywords || product.keywords || []).join(', ') %>" class="input-field">
             </div>
         </div>
         <div class="mt-6 space-y-2">
-            <label for="metaDescription" class="block text-sm font-semibold text-[#1E293B]">توضیحات متا</label>
-            <textarea id="metaDescription" name="metaDescription" rows="3" class="input-field resize-y" placeholder="در ۱۵۰ کاراکتر توضیح دهید که محصول چه مزیتی دارد..."><%= product.metaDescription || '' %></textarea>
+            <label for="metaDescription" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_7d6ba4bee034') %></label>
+            <textarea id="metaDescription" name="translations[fa][metaDescription]" rows="3" class="input-field resize-y"><%= product.translations?.fa?.metaDescription || product.metaDescription || '' %></textarea>
         </div>
     </div>
 
     <!-- Flags & Specs -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="card-modern">
-            <h2 class="text-xl font-semibold text-[#1E293B] mb-4">برچسب‌ها</h2>
+            <h2 class="text-xl font-semibold text-[#1E293B] mb-4"><%= t('auto.k_4b4c40dc2b49') %></h2>
             <div class="space-y-3">
                 <label class="flex items-center gap-3 text-sm text-[#1E293B]">
                     <input type="checkbox" id="isNew" name="isNew" value="true" <%= product.isNew ? 'checked' : '' %> class="w-4 h-4 rounded border-[#2563EB]/30 text-[#2563EB] focus:ring-[#2563EB]">
-                    محصول جدید (NEW)
+                    <%= t('auto.k_7ef3a583ba13') %>
                 </label>
                 <label class="flex items-center gap-3 text-sm text-[#1E293B]">
                     <input type="checkbox" id="isBestSeller" name="isBestSeller" value="true" <%= product.isBestSeller ? 'checked' : '' %> class="w-4 h-4 rounded border-[#2563EB]/30 text-[#2563EB] focus:ring-[#2563EB]">
-                    پرفروش (Best Seller)
+                    <%= t('auto.k_4bac6559416d') %>
                 </label>
             </div>
         </div>
         <div class="card-modern">
-            <h2 class="text-xl font-semibold text-[#1E293B] mb-4">مشخصات فنی</h2>
-            <label for="specs" class="block text-sm font-semibold text-[#1E293B] mb-2">مشخصات (هر خط یک مشخصه به صورت کلید:مقدار)</label>
-            <textarea id="specs" name="specs" rows="5" class="input-field resize-y"><% if (product.specs && typeof product.specs === 'object') { %><%= Object.entries(product.specs).map(([k,v]) => k + ':' + v).join('\n') %><% } else { %><%= product.specs || '' %><% } %></textarea>
-            <p class="text-xs text-[#6B7280] mt-2">مثال هر خط: <code>ولتاژ:20</code>. این ورودی به صورت خودکار به فرمت ساختاری تبدیل می‌شود.</p>
+            <h2 class="text-xl font-semibold text-[#1E293B] mb-4"><%= t('auto.k_75d94d0a1292') %></h2>
+            <label for="specs" class="block text-sm font-semibold text-[#1E293B] mb-2"><%= t('auto.k_a936bc3fdf4a') %></label>
+            <textarea id="specs" name="translations[fa][specs]" rows="5" class="input-field resize-y"><%= Object.entries(product.translations?.fa?.specs || product.specs || {}).map(([k,v]) => k + ':' + v).join('\n') %></textarea>
+            <p class="text-xs text-[#6B7280] mt-2"><%= t('auto.k_5c2fef981507') %> <code><%= t('auto.k_df4b9d614141') %></code>. <%= t('auto.k_08dcc032aa89') %></p>
         </div>
     </div>
 
     <div class="flex flex-col sm:flex-row justify-end gap-3">
         <a href="/admin/products" class="btn-secondary h-12">
-            بازگشت
+            <%= t('auto.k_972515c439c7') %>
         </a>
         <button type="submit" class="btn-primary px-8 h-12">
-            ذخیره تغییرات
+            <%= t('auto.k_36ed0c520871') %>
         </button>
     </div>
 </form>

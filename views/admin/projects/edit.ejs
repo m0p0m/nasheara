@@ -1,31 +1,41 @@
-<h1 class="text-3xl font-bold text-[#1E293B] mb-2">ویرایش نمونه‌کار: <%= project.title %></h1>
-<p class="text-[#6B7280] mb-8">اطلاعات و تصاویر پروژه را به‌روزرسانی کنید.</p>
+<h1 class="text-3xl font-bold text-[#1E293B] mb-2"><%= t('auto.k_d55a564436e9') %> <%= project.title %></h1>
+<p class="text-[#6B7280] mb-8"><%= t('auto.k_6885f1dfbc2d') %></p>
 
 <form action="/admin/projects/edit/<%= project.id %>" method="POST" enctype="multipart/form-data" class="space-y-8">
     <div class="card-modern">
-        <h2 class="text-xl font-semibold mb-6">اطلاعات اصلی</h2>
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4e703f2368ec') %></h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2"><label for="title" class="block text-sm font-semibold">عنوان *</label><input id="title" name="title" value="<%= project.title %>" required class="input-field"></div>
-            <div class="space-y-2"><label for="slug" class="block text-sm font-semibold">نامک (Slug)</label><input id="slug" name="slug" dir="ltr" value="<%= project.slug || '' %>" class="input-field"></div>
-            <div class="space-y-2 md:col-span-2"><label for="location" class="block text-sm font-semibold">موقعیت یا نوع فضا</label><input id="location" name="location" value="<%= project.location || '' %>" class="input-field"></div>
-            <div class="space-y-2 md:col-span-2"><label for="description" class="block text-sm font-semibold">توضیحات</label><textarea id="description" name="description" rows="7" class="input-field resize-y"><%= project.description || '' %></textarea></div>
+            <div class="space-y-2"><label for="title" class="block text-sm font-semibold"><%= t('auto.k_1a9bdb20dee4') %> *</label><input id="title" name="translations[fa][title]" value="<%= project.translations?.fa?.title || project.title %>" required class="input-field"></div>
+            <div class="space-y-2"><label for="slug" class="block text-sm font-semibold"><%= t('auto.k_3a580488f409') %></label><input id="slug" name="slug" dir="ltr" value="<%= project.slug || '' %>" class="input-field"></div>
+            <div class="space-y-2 md:col-span-2"><label for="location" class="block text-sm font-semibold"><%= t('auto.k_be8fde0313ec') %></label><input id="location" name="translations[fa][location]" value="<%= project.translations?.fa?.location || project.location || '' %>" class="input-field"></div>
+            <div class="space-y-2 md:col-span-2"><label for="description" class="block text-sm font-semibold"><%= t('auto.k_55bbd4b9a85f') %></label><textarea id="description" name="translations[fa][description]" rows="7" class="input-field resize-y"><%= project.translations?.fa?.description || project.description || '' %></textarea></div>
         </div>
     </div>
+    <% ['en', 'ar'].forEach(language => { const translation = project.translations?.[language] || {}; %>
+    <div class="card-modern" dir="<%= language === 'en' ? 'ltr' : 'rtl' %>">
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4ba3e969a5bb') %> <%= language === 'en' ? 'English' : t('auto.k_9970632f55af') %></h2>
+        <div class="space-y-5">
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_1a9bdb20dee4') %></label><input name="translations[<%= language %>][title]" value="<%= translation.title || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_be8fde0313ec') %></label><input name="translations[<%= language %>][location]" value="<%= translation.location || '' %>" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_55bbd4b9a85f') %></label><textarea name="translations[<%= language %>][description]" rows="7" class="input-field resize-y"><%= translation.description || '' %></textarea></div>
+        </div>
+    </div>
+    <% }); %>
     <div class="card-modern">
-        <h2 class="text-xl font-semibold mb-6">تصاویر پروژه</h2>
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_ca4d44562eaa') %></h2>
         <div class="grid md:grid-cols-2 gap-6">
             <div class="space-y-3">
                 <% if (project.coverImage) { %><img src="<%= project.coverImage %>" alt="<%= project.title %>" class="w-40 h-28 object-cover rounded-xl"><% } %>
-                <label for="coverImage" class="block text-sm font-semibold">جایگزینی کاور</label><input type="file" id="coverImage" name="coverImage" accept="image/*" class="input-field border-dashed">
+                <label for="coverImage" class="block text-sm font-semibold"><%= t('auto.k_9a3a77aa08e3') %></label><input type="file" id="coverImage" name="coverImage" accept="image/*" class="input-field border-dashed">
             </div>
             <div class="space-y-3">
-                <div class="flex flex-wrap gap-2"><% (project.galleryImages || []).forEach(image => { %><img src="<%= image %>" alt="تصویر گالری" class="w-20 h-20 object-cover rounded-lg"><% }); %></div>
-                <label for="galleryImages" class="block text-sm font-semibold">افزودن تصاویر گالری</label><input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed">
+                <div class="flex flex-wrap gap-2"><% (project.galleryImages || []).forEach(image => { %><img src="<%= image %>" alt="<%= t('auto.k_c6f038461aee') %>" class="w-20 h-20 object-cover rounded-lg"><% }); %></div>
+                <label for="galleryImages" class="block text-sm font-semibold"><%= t('auto.k_b2ffb7068670') %></label><input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed">
             </div>
         </div>
     </div>
     <div class="card-modern">
-        <h2 class="text-xl font-semibold mb-5">محصولات مرتبط</h2>
+        <h2 class="text-xl font-semibold mb-5"><%= t('auto.k_7d8f8775cf18') %></h2>
         <% const selectedProducts = project.relatedProductIds || []; %>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <% products.forEach(product => { %>
@@ -36,5 +46,5 @@
             <% }); %>
         </div>
     </div>
-    <div class="flex justify-end gap-3"><a href="/admin/projects" class="btn-secondary">انصراف</a><button class="btn-primary">ذخیره تغییرات</button></div>
+    <div class="flex justify-end gap-3"><a href="/admin/projects" class="btn-secondary"><%= t('auto.k_106dfb4e0f62') %></a><button class="btn-primary"><%= t('auto.k_36ed0c520871') %></button></div>
 </form>

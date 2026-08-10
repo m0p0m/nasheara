@@ -1,38 +1,48 @@
-<h1 class="text-3xl font-bold text-[#1E293B] mb-2">افزودن نمونه‌کار</h1>
-<p class="text-[#6B7280] mb-8">اطلاعات پروژه اجراشده را وارد کنید.</p>
+<h1 class="text-3xl font-bold text-[#1E293B] mb-2"><%= t('auto.k_6ed890aa103a') %></h1>
+<p class="text-[#6B7280] mb-8"><%= t('auto.k_92788e13e7a4') %></p>
 
 <form action="/admin/projects/add" method="POST" enctype="multipart/form-data" class="space-y-8">
     <div class="card-modern">
-        <h2 class="text-xl font-semibold mb-6">اطلاعات اصلی</h2>
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4e703f2368ec') %></h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-                <label for="title" class="block text-sm font-semibold">عنوان *</label>
-                <input id="title" name="title" required class="input-field" placeholder="مثلاً اجرای کاشی حیاط ویلای یزد">
+                <label for="title" class="block text-sm font-semibold"><%= t('auto.k_1a9bdb20dee4') %> *</label>
+                <input id="title" name="translations[fa][title]" required class="input-field" placeholder="<%= t('auto.k_a1ebe4cb3392') %>">
             </div>
             <div class="space-y-2">
-                <label for="slug" class="block text-sm font-semibold">نامک (Slug)</label>
-                <input id="slug" name="slug" dir="ltr" class="input-field" placeholder="خالی بگذارید تا خودکار ساخته شود">
+                <label for="slug" class="block text-sm font-semibold"><%= t('auto.k_3a580488f409') %></label>
+                <input id="slug" name="slug" dir="ltr" class="input-field" placeholder="<%= t('auto.k_0ea8b4c89014') %>">
             </div>
             <div class="space-y-2 md:col-span-2">
-                <label for="location" class="block text-sm font-semibold">موقعیت یا نوع فضا</label>
-                <input id="location" name="location" class="input-field" placeholder="مثلاً یزد، حیاط ویلا">
+                <label for="location" class="block text-sm font-semibold"><%= t('auto.k_be8fde0313ec') %></label>
+                <input id="location" name="translations[fa][location]" class="input-field" placeholder="<%= t('auto.k_1746e1f65023') %>">
             </div>
             <div class="space-y-2 md:col-span-2">
-                <label for="description" class="block text-sm font-semibold">توضیحات</label>
-                <textarea id="description" name="description" rows="7" class="input-field resize-y"></textarea>
+                <label for="description" class="block text-sm font-semibold"><%= t('auto.k_55bbd4b9a85f') %></label>
+                <textarea id="description" name="translations[fa][description]" rows="7" class="input-field resize-y"></textarea>
             </div>
         </div>
     </div>
+    <% ['en', 'ar'].forEach(language => { %>
+    <div class="card-modern" dir="<%= language === 'en' ? 'ltr' : 'rtl' %>">
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4ba3e969a5bb') %> <%= language === 'en' ? 'English' : t('auto.k_9970632f55af') %></h2>
+        <div class="space-y-5">
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_1a9bdb20dee4') %></label><input name="translations[<%= language %>][title]" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_be8fde0313ec') %></label><input name="translations[<%= language %>][location]" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_55bbd4b9a85f') %></label><textarea name="translations[<%= language %>][description]" rows="7" class="input-field resize-y"></textarea></div>
+        </div>
+    </div>
+    <% }); %>
     <div class="card-modern">
-        <h2 class="text-xl font-semibold mb-6">تصاویر پروژه</h2>
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_ca4d44562eaa') %></h2>
         <div class="grid md:grid-cols-2 gap-6">
-            <div class="space-y-2"><label for="coverImage" class="block text-sm font-semibold">تصویر کاور</label><input type="file" id="coverImage" name="coverImage" accept="image/*" class="input-field border-dashed"></div>
-            <div class="space-y-2"><label for="galleryImages" class="block text-sm font-semibold">گالری (حداکثر ۵ تصویر)</label><input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed"></div>
+            <div class="space-y-2"><label for="coverImage" class="block text-sm font-semibold"><%= t('auto.k_45855691b427') %></label><input type="file" id="coverImage" name="coverImage" accept="image/*" class="input-field border-dashed"></div>
+            <div class="space-y-2"><label for="galleryImages" class="block text-sm font-semibold"><%= t('auto.k_8bf92dafdf67') %></label><input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed"></div>
         </div>
     </div>
     <div class="card-modern">
-        <h2 class="text-xl font-semibold mb-2">محصولات مرتبط</h2>
-        <p class="text-sm text-slate-500 mb-5">محصولات استفاده‌شده در این پروژه را انتخاب کنید.</p>
+        <h2 class="text-xl font-semibold mb-2"><%= t('auto.k_7d8f8775cf18') %></h2>
+        <p class="text-sm text-slate-500 mb-5"><%= t('auto.k_e889b63e1ca6') %></p>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <% products.forEach(product => { %>
                 <label class="flex items-center gap-3 p-3 border rounded-xl hover:bg-slate-50">
@@ -42,5 +52,5 @@
             <% }); %>
         </div>
     </div>
-    <div class="flex justify-end gap-3"><a href="/admin/projects" class="btn-secondary">انصراف</a><button class="btn-primary">ذخیره نمونه‌کار</button></div>
+    <div class="flex justify-end gap-3"><a href="/admin/projects" class="btn-secondary"><%= t('auto.k_106dfb4e0f62') %></a><button class="btn-primary"><%= t('auto.k_eccdfd9019ea') %></button></div>
 </form>

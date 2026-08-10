@@ -1,11 +1,21 @@
 const { v4: uuidv4 } = require('uuid');
 const prisma = require('../lib/prisma');
 const slugify = require('../utils/slugify');
+const { buildTranslations, localizeRecord } = require('../utils/translations');
 
-const toProduct = record => {
+const TRANSLATABLE_FIELDS = [
+    'name', 'description', 'metaTitle', 'metaDescription', 'keywords', 'patternName',
+    'color', 'material', 'dimensions', 'usageArea', 'specs'
+];
+
+const toProduct = (record, locale = 'fa') => {
     if (!record) return record;
     const { categoryRecord, categoryId, projects, ...product } = record;
-    return { ...product, category: categoryRecord ? categoryRecord.name : null };
+    const localized = localizeRecord(product, TRANSLATABLE_FIELDS, locale);
+    const localizedCategory = categoryRecord
+        ? localizeRecord(categoryRecord, ['name', 'description'], locale)
+        : null;
+    return { ...localized, category: localizedCategory ? localizedCategory.name : null };
 };
 
 const uniqueSlug = async (value, excludedId = null) => {
@@ -53,24 +63,33 @@ const productData = async (input, current = null) => {
         data.isNew ??= false;
         data.isBestSeller ??= false;
     }
+    const translations = buildTranslations(input, TRANSLATABLE_FIELDS, current ? current.translations : {});
+    data.translations = translations;
+    const fa = translations.fa || {};
+    for (const field of TRANSLATABLE_FIELDS) {
+        if (!Object.prototype.hasOwnProperty.call(fa, field)) continue;
+        if (['keywords', 'usageArea'].includes(field)) data[field] = Array.isArray(fa[field]) ? fa[field] : [];
+        else if (field === 'specs') data.specs = fa.specs && typeof fa.specs === 'object' ? fa.specs : {};
+        else data[field] = fa[field] || null;
+    }
     return data;
 };
 
-const getAll = async () => (await prisma.product.findMany({ include: { categoryRecord: true } })).map(toProduct);
+const getAll = async (locale = 'fa') => (await prisma.product.findMany({ include: { categoryRecord: true } })).map(record => toProduct(record, locale));
 
-const findById = async id => toProduct(await prisma.product.findUnique({ where: { id }, include: { categoryRecord: true } }));
+const findById = async (id, locale = 'fa') => toProduct(await prisma.product.findUnique({ where: { id }, include: { categoryRecord: true } }), locale);
 
-const findBySlug = async slug => toProduct(await prisma.product.findUnique({
+const findBySlug = async (slug, locale = 'fa') => toProduct(await prisma.product.findUnique({
     where: { slug: slugify(slug) }, include: { categoryRecord: true }
-}));
+}), locale);
 
 const create = async input => {
-    const slug = await uniqueSlug(input.slug || input.name);
+    const slug = await uniqueSlug(input.slug || input.name || input.translations?.fa?.name);
     const record = await prisma.product.create({
         data: { id: uuidv4(), ...(await productData(input)), slug },
         include: { categoryRecord: true }
     });
-    return toProduct(record);
+    return toProduct(record, input.locale || 'fa');
 };
 
 const update = async (id, input) => {
@@ -83,7 +102,7 @@ const update = async (id, input) => {
     const record = await prisma.product.update({
         where: { id }, data: { ...(await productData(input, current)), slug }, include: { categoryRecord: true }
     });
-    return toProduct(record);
+    return toProduct(record, input.locale || 'fa');
 };
 
 const remove = async id => {

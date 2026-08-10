@@ -1,39 +1,39 @@
 <div class="mb-8">
     <div class="flex flex-col xl:flex-row justify-between items-start gap-4 mb-6">
         <div>
-            <h1 class="text-4xl font-bold text-slate-900 mb-2">مدیریت محصولات</h1>
-            <p class="text-slate-500">مشاهده، ویرایش و انتشار محصولات فروشگاه</p>
+            <h1 class="text-4xl font-bold text-slate-900 mb-2"><%= t('auto.k_52d769d792f0') %></h1>
+            <p class="text-slate-500"><%= t('auto.k_242cfbe526a3') %></p>
         </div>
         <a href="/admin/products/add" class="inline-flex items-center gap-2 btn-primary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            افزودن محصول جدید
+            <%= t('auto.k_fc321cb59c64') %>
         </a>
     </div>
     <% const safeProducts = Array.isArray(products) ? products : []; %>
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
         <% const noImageCount = safeProducts.filter(product => !product.mainImage).length; %>
         <div class="card-modern">
-            <p class="text-sm text-slate-500">تعداد محصولات</p>
+            <p class="text-sm text-slate-500"><%= t('auto.k_2133ee66eee0') %></p>
             <p class="mt-3 text-3xl font-bold text-slate-900"><%= safeProducts.length %></p>
         </div>
         <div class="card-modern">
-            <p class="text-sm text-slate-500">وضعیت فیلتر</p>
-            <p class="mt-3 text-xl font-semibold text-slate-900"><%= q ? 'فیلتر روشن است' : 'همه محصولات نمایش داده می‌شوند' %></p>
+            <p class="text-sm text-slate-500"><%= t('auto.k_e3b971a3f3b0') %></p>
+            <p class="mt-3 text-xl font-semibold text-slate-900"><%= q ? t('auto.k_132a80572443') : t('auto.k_4e19ecc30a22') %></p>
         </div>
         <div class="card-modern">
-            <p class="text-sm text-slate-500">محصولات بدون تصویر</p>
+            <p class="text-sm text-slate-500"><%= t('auto.k_420d45935eec') %></p>
             <p class="mt-3 text-3xl font-bold text-slate-900"><%= noImageCount %></p>
         </div>
     </div>
     <!-- Search -->
     <form action="/admin/products" method="GET" class="mb-6">
         <div class="flex gap-3">
-            <input type="text" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>" placeholder="جستجو در نام، توضیحات یا دسته..." class="input-field h-12">
-            <button class="h-12 px-6 bg-slate-50 text-slate-700 rounded-xl hover:shadow-lg transition-all">جستجو</button>
+            <input type="text" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>" placeholder="<%= t('auto.k_04dfa6055959') %>" class="input-field h-12">
+            <button class="h-12 px-6 bg-slate-50 text-slate-700 rounded-xl hover:shadow-lg transition-all"><%= t('auto.k_1fc039e00500') %></button>
             <% if (q) { %>
-                <a href="/admin/products" class="h-12 px-4 inline-flex items-center text-[#2563EB] hover:underline">حذف فیلتر</a>
+                <a href="/admin/products" class="h-12 px-4 inline-flex items-center text-[#2563EB] hover:underline"><%= t('auto.k_ac3d6175fd16') %></a>
             <% } %>
         </div>
     </form>
@@ -45,12 +45,12 @@
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50 text-slate-700">
                     <tr>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">تصویر</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">نام محصول</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">دسته‌بندی</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">موجودی</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">وضعیت</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-slate-700 uppercase tracking-wider">عملیات</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider"><%= t('auto.k_de5560842bdf') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider"><%= t('auto.k_430308963fce') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider"><%= t('auto.k_a4dfaeb7ad8e') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider"><%= t('auto.k_55645b2c6d92') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider"><%= t('auto.k_55518965c603') %></th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-slate-700 uppercase tracking-wider"><%= t('auto.k_8d1cc546f412') %></th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -74,7 +74,7 @@
                                 <div class="text-xs text-[#6B7280] mt-1 line-clamp-2"><%= product.description ? product.description.substring(0, 60) : '' %>...</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 text-xs font-medium bg-[#F0F9FF] text-[#2563EB] rounded-full"><%= product.category || 'بدون دسته' %></span>
+                                <span class="px-3 py-1 text-xs font-medium bg-[#F0F9FF] text-[#2563EB] rounded-full"><%= product.category || t('auto.k_3145305ff0ff') %></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <%
@@ -82,20 +82,20 @@
                                     const stockValue = hasNumericStock ? product.stock : null;
                                 %>
                                 <% if (stockValue === null) { %>
-                                    <span class="px-3 py-1 text-xs font-medium bg-[#F0F9FF] text-[#2563EB] rounded-full">موجود</span>
+                                    <span class="px-3 py-1 text-xs font-medium bg-[#F0F9FF] text-[#2563EB] rounded-full"><%= t('auto.k_5ad7cf172cdb') %></span>
                                 <% } else if (stockValue > 0) { %>
-                                    <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full"><%= stockValue %> عدد</span>
+                                    <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full"><%= stockValue %> <%= t('auto.k_8bc43dce18cf') %></span>
                                 <% } else { %>
-                                    <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">ناموجود</span>
+                                    <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full"><%= t('auto.k_c42b8336fca5') %></span>
                                 <% } %>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex gap-2">
                                     <% if (product.isNew) { %>
-                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded">جدید</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded"><%= t('auto.k_64dfbb8da93a') %></span>
                                     <% } %>
                                     <% if (product.isBestSeller) { %>
-                                        <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded">پرفروش</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded"><%= t('auto.k_122eb1e9248c') %></span>
                                     <% } %>
                                 </div>
                             </td>
@@ -105,14 +105,14 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
-                                        ویرایش
+                                        <%= t('auto.k_ac60ae7a6877') %>
                                     </a>
-                                    <form action="/admin/products/delete/<%= product.id %>" method="POST" class="inline" onsubmit="return confirm('آیا از حذف این محصول اطمینان دارید؟');">
+                                    <form action="/admin/products/delete/<%= product.id %>" method="POST" class="inline" onsubmit="return confirm('<%= t('auto.k_770d0e690ef2') %>');">
                                         <button type="submit" class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
-                                            حذف
+                                            <%= t('auto.k_2d2bbdc2d694') %>
                                         </button>
                                     </form>
                                 </div>
@@ -129,13 +129,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
             </div>
-            <h3 class="text-2xl font-bold text-[#1E293B] mb-4">محصولی یافت نشد</h3>
-            <p class="text-[#6B7280] mb-8">هنوز محصولی اضافه نشده است.</p>
+            <h3 class="text-2xl font-bold text-[#1E293B] mb-4"><%= t('auto.k_eb95102af9f8') %></h3>
+            <p class="text-[#6B7280] mb-8"><%= t('auto.k_c7a765f8063d') %></p>
             <a href="/admin/products/add" class="btn-primary">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                افزودن اولین محصول
+                <%= t('auto.k_8eb8f753256f') %>
             </a>
         </div>
     <% } %>

@@ -44,7 +44,8 @@ const migrate = async () => {
             name: category.name,
             slug: await uniqueSlug(prisma.category, category.slug || category.name, id),
             description: category.description || null,
-            mainImage: category.mainImage || null
+            mainImage: category.mainImage || null,
+            translations: category.translations || { fa: { name: category.name, description: category.description || '' }, en: {}, ar: {} }
         };
         await prisma.category.upsert({ where: { id }, update: data, create: { id, ...data } });
     }
@@ -83,7 +84,13 @@ const migrate = async () => {
             color: product.color || null,
             material: product.material || null,
             dimensions: product.dimensions || null,
-            usageArea: Array.isArray(product.usageArea) ? product.usageArea : []
+            usageArea: Array.isArray(product.usageArea) ? product.usageArea : [],
+            translations: product.translations || { fa: {
+                name: product.name, description: product.description || '', metaTitle: product.metaTitle || '',
+                metaDescription: product.metaDescription || '', keywords: product.keywords || [],
+                patternName: product.patternName || '', color: product.color || '', material: product.material || '',
+                dimensions: product.dimensions || '', usageArea: product.usageArea || [], specs: product.specs || {}
+            }, en: {}, ar: {} }
         };
         await prisma.product.upsert({ where: { id }, update: data, create: { id, ...data } });
     }
@@ -97,7 +104,10 @@ const migrate = async () => {
             description: project.description || null,
             coverImage: project.coverImage || null,
             galleryImages: Array.isArray(project.galleryImages) ? project.galleryImages : [],
-            createdAt: validDate(project.createdAt)
+            createdAt: validDate(project.createdAt),
+            translations: project.translations || { fa: {
+                title: project.title, location: project.location || '', description: project.description || ''
+            }, en: {}, ar: {} }
         };
         await prisma.project.upsert({ where: { id }, update: data, create: { id, ...data } });
         const references = Array.isArray(project.relatedProductIds) ? project.relatedProductIds.map(String) : [];
@@ -128,7 +138,12 @@ const migrate = async () => {
             metaKeywords: article.metaKeywords || null, published: Boolean(article.published),
             mainImage: article.mainImage || null,
             galleryImages: Array.isArray(article.galleryImages) ? article.galleryImages : [],
-            createdAt: validDate(article.createdAt), updatedAt: validDate(article.updatedAt)
+            createdAt: validDate(article.createdAt), updatedAt: validDate(article.updatedAt),
+            translations: article.translations || { fa: {
+                title: article.title, content: article.content || '', excerpt: article.excerpt || '',
+                metaTitle: article.metaTitle || '', metaDescription: article.metaDescription || '',
+                metaKeywords: article.metaKeywords || ''
+            }, en: {}, ar: {} }
         };
         await prisma.article.upsert({ where: { id }, update: data, create: { id, ...data } });
     }

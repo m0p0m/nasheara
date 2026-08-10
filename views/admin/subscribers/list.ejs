@@ -1,8 +1,8 @@
 <div class="flex flex-col gap-6">
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-2xl font-bold text-[#1E293B]">لیست اعضای خبرنامه</h2>
-            <p class="text-slate-500 mt-1">مشاهده افرادی که در خبرنامه عضو شده‌اند</p>
+            <h2 class="text-2xl font-bold text-[#1E293B]"><%= t('auto.k_99405c6e6461') %></h2>
+            <p class="text-slate-500 mt-1"><%= t('auto.k_e46746604a7d') %></p>
         </div>
     </div>
 
@@ -11,10 +11,10 @@
             <table class="w-full text-right border-collapse">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200">
-                        <th class="px-6 py-4 font-bold text-slate-700">ردیف</th>
-                        <th class="px-6 py-4 font-bold text-slate-700">ایمیل</th>
-                        <th class="px-6 py-4 font-bold text-slate-700">تاریخ عضویت</th>
-                        <th class="px-6 py-4 font-bold text-slate-700">عملیات</th>
+                        <th class="px-6 py-4 font-bold text-slate-700"><%= t('auto.k_c9ce1c290c42') %></th>
+                        <th class="px-6 py-4 font-bold text-slate-700"><%= t('auto.k_f1ad423d68cf') %></th>
+                        <th class="px-6 py-4 font-bold text-slate-700"><%= t('auto.k_66e12db8fdb6') %></th>
+                        <th class="px-6 py-4 font-bold text-slate-700"><%= t('auto.k_8d1cc546f412') %></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -27,7 +27,7 @@
                                     <%= new Date(sub.subscribedAt).toLocaleDateString('fa-IR') %>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <form action="/admin/subscribers/delete/<%= sub.id %>" method="POST" onsubmit="return confirm('آیا از حذف این عضو اطمینان دارید؟')">
+                                    <form action="/admin/subscribers/delete/<%= sub.id %>" method="POST" onsubmit="return confirm('<%= t('auto.k_91692ccf1edd') %>')">
                                         <button type="submit" class="text-red-600 hover:text-red-800 transition-colors">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -40,7 +40,7 @@
                     <% } else { %>
                         <tr>
                             <td colspan="3" class="px-6 py-12 text-center text-slate-500">
-                                هیچ عضوی یافت نشد.
+                                <%= t('auto.k_a519e2de391e') %>
                             </td>
                         </tr>
                     <% } %>

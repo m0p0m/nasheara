@@ -7,8 +7,8 @@ const Project = require('../models/project');
 const getHomePage = async (req, res) => {
     try {
         const query = (req.query.q || '').trim();
-        const allProducts = await Product.getAll();
-        const categories = await Category.getAll();
+        const allProducts = await Product.getAll(req.locale);
+        const categories = await Category.getAll(req.locale);
         const filtered = query
             ? allProducts.filter(p =>
                 [p.name, p.description, p.category]
@@ -17,7 +17,7 @@ const getHomePage = async (req, res) => {
               )
             : allProducts;
         const products = filtered.slice(0, 8); // Show only 8 products on home page
-        const articles = await Article.getPublished(6); // Get 6 latest published articles
+        const articles = await Article.getPublished(6, req.locale); // Get 6 latest published articles
         res.render('public/home', {
             title: 'صفحه اصلی - شرکت تصفیه آب صبا',
             products: products,
@@ -38,8 +38,8 @@ const getAllProducts = async (req, res) => {
     try {
         const query = (req.query.q || '').trim();
         const selectedCategory = (req.query.category || '').trim();
-        const allProducts = await Product.getAll();
-        const categories = await Category.getAll();
+        const allProducts = await Product.getAll(req.locale);
+        const categories = await Category.getAll(req.locale);
 
         let products = allProducts;
         if (query) {
@@ -70,7 +70,7 @@ const getAllProducts = async (req, res) => {
 // Display product detail page
 const getProductDetail = async (req, res) => {
     try {
-        const product = await Product.findBySlug(req.params.slug);
+        const product = await Product.findBySlug(req.params.slug, req.locale);
         if (!product) {
             return res.status(404).render('public/product-detail', {
                 title: 'محصول یافت نشد - شرکت تصفیه آب صبا',
@@ -79,7 +79,7 @@ const getProductDetail = async (req, res) => {
                 layout: 'public/layout'
             });
         }
-        const allProducts = await Product.getAll();
+        const allProducts = await Product.getAll(req.locale);
         const relatedProducts = allProducts
             .filter(p => p.id !== product.id && p.category && product.category && p.category === product.category)
             .slice(0, 4);
@@ -88,7 +88,7 @@ const getProductDetail = async (req, res) => {
             title: product.metaTitle || product.name,
             metaDescription: product.metaDescription || (product.description ? product.description.substring(0, 160) : `معرفی ${product.name}`),
             metaKeywords: Array.isArray(product.keywords) ? product.keywords.join(', ') : product.keywords,
-            canonicalUrl: `${siteUrl}/product/${encodeURIComponent(product.slug)}`,
+            canonicalUrl: `${siteUrl}/${req.locale}/product/${encodeURIComponent(product.slug)}`,
             ogImage: product.mainImage ? `${siteUrl}${product.mainImage}` : undefined,
             siteUrl,
             product: product,
@@ -105,7 +105,7 @@ const getProductDetail = async (req, res) => {
 // Display all completed projects
 const getAllProjects = async (req, res) => {
     try {
-        const projects = (await Project.getAll())
+        const projects = (await Project.getAll(req.locale))
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         res.render('public/projects', {
             title: 'نمونه‌کارها', projects, layout: 'public/layout', currentPath: req.path
@@ -119,14 +119,14 @@ const getAllProjects = async (req, res) => {
 // Display a completed project and its related products
 const getProjectDetail = async (req, res) => {
     try {
-        const project = await Project.findBySlug(req.params.slug);
+        const project = await Project.findBySlug(req.params.slug, req.locale);
         if (!project) {
             return res.status(404).render('public/project-detail', {
                 title: 'نمونه‌کار یافت نشد', project: null, relatedProducts: [],
                 layout: 'public/layout', currentPath: req.path
             });
         }
-        const products = await Product.getAll();
+        const products = await Product.getAll(req.locale);
         const references = project.relatedProductIds || [];
         const relatedProducts = references
             .map(reference => products.find(product => product.id === reference || product.slug === reference))
@@ -135,7 +135,7 @@ const getProjectDetail = async (req, res) => {
         res.render('public/project-detail', {
             title: project.title,
             metaDescription: project.description ? project.description.substring(0, 160) : `معرفی نمونه‌کار ${project.title}`,
-            canonicalUrl: `${siteUrl}/project/${encodeURIComponent(project.slug)}`,
+            canonicalUrl: `${siteUrl}/${req.locale}/project/${encodeURIComponent(project.slug)}`,
             ogImage: project.coverImage ? `${siteUrl}${project.coverImage}` : undefined,
             siteUrl,
             project, relatedProducts, layout: 'public/layout', currentPath: req.path
@@ -159,12 +159,15 @@ const getSitemap = async (req, res) => {
         const [products, projects, articles] = await Promise.all([
             Product.getAll(), Project.getAll(), Article.getAll()
         ]);
-        const paths = [
+        const basePaths = [
             '/', '/products', '/projects', '/articles', '/about', '/contact',
             ...products.map(product => `/product/${encodeURIComponent(product.slug)}`),
             ...projects.map(project => `/project/${encodeURIComponent(project.slug)}`),
             ...articles.map(article => `/article/${encodeURIComponent(article.slug)}`)
         ];
+        const paths = ['fa', 'en', 'ar'].flatMap(locale =>
+            basePaths.map(urlPath => `/${locale}${urlPath}`)
+        );
         const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
             `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
             paths.map(urlPath => `  <url><loc>${xmlEscape(`${baseUrl}${urlPath}`)}</loc></url>`).join('\n') +

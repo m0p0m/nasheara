@@ -7,7 +7,7 @@ const Product = require('../models/product'); // To show product names in the fo
 const showConsultationForm = async (req, res) => {
     try {
         // We might want to pre-select a product if the user clicks from a product page
-        const products = await Product.getAll();
+        const products = await Product.getAll(req.locale);
         const selectedProduct = req.query.product || '';
         res.render('public/consultation-form', {
             title: 'درخواست مشاوره',

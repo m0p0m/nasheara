@@ -1,36 +1,39 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="<%= locale %>" dir="<%= dir %>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <% Object.entries(alternateUrls).forEach(([language, url]) => { %>
+    <link rel="alternate" hreflang="<%= language %>" href="<%= url %>">
+    <% }); %>
     <title>
-        <%= typeof title !=='undefined' ? title : 'کاشی طرح‌دار ایرانی | کاشی سنتی و دکوراتیو' %>
+        <%= typeof title !=='undefined' ? title : t('auto.k_cf7e195c55d6') %>
     </title>
     <meta name="description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'طراحی و تولید کاشی‌های طرح‌دار ایرانی برای کف، دیوار، حیاط، استخر، آشپزخانه و فضاهای معماری.' %>">
+        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_6ee1d3a1f6a2') %>">
     <meta name="keywords"
-        content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : 'کاشی طرح‌دار, کاشی سنتی, کاشی دکوراتیو, کاشی کف, کاشی دیوار' %>">
-    <meta name="author" content="شرکت کاشی طرح‌دار">
+        content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : t('auto.k_c518bfdfd1b4') %>">
+    <meta name="author" content="<%= t('auto.k_e6736350dccf') %>">
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'کاشی طرح‌دار ایرانی' %>">
+    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : t('auto.k_9bb88d484369') %>">
     <meta property="og:description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'طراحی و تولید کاشی‌های طرح‌دار ایرانی برای فضاهای معماری' %>">
+        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_3f56b4ab4645') %>">
     <meta property="og:type" content="website">
     <meta property="og:url"
         content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
     <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/log.png' %>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : 'لوگو شرکت کاشی طرح‌دار' %>">
+    <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : t('auto.k_d26f50636237') %>">
     <meta property="og:locale" content="fa_IR">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'کاشی طرح‌دار ایرانی' %>">
+    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : t('auto.k_9bb88d484369') %>">
     <meta name="twitter:description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'طراحی و تولید کاشی‌های طرح‌دار ایرانی' %>">
+        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_d94f40d44584') %>">
     <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/log.png' %>">
 
     <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
@@ -44,16 +47,16 @@
     {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "شرکت کاشی طرح‌دار",
-        "alternateName": "تولیدکننده کاشی طرح‌دار ایرانی",
+        "name": "<%= t('auto.k_e6736350dccf') %>",
+        "alternateName": "<%= t('auto.k_3abe6e50c832') %>",
         "url": "<%= siteUrl %>",
         "logo": "<%= siteUrl %>/icons/log.png",
-        "description": "طراحی و تولید کاشی‌های طرح‌دار، سنتی و دکوراتیو برای فضاهای داخلی و خارجی",
+        "description": "<%= t('auto.k_1a135a699aa6') %>",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "بلوار کوه سفید، کوچه ۲۲، پلاک ۵",
-            "addressLocality": "قم",
-            "addressRegion": "قم",
+            "streetAddress": "<%= t('auto.k_13b4545e00d4') %>",
+            "addressLocality": "<%= t('auto.k_352a9115c09a') %>",
+            "addressRegion": "<%= t('auto.k_352a9115c09a') %>",
             "postalCode": "37158",
             "addressCountry": "IR"
         },
@@ -101,16 +104,16 @@
             "name": "Iran"
         },
         "knowsAbout": [
-            "کاشی طرح‌دار",
-            "کاشی سنتی ایرانی",
-            "کاشی دکوراتیو",
-            "کاشی کف و دیوار",
-            "طراحی الگوهای کاشی"
+            "<%= t('auto.k_e793d09fd794') %>",
+            "<%= t('auto.k_a2e513b6d526') %>",
+            "<%= t('auto.k_4e4b7698700b') %>",
+            "<%= t('auto.k_098f35f33ee7') %>",
+            "<%= t('auto.k_f456fa7cb896') %>"
         ],
         "makesOffer": [
-            "طراحی و تولید کاشی سفارشی",
-            "تأمین کاشی پروژه‌های معماری",
-            "مشاوره انتخاب طرح و رنگ"
+            "<%= t('auto.k_7fae9146da8f') %>",
+            "<%= t('auto.k_819ba7cf5733') %>",
+            "<%= t('auto.k_4b4ff2dcc670') %>"
         ]
     }
     </script>
@@ -120,15 +123,15 @@
     {
         "@context": "https://schema.org",
         "@type": "HomeAndConstructionBusiness",
-        "name": "شرکت کاشی طرح‌دار",
+        "name": "<%= t('auto.k_e6736350dccf') %>",
         "image": "<%= siteUrl %>/icons/log.png",
         "telephone": "+982536550672",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "بلوار کوه سفید، کوچه ۲۲، پلاک ۵",
-            "addressLocality": "قم",
-            "addressRegion": "قم",
-            "addressCountry": "ایران"
+            "streetAddress": "<%= t('auto.k_13b4545e00d4') %>",
+            "addressLocality": "<%= t('auto.k_352a9115c09a') %>",
+            "addressRegion": "<%= t('auto.k_352a9115c09a') %>",
+            "addressCountry": "<%= t('auto.k_79ba78bc6d05') %>"
         },
         "geo": {
             "@type": "GeoCoordinates",
@@ -136,9 +139,9 @@
             "longitude": "50.875946"
         },
         "openingHours": "Sa-Th 08:00-18:00",
-        "priceRange": "مناسب",
+        "priceRange": "<%= t('auto.k_968cb577d09a') %>",
         "currenciesAccepted": "IRR",
-        "paymentAccepted": "نقدی، کارت‌خوان، واریز بانکی"
+        "paymentAccepted": "<%= t('auto.k_16839d59c75a') %>"
     }
     </script>
 
@@ -333,7 +336,7 @@
     </style>
 </head>
 
-<body class="min-h-screen bg-white" dir="rtl">
+<body class="min-h-screen bg-white <%= locale === 'en' ? 'font-en' : 'font-fa-ar' %>" dir="<%= dir %>">
     <!-- Header -->
     <header
         class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm shadow-sm py-5"
@@ -341,70 +344,75 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between">
                 <!-- Right side: Logo -->
-                <a href="/" class="flex items-center gap-3 group">
+                <a href="/<%= locale %>/" class="flex items-center gap-3 group">
                     <div class="relative">
-                        <!-- تصویر لوگو -->
+                        <!-- <%= t('auto.k_103fb4b0da7e') %>>
                         <div
                             class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shadow-lg p-2">
-                            <img src="/icons/log.png" alt="لوگو شرکت صبا تصفیه" class="w-full h-full object-contain">
+                            <img src="/icons/log.png" alt="<%= t('auto.k_8f11691a9d94') %>" class="w-full h-full object-contain">
                         </div>
                         <div class="absolute -top-1 -right-1 w-3 h-3 bg-[#1ECFD0] rounded-full animate-ping"></div>
                     </div>
                     <div>
-                        <h2 class="transition-colors text-[#0B1826] font-bold text-lg">صبا تصفیه</h2>
-                        <p class="text-xs text-[#6B7280]">تکنولوژی آب پاک</p>
+                        <h2 class="transition-colors text-[#0B1826] font-bold text-lg"><%= t('auto.k_07cafa008fd3') %></h2>
+                        <p class="text-xs text-[#6B7280]"><%= t('auto.k_4626729135e6') %></p>
                     </div>
                 </a>
 
                 <!-- Center: Navigation -->
                 <nav class="hidden lg:flex items-center gap-2">
-                    <a href="/" class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        خانه
+                    <a href="/<%= locale %>/" class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
+                        <%= t('nav.home') %>
                         <span
                             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                     </a>
-                    <a href="/products"
+                    <a href="/<%= locale %>/products"
                         class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        محصولات
+                        <%= t('nav.products') %>
                         <span
                             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                     </a>
-                    <a href="/projects" class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        نمونه‌کارها
+                    <a href="/<%= locale %>/projects" class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
+                        <%= t('nav.projects') %>
                         <span class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                     </a>
-                    <a href="/about"
+                    <a href="/<%= locale %>/about"
                         class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        درباره ما
+                        <%= t('nav.about') %>
                         <span
                             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                     </a>
-                    <a href="/articles"
+                    <a href="/<%= locale %>/articles"
                         class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        مقالات
+                        <%= t('nav.articles') %>
                         <span
                             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                     </a>
-                    <a href="/contact"
+                    <a href="/<%= locale %>/contact"
                         class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        تماس
+                        <%= t('nav.contact') %>
                         <span
                             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                     </a>
                 </nav>
 
                 <!-- Left side: Phone and Contact Button -->
+                <div class="hidden lg:flex items-center gap-2" aria-label="<%= t('language.switch') %>">
+                    <a href="<%= alternateUrls.fa %>" lang="fa">FA</a>
+                    <a href="<%= alternateUrls.en %>" lang="en">EN</a>
+                    <a href="<%= alternateUrls.ar %>" lang="ar">AR</a>
+                </div>
                 <div class="hidden lg:flex items-center gap-3">
                     <div class="flex flex-col items-end">
                         <a href="tel:09122515229"
                             class="text-[#0B1826] hover:text-[#0B74DA] transition-colors text-sm font-medium ltr-text">
                             09122515229
                         </a>
-                        <span class="text-xs text-[#6B7280]">پشتیبانی تلفنی</span>
+                        <span class="text-xs text-[#6B7280]"><%= t('auto.k_d73636babd9b') %></span>
                     </div>
-                    <a href="/consultation"
+                    <a href="/<%= locale %>/consultation"
                         class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 py-2 bg-[#FF7A3D] hover:bg-[#FF7A3D]/90 text-white rounded-xl px-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                        تماس فوری
+                        <%= t('auto.k_69252c124a72') %>
                     </a>
                 </div>
 
@@ -428,7 +436,7 @@
             id="mobileMenu">
             <div class="p-6 space-y-6">
                 <div class="flex items-center justify-between pb-4 border-b border-gray-100">
-                    <h3 class="text-[#0B1826] font-bold">منوی اصلی</h3>
+                    <h3 class="text-[#0B1826] font-bold"><%= t('auto.k_6b5b757f2483') %></h3>
                     <button id="closeMobileMenu">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -439,20 +447,24 @@
                     </button>
                 </div>
                 <nav class="space-y-2">
-                    <a href="/"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all">خانه</a>
-                    <a href="/products"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all">محصولات</a>
-                    <a href="/projects"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all">نمونه‌کارها</a>
-                    <a href="/about"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all">درباره
-                        ما</a>
-                    <a href="/articles"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all">مقالات</a>
-                    <a href="/contact"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all">تماس</a>
+                    <a href="/<%= locale %>/"
+                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.home') %></a>
+                    <a href="/<%= locale %>/products"
+                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.products') %></a>
+                    <a href="/<%= locale %>/projects"
+                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.projects') %></a>
+                    <a href="/<%= locale %>/about"
+                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('auto.k_02b1718b41d5') %></a>
+                    <a href="/<%= locale %>/articles"
+                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.articles') %></a>
+                    <a href="/<%= locale %>/contact"
+                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.contact') %></a>
                 </nav>
+                <div class="flex items-center gap-4 px-4" aria-label="<%= t('language.switch') %>">
+                    <a href="<%= alternateUrls.fa %>" lang="fa">FA</a>
+                    <a href="<%= alternateUrls.en %>" lang="en">EN</a>
+                    <a href="<%= alternateUrls.ar %>" lang="ar">AR</a>
+                </div>
                 <div class="pt-4 border-t border-gray-100 space-y-3">
                     <a href="tel:09122515229"
                         class="flex items-center gap-3 px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] rounded-xl transition-all">
@@ -465,9 +477,9 @@
                         </svg>
                         <span class="font-medium ltr-text">09122515229</span>
                     </a>
-                    <a href="/consultation"
+                    <a href="/<%= locale %>/consultation"
                         class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 w-full bg-[#FF7A3D] hover:bg-[#FF7A3D]/90 text-white rounded-xl py-6">
-                        تماس فوری
+                        <%= t('auto.k_69252c124a72') %>
                     </a>
                 </div>
             </div>
@@ -497,13 +509,13 @@
                         <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
                         <div class="relative z-10">
                             <div class="text-center mb-8">
-                                <h3 class="text-2xl md:text-3xl mb-3 font-bold">از اخبار و تخفیف‌ها باخبر شوید</h3>
-                                <p class="text-white/90">عضویت در خبرنامه و دریافت جدیدترین اطلاعات محصولات صنعتی</p>
+                                <h3 class="text-2xl md:text-3xl mb-3 font-bold"><%= t('auto.k_bb4cb2faa813') %></h3>
+                                <p class="text-white/90"><%= t('auto.k_54108ef202e0') %></p>
                             </div>
-                            <form action="/newsletter/subscribe" method="POST" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                            <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                                 <input type="email" name="email" required
                                     class="flex-1 px-4 py-3 bg-white/20 border-white/30 text-white placeholder:text-white/60 rounded-xl h-14 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50"
-                                    placeholder="آدرس ایمیل شما">
+                                    placeholder="<%= t('auto.k_87b980b1e99a') %>">
                                 <button type="submit"
                                     class="inline-flex items-center justify-center text-sm font-medium transition-colors bg-white text-[#0B74DA] hover:bg-white/90 rounded-xl h-14 px-8 whitespace-nowrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -514,7 +526,7 @@
                                         </path>
                                         <path d="m21.854 2.147-10.94 10.939"></path>
                                     </svg>
-                                    عضویت
+                                    <%= t('auto.k_dd82969f5c95') %>
                                 </button>
                             </form>
                         </div>
@@ -525,26 +537,25 @@
 
         <div class="container mx-auto px-4 py-16 relative z-10">
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- اطلاعات تماس -->
+                <!-- <%= t('auto.k_f64729f50fff') %>>
                 <div class="lg:col-span-2">
-                    <a href="/" class="flex items-center gap-3 mb-6 group">
+                    <a href="/<%= locale %>/" class="flex items-center gap-3 mb-6 group">
                         <div
                             class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform p-3">
-                            <img src="/icons/log.png" alt="لوگو شرکت صبا تصفیه" class="w-full h-full object-contain">
+                            <img src="/icons/log.png" alt="<%= t('auto.k_8f11691a9d94') %>" class="w-full h-full object-contain">
                         </div>
                         <div>
-                            <h2 class="text-2xl font-bold">صبا تصفیه</h2>
-                            <p class="text-sm text-white/60">تکنولوژی آب پاک</p>
+                            <h2 class="text-2xl font-bold"><%= t('auto.k_07cafa008fd3') %></h2>
+                            <p class="text-sm text-white/60"><%= t('auto.k_4626729135e6') %></p>
                         </div>
                     </a>
-                    <p class="text-white/80 mb-6 leading-relaxed">پیشرو در ارائه تجهیزات و سیستم‌های تصفیه آب صنعتی با
-                        بیش از ۱۵ سال تجربه. ما متعهد به ارائه بهترین کیفیت و خدمات به صنایع کشور هستیم.</p>
+                    <p class="text-white/80 mb-6 leading-relaxed"><%= t('auto.k_c289a34978b5') %></p>
 
-                    <!-- اطلاعات تماس -->
+                    <!-- <%= t('auto.k_f64729f50fff') %>>
                     <div class="space-y-4 mb-6">
-                        <!-- تلفن‌های تماس -->
+                        <!-- <%= t('auto.k_165f6ce0e5a7') %>>
                         <div class="space-y-3">
-                            <h4 class="text-white font-medium mb-2">تلفن تماس:</h4>
+                            <h4 class="text-white font-medium mb-2"><%= t('auto.k_67649d7aef42') %></h4>
                             <div class="space-y-2">
                                 <a href="tel:09122515229"
                                     class="flex items-center gap-2 text-white/90 hover:text-white transition-colors group">
@@ -581,9 +592,9 @@
                                 </a>
                             </div>
                         </div>
-                        <!-- آدرس -->
+                        <!-- <%= t('auto.k_e0a0a0744f1e') %>>
                         <div class="space-y-3">
-                            <h4 class="text-white font-medium mb-2">آدرس دفتر مرکزی:</h4>
+                            <h4 class="text-white font-medium mb-2"><%= t('auto.k_2c7704437658') %></h4>
                             <div class="flex items-start gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -591,83 +602,83 @@
                                     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
                                     <circle cx="12" cy="10" r="3"></circle>
                                 </svg>
-                                <p class="text-white/90 leading-relaxed">قم، بلوار کوه سفید، کوچه ۲۲، پلاک ۵</p>
+                                <p class="text-white/90 leading-relaxed"><%= t('auto.k_f572ddf64198') %></p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- منوهای دیگر -->
+                <!-- <%= t('auto.k_b7091bf2ea25') %>>
                 <div>
-                    <h3 class="text-lg mb-6 relative inline-block font-bold">شرکت
+                    <h3 class="text-lg mb-6 relative inline-block font-bold"><%= t('auto.k_bb7fa7e89d8c') %>
                         <div
                             class="absolute -bottom-2 right-0 w-12 h-1 bg-gradient-to-r from-[#1ECFD0] to-transparent rounded-full">
                         </div>
                     </h3>
                     <ul class="space-y-3">
-                        <li><a href="/about"
+                        <li><a href="/<%= locale %>/about"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>درباره ما
+                                </div><%= t('auto.k_02b1718b41d5') %>
                             </a></li>
-                        <li><a href="/products"
+                        <li><a href="/<%= locale %>/products"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>محصولات
+                                </div><%= t('auto.k_83cb78bbde58') %>
                             </a></li>
-                        <li><a href="/articles"
+                        <li><a href="/<%= locale %>/articles"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>مقالات
+                                </div><%= t('auto.k_d41e0bc0a701') %>
                             </a></li>
-                        <li><a href="/contact"
+                        <li><a href="/<%= locale %>/contact"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>تماس با ما
+                                </div><%= t('auto.k_a4a1baccd7b6') %>
                             </a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="text-lg mb-6 relative inline-block font-bold">خدمات
+                    <h3 class="text-lg mb-6 relative inline-block font-bold"><%= t('auto.k_165e4c10bab4') %>
                         <div
                             class="absolute -bottom-2 right-0 w-12 h-1 bg-gradient-to-r from-[#1ECFD0] to-transparent rounded-full">
                         </div>
                     </h3>
                     <ul class="space-y-3">
-                        <li><a href="/consultation"
+                        <li><a href="/<%= locale %>/consultation"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>مشاوره رایگان
+                                </div><%= t('auto.k_ff4db400724e') %>
                             </a></li>
-                        <li><a href="/#contact"
+                        <li><a href="/<%= locale %>/#contact"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>گارانتی محصولات
+                                </div><%= t('auto.k_4896ab117736') %>
                             </a></li>
-                        <li><a href="/#contact"
+                        <li><a href="/<%= locale %>/#contact"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>نصب و راه‌اندازی
+                                </div><%= t('auto.k_0f9a99e53cbc') %>
                             </a></li>
-                        <li><a href="/#contact"
+                        <li><a href="/<%= locale %>/#contact"
                                 class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
                                 <div
                                     class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>سرویس و نگهداری
+                                </div><%= t('auto.k_8b9f196ac154') %>
                             </a></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- گواهینامه‌ها -->
+            <!-- <%= t('auto.k_063aa2712a93') %>>
             <div class="border-t border-white/10 pt-8 mb-8">
                 <div class="flex items-center justify-center gap-3 mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -678,10 +689,10 @@
                         </path>
                         <circle cx="12" cy="8" r="6"></circle>
                     </svg>
-                    <h4 class="text-white/80 font-semibold">گواهینامه‌ها و استانداردها</h4>
+                    <h4 class="text-white/80 font-semibold"><%= t('auto.k_8b2baa82ea5f') %></h4>
                 </div>
 
-                <!-- اینماد در وسط با زمینه سفید -->
+                <!-- <%= t('auto.k_ae438079ed92') %>>
                 <div class="flex justify-center mt-6">
                     <div class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
                         <a referrerpolicy='origin' target='_blank'
@@ -689,23 +700,22 @@
                             class="block hover:opacity-90 transition-opacity duration-300">
                             <img referrerpolicy='origin'
                                 src='https://trustseal.enamad.ir/logo.aspx?id=496386&Code=sE2orZNPNU8gnRGZFPHGlE76jr4SwAj4'
-                                alt='نماد اعتماد الکترونیکی' code='sE2orZNPNU8gnRGZFPHGlE76jr4SwAj4'
+                                alt='<%= t('auto.k_193a33bef234') %>' code='sE2orZNPNU8gnRGZFPHGlE76jr4SwAj4'
                                 class="h-20 w-auto mx-auto">
                         </a>
-                        <p class="text-center text-xs text-gray-600 mt-2 font-medium">نماد اعتماد الکترونیکی</p>
+                        <p class="text-center text-xs text-gray-600 mt-2 font-medium"><%= t('auto.k_193a33bef234') %></p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Copyright و شبکه‌های اجتماعی -->
+        <!-- Copyright <%= t('auto.k_00f10bc8d4ea') %>>
         <div class="border-t border-white/10 relative z-10">
             <div class="container mx-auto px-4 py-6">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p class="text-white/60 text-sm text-center md:text-right">© <%= new Date().getFullYear() %> شرکت
-                            تصفیه آب صبا. تمامی حقوق محفوظ است.</p>
+                    <p class="text-white/60 text-sm text-center md:text-right">© <%= new Date().getFullYear() %> <%= t('auto.k_da1787a07b69') %></p>
                     <div class="flex items-center gap-6">
-                        <span class="text-white/60 text-sm hidden md:block">ما را دنبال کنید:</span>
+                        <span class="text-white/60 text-sm hidden md:block"><%= t('auto.k_9b83a942acaf') %></span>
                         <div class="flex gap-3">
                             <a href="https://www.instagram.com/sabatasfiyeh"
                                 class="w-10 h-10 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/10 border border-white/10 transition-all hover:scale-110 group">
@@ -750,7 +760,7 @@
         </div>
     </footer>
 
-    <!-- اسکریپت‌ها -->
+    <!-- <%= t('auto.k_4ee560a9b458') %>>
     <script>
         // Ensure page content isn't hidden behind fixed header: set body padding dynamically
         function adjustBodyPaddingForHeader() {

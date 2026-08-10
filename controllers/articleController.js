@@ -39,17 +39,21 @@ const showAddForm = (req, res) => {
 // Admin: Add new article
 const addArticle = async (req, res) => {
     try {
-        const { title, content, excerpt, metaTitle, metaDescription, metaKeywords, published } = req.body;
-        const slug = generateSlug(title);
+        const { title, content, excerpt, metaTitle, metaDescription, metaKeywords, published, translations = {} } = req.body;
+        const fa = translations.fa || {};
+        const primaryTitle = fa.title || title;
+        const primaryContent = fa.content || content || '';
+        const slug = generateSlug(primaryTitle);
         
         const articleData = {
-            title,
+            title: primaryTitle,
             slug,
-            content,
-            excerpt: excerpt || content.substring(0, 200),
-            metaTitle: metaTitle || title,
-            metaDescription: metaDescription || excerpt || content.substring(0, 160),
-            metaKeywords: metaKeywords || '',
+            content: primaryContent,
+            excerpt: fa.excerpt || excerpt || primaryContent.substring(0, 200),
+            metaTitle: fa.metaTitle || metaTitle || primaryTitle,
+            metaDescription: fa.metaDescription || metaDescription || fa.excerpt || excerpt || primaryContent.substring(0, 160),
+            metaKeywords: fa.metaKeywords || metaKeywords || '',
+            translations,
             published: published === 'on' || published === true,
             mainImage: req.files && req.files.mainImage ? `/uploads/${req.files.mainImage[0].filename}` : null
         };
@@ -84,22 +88,26 @@ const showEditForm = async (req, res) => {
 // Admin: Update article
 const updateArticle = async (req, res) => {
     try {
-        const { title, content, excerpt, metaTitle, metaDescription, metaKeywords, published } = req.body;
+        const { title, content, excerpt, metaTitle, metaDescription, metaKeywords, published, translations = {} } = req.body;
+        const fa = translations.fa || {};
+        const primaryTitle = fa.title || title;
+        const primaryContent = fa.content || content || '';
         const article = await Article.findById(req.params.id);
         
         if (!article) {
             return res.status(404).send('مقاله یافت نشد.');
         }
 
-        const slug = generateSlug(title);
+        const slug = generateSlug(primaryTitle);
         const updatedData = {
-            title,
+            title: primaryTitle,
             slug,
-            content,
-            excerpt: excerpt || content.substring(0, 200),
-            metaTitle: metaTitle || title,
-            metaDescription: metaDescription || excerpt || content.substring(0, 160),
-            metaKeywords: metaKeywords || '',
+            content: primaryContent,
+            excerpt: fa.excerpt || excerpt || primaryContent.substring(0, 200),
+            metaTitle: fa.metaTitle || metaTitle || primaryTitle,
+            metaDescription: fa.metaDescription || metaDescription || fa.excerpt || excerpt || primaryContent.substring(0, 160),
+            metaKeywords: fa.metaKeywords || metaKeywords || '',
+            translations,
             published: published === 'on' || published === true
         };
 
@@ -147,7 +155,7 @@ const deleteArticle = async (req, res) => {
 // Public: Get article detail
 const getArticleDetail = async (req, res) => {
     try {
-        const article = await Article.findBySlug(req.params.slug);
+        const article = await Article.findBySlug(req.params.slug, req.locale);
         if (!article || !article.published) {
             return res.status(404).render('public/article-detail', {
                 title: 'مقاله یافت نشد',
@@ -157,11 +165,13 @@ const getArticleDetail = async (req, res) => {
             });
         }
         const articleHtml = marked.parse(article.content || '');
+        const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
         res.render('public/article-detail', {
             title: article.metaTitle || article.title,
             metaDescription: article.metaDescription,
             metaKeywords: article.metaKeywords,
-            ogImage: article.mainImage ? `https://sabatasfiyeh.com${article.mainImage}` : undefined,
+            canonicalUrl: `${siteUrl}/${req.locale}/article/${encodeURIComponent(article.slug)}`,
+            ogImage: article.mainImage ? `${siteUrl}${article.mainImage}` : undefined,
             article: article,
             articleHtml,
             layout: 'public/layout',
@@ -176,7 +186,7 @@ const getArticleDetail = async (req, res) => {
 // Public: List all articles
 const getAllArticles = async (req, res) => {
     try {
-        const articles = await Article.getPublished();
+        const articles = await Article.getPublished(null, req.locale);
         res.render('public/articles', {
             title: 'مقالات - شرکت تصفیه آب صبا',
             articles: articles,

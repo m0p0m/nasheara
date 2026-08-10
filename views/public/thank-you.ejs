@@ -8,19 +8,19 @@
       </div>
 
       <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-4">
-        <%= typeof heading !== 'undefined' ? heading : 'عملیات با موفقیت انجام شد' %>
+        <%= typeof heading !== 'undefined' ? heading : t('auto.k_5c52616718c1') %>
       </h1>
 
       <p class="text-lg text-slate-600 mb-10 leading-relaxed">
-        <%= typeof message !== 'undefined' ? message : 'درخواست شما با موفقیت ثبت شد. در اسرع وقت با شما تماس خواهیم گرفت.' %>
+        <%= typeof message !== 'undefined' ? message : t('auto.k_4cd08e174103') %>
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="/" class="btn-primary">
-          بازگشت به صفحه اصلی
+        <a href="/<%= locale %>/" class="btn-primary">
+          <%= t('auto.k_1bd7e08e1679') %>
         </a>
-        <a href="/products" class="btn-secondary">
-          مشاهده محصولات
+        <a href="/<%= locale %>/products" class="btn-secondary">
+          <%= t('auto.k_683dfe4e3a38') %>
         </a>
       </div>
     </div>

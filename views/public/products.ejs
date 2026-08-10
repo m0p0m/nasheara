@@ -10,15 +10,15 @@
                         d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" />
                     <circle cx="12" cy="8" r="6" />
                 </svg>
-                <span>محصولات و تجهیزات</span>
+                <span><%= t('auto.k_251b34b4ff04') %></span>
             </div>
-            <h1 class="pp-title">تمام محصولات ما</h1>
-            <p class="pp-sub">گستره‌ای کامل از قطعات، دستگاه‌ها و سیستم‌های تصفیه آب با کیفیت عالی</p>
+            <h1 class="pp-title"><%= t('auto.k_a1d1b94e0ef7') %></h1>
+            <p class="pp-sub"><%= t('auto.k_01282ccc08e4') %></p>
         </div>
 
         <!-- Filter Box -->
         <div class="pp-filterbox">
-            <form action="/products" method="GET">
+            <form action="/<%= locale %>/products" method="GET">
 
                 <div class="pp-search-row">
                     <div class="pp-search-field">
@@ -28,11 +28,11 @@
                             <path d="m21 21-4.3-4.3" />
                         </svg>
                         <input type="text" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>"
-                            placeholder="جستجو در محصولات..." class="pp-search-input">
+                            placeholder="<%= t('auto.k_492ab4c39202') %>" class="pp-search-input">
                     </div>
                     <div class="pp-select-field">
                         <select name="category" class="pp-select">
-                            <option value="">همه دسته‌ها</option>
+                            <option value=""><%= t('auto.k_7b6912ab6fcd') %></option>
                             <% if (categories) { categories.forEach(c=> { %>
                                 <option value="<%= c.name %>" <%=selectedCategory===c.name ? 'selected' : '' %>><%=
                                         c.name %>
@@ -50,38 +50,38 @@
                             <circle cx="11" cy="11" r="8" />
                             <path d="m21 21-4.3-4.3" />
                         </svg>
-                        <span>جستجو</span>
+                        <span><%= t('auto.k_1fc039e00500') %></span>
                     </button>
                 </div>
 
                 <% if (q || selectedCategory) { %>
                     <div class="pp-active-filters">
-                        <span class="pp-af-label">فیلتر فعال:</span>
+                        <span class="pp-af-label"><%= t('auto.k_a3ad28e57400') %></span>
                         <% if (q) { %><span class="pp-tag">«<%= q %>»</span>
                             <% } %>
                                 <% if (selectedCategory) { %><span class="pp-tag">
                                         <%= selectedCategory %>
                                     </span>
                                     <% } %>
-                                        <a href="/products" class="pp-clear">
+                                        <a href="/<%= locale %>/products" class="pp-clear">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M18 6 6 18" />
                                                 <path d="m6 6 12 12" />
                                             </svg>
-                                            حذف فیلترها
+                                            <%= t('auto.k_5f11ae8e56cd') %>
                                         </a>
                     </div>
                     <% } %>
 
                         <% if (categories && categories.length) { %>
                             <div class="pp-divider"></div>
-                            <p class="pp-cats-label">دسته‌بندی‌ها</p>
+                            <p class="pp-cats-label"><%= t('auto.k_fb6c30f397ae') %></p>
                             <div class="pp-cats-scroll">
-                                <a href="/products"
-                                    class="pp-pill <%= !selectedCategory ? 'pp-pill--on' : 'pp-pill--off' %>">همه</a>
+                                <a href="/<%= locale %>/products"
+                                    class="pp-pill <%= !selectedCategory ? 'pp-pill--on' : 'pp-pill--off' %>"><%= t('auto.k_bf742c5a3d64') %></a>
                                 <% categories.forEach(c=> { %>
-                                    <a href="/products?category=<%= encodeURIComponent(c.name) %>"
+                                    <a href="/<%= locale %>/products?category=<%= encodeURIComponent(c.name) %>"
                                         class="pp-pill <%= selectedCategory === c.name ? 'pp-pill--on' : 'pp-pill--off' %>">
                                         <% if (c.mainImage) { %>
                                             <img src="<%= c.mainImage %>" alt="" class="pp-pill-img">
@@ -103,13 +103,13 @@
         <% if (products && products.length> 0) { %>
             <div class="pp-grid">
                 <% products.forEach(product=> { %>
-                    <a href="/product/<%= encodeURIComponent(product.slug) %>" class="pp-card">
+                    <a href="/<%= locale %>/product/<%= encodeURIComponent(product.slug) %>" class="pp-card">
                         <div class="pp-card-img">
                             <img src="<%= product.mainImage || '/placeholder.jpg' %>" alt="<%= product.name %>"
                                 loading="lazy">
-                            <% if (product.isNew) { %><span class="pp-badge pp-badge--new">جدید</span>
+                            <% if (product.isNew) { %><span class="pp-badge pp-badge--new"><%= t('auto.k_64dfbb8da93a') %></span>
                                 <% } %>
-                                    <% if (product.isBestSeller) { %><span class="pp-badge pp-badge--sell">پرفروش</span>
+                                    <% if (product.isBestSeller) { %><span class="pp-badge pp-badge--sell"><%= t('auto.k_122eb1e9248c') %></span>
                                         <% } %>
                         </div>
                         <div class="pp-card-body">
@@ -129,7 +129,7 @@
                                             <div style="flex:1"></div>
                                             <% } %>
                                                 <span class="pp-card-btn">
-                                                    مشاهده محصول
+                                                    <%= t('auto.k_7cb95a333538') %>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                         stroke-width="2.5" stroke-linecap="round"
@@ -155,15 +155,15 @@
                             <path d="M12 22V12" />
                         </svg>
                     </div>
-                    <h3 class="pp-empty-title">محصولی یافت نشد</h3>
+                    <h3 class="pp-empty-title"><%= t('auto.k_eb95102af9f8') %></h3>
                     <p class="pp-empty-text">
-                        <% if (q || selectedCategory) { %>فیلترها را تغییر دهید یا همه محصولات را ببینید.<% } else { %>
-                                در حال حاضر محصولی برای نمایش وجود ندارد.<% } %>
+                        <% if (q || selectedCategory) { %><%= t('auto.k_0dc4306e14bb') %><% } else { %>
+                                <%= t('auto.k_cb499b4618c1') %><% } %>
                     </p>
                     <div class="pp-empty-btns">
-                        <% if (q || selectedCategory) { %><a href="/products" class="pp-btn-primary">حذف فیلترها</a>
+                        <% if (q || selectedCategory) { %><a href="/<%= locale %>/products" class="pp-btn-primary"><%= t('auto.k_5f11ae8e56cd') %></a>
                             <% } %>
-                                <a href="/" class="pp-btn-outline">بازگشت به صفحه اصلی</a>
+                                <a href="/<%= locale %>/" class="pp-btn-outline"><%= t('auto.k_1bd7e08e1679') %></a>
                     </div>
                 </div>
                 <% } %>

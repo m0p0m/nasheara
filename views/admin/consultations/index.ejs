@@ -4,26 +4,26 @@
     <% const activeRequestCount = totalRequests - handledRequestCount; %>
     <div class="flex flex-col xl:flex-row justify-between items-start gap-4 mb-6">
         <div>
-            <h1 class="text-4xl font-bold text-slate-900 mb-2">درخواست‌های مشاوره</h1>
-            <p class="text-slate-500">مدیریت و پیگیری سریع درخواست‌های مشتریان</p>
+            <h1 class="text-4xl font-bold text-slate-900 mb-2"><%= t('auto.k_ca3d6d623533') %></h1>
+            <p class="text-slate-500"><%= t('auto.k_50e61b5a2958') %></p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-            <a href="/admin/consultations" class="px-4 py-2 rounded-2xl border text-sm transition-all duration-200 <%= typeof currentView === 'undefined' || currentView !== 'handled' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200' %>">درخواست‌های فعال</a>
-            <a href="/admin/consultations?view=handled" class="px-4 py-2 rounded-2xl border text-sm transition-all duration-200 <%= typeof currentView !== 'undefined' && currentView === 'handled' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200' %>">تماس‌های انجام‌شده</a>
-            <a href="/admin/consultations?view=all" class="px-4 py-2 rounded-2xl border text-sm transition-all duration-200 <%= typeof currentView !== 'undefined' && currentView === 'all' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200' %>">همه</a>
+            <a href="/admin/consultations" class="px-4 py-2 rounded-2xl border text-sm transition-all duration-200 <%= typeof currentView === 'undefined' || currentView !== 'handled' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200' %>"><%= t('auto.k_687ff1aefd12') %></a>
+            <a href="/admin/consultations?view=handled" class="px-4 py-2 rounded-2xl border text-sm transition-all duration-200 <%= typeof currentView !== 'undefined' && currentView === 'handled' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200' %>"><%= t('auto.k_a421cfc567a6') %></a>
+            <a href="/admin/consultations?view=all" class="px-4 py-2 rounded-2xl border text-sm transition-all duration-200 <%= typeof currentView !== 'undefined' && currentView === 'all' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200' %>"><%= t('auto.k_bf742c5a3d64') %></a>
         </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">کل درخواست‌ها</p>
+            <p class="text-sm text-slate-500"><%= t('auto.k_034321aa3c49') %></p>
             <p class="mt-3 text-3xl font-bold text-slate-900"><%= totalRequests %></p>
         </div>
         <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">درخواست‌های فعال</p>
+            <p class="text-sm text-slate-500"><%= t('auto.k_687ff1aefd12') %></p>
             <p class="mt-3 text-3xl font-bold text-slate-900"><%= activeRequestCount %></p>
         </div>
         <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">تماس‌های انجام‌شده</p>
+            <p class="text-sm text-slate-500"><%= t('auto.k_a421cfc567a6') %></p>
             <p class="mt-3 text-3xl font-bold text-slate-900"><%= handledRequestCount %></p>
         </div>
     </div>
@@ -52,11 +52,11 @@
                     </div>
                     <div class="flex items-center gap-2">
                             <span class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl shadow-lg">
-                                <%= consultation.requests.length %> درخواست
+                                <%= consultation.requests.length %> <%= t('auto.k_8f47967f4c0c') %>
                             </span>
                             <% if (currentView !== 'handled') { %>
-                                <form action="/admin/consultations/mark/<%= encodeURIComponent(consultation.phone) %>" method="POST" onsubmit="return confirm('آیا از علامت‌گذاری این گروه به عنوان "تماس گرفته شده" مطمئن هستید؟');">
-                                    <button type="submit" class="px-3 py-2 bg-green-500 text-white rounded-lg text-sm">تماس برقرار شد</button>
+                                <form action="/admin/consultations/mark/<%= encodeURIComponent(consultation.phone) %>" method="POST" onsubmit="return confirm('<%= t('auto.k_92c4be623b2f') %> "<%= t('auto.k_c00c3babf496') %>" <%= t('auto.k_f1f392de9869') %>');">
+                                    <button type="submit" class="px-3 py-2 bg-green-500 text-white rounded-lg text-sm"><%= t('auto.k_a18b8ed8d281') %></button>
                                 </form>
                             <% } %>
                         </div>
@@ -67,15 +67,15 @@
                         <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        جزئیات درخواست‌ها
+                        <%= t('auto.k_a8301a08d0f6') %>
                     </h4>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-white/50">
                                 <tr>
-                                    <th class="px-4 py-3 text-right text-xs font-bold text-[#2563EB] uppercase">محصول مورد نظر</th>
-                                    <th class="px-4 py-3 text-right text-xs font-bold text-[#2563EB] uppercase">زمان تماس</th>
-                                    <th class="px-4 py-3 text-right text-xs font-bold text-[#2563EB] uppercase">تاریخ ثبت</th>
+                                    <th class="px-4 py-3 text-right text-xs font-bold text-[#2563EB] uppercase"><%= t('auto.k_739f4124ddb1') %></th>
+                                    <th class="px-4 py-3 text-right text-xs font-bold text-[#2563EB] uppercase"><%= t('auto.k_3564c72071ef') %></th>
+                                    <th class="px-4 py-3 text-right text-xs font-bold text-[#2563EB] uppercase"><%= t('auto.k_6a67beb81ecb') %></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-100">
@@ -83,7 +83,7 @@
                                     <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-4 py-3 text-sm text-[#1E293B]">
                                             <div class="space-y-1">
-                                                <span class="px-3 py-1 bg-white rounded-lg text-xs font-medium block"><%= request.interestedInProduct || 'عمومی' %></span>
+                                                <span class="px-3 py-1 bg-white rounded-lg text-xs font-medium block"><%= request.interestedInProduct || t('auto.k_d97fcd3eb0b1') %></span>
                                                 <% if (request.projectType) { %>
                                                     <span class="px-2 py-1 bg-gray-100 rounded text-xs text-[#6B7280]"><%= request.projectType %></span>
                                                 <% } %>
@@ -92,9 +92,9 @@
                                         <td class="px-4 py-3 text-sm text-[#6B7280]">
                                             <% 
                                                 const timeLabels = {
-                                                    'ASAP': 'در اسرع وقت',
-                                                    'Morning': 'صبح (۹ تا ۱۲)',
-                                                    'Afternoon': 'بعد از ظهر (۱۳ تا ۱۷)'
+                                                    'ASAP': t('auto.k_2a156f18a9bf'),
+                                                    'Morning': t('auto.k_ca24ca02174d'),
+                                                    'Afternoon': t('auto.k_ce1f1418dec4')
                                                 };
                                             %>
                                             <span class="px-3 py-1 bg-[#F0F9FF] text-[#2563EB] rounded-lg text-xs font-medium">
@@ -114,12 +114,12 @@
                                             <% } %>
                                             <% if (!request.contacted) { %>
                                                 <div class="mt-2">
-                                                    <form action="/admin/consultations/mark-id/<%= request.id %>" method="POST" onsubmit="return confirm('آیا از علامت‌گذاری این درخواست به عنوان "تماس گرفته شده" مطمئن هستید؟');">
-                                                        <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded-lg text-xs">تماس گرفتم</button>
+                                                    <form action="/admin/consultations/mark-id/<%= request.id %>" method="POST" onsubmit="return confirm('<%= t('auto.k_d1c75c063a66') %> "<%= t('auto.k_c00c3babf496') %>" <%= t('auto.k_f1f392de9869') %>');">
+                                                        <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded-lg text-xs"><%= t('auto.k_7c6e4315b5ab') %></button>
                                                     </form>
                                                 </div>
                                             <% } else { %>
-                                                <div class="mt-2 text-xs text-green-700 font-medium">تماس گرفته شده</div>
+                                                <div class="mt-2 text-xs text-green-700 font-medium"><%= t('auto.k_c00c3babf496') %></div>
                                             <% } %>
                                         </td>
                                     </tr>
@@ -139,8 +139,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
             </div>
-            <h3 class="text-2xl font-bold text-[#1E293B] mb-4">درخواستی یافت نشد</h3>
-            <p class="text-[#6B7280] mb-8">هنوز درخواست مشاوره‌ای ثبت نشده است.</p>
+            <h3 class="text-2xl font-bold text-[#1E293B] mb-4"><%= t('auto.k_3ef1d6c53f78') %></h3>
+            <p class="text-[#6B7280] mb-8"><%= t('auto.k_c56f552bdd59') %></p>
         </div>
     </div>
 <% } %>

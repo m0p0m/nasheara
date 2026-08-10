@@ -1,9 +1,9 @@
 <div class="mb-8 flex flex-col sm:flex-row justify-between items-start gap-4">
     <div>
-        <h1 class="text-4xl font-bold text-slate-900 mb-2">مدیریت نمونه‌کارها</h1>
-        <p class="text-slate-500">پروژه‌های اجراشده را ثبت و مدیریت کنید.</p>
+        <h1 class="text-4xl font-bold text-slate-900 mb-2"><%= t('auto.k_e71de2ccc50b') %></h1>
+        <p class="text-slate-500"><%= t('auto.k_69eac727e13a') %></p>
     </div>
-    <a href="/admin/projects/add" class="btn-primary">افزودن نمونه‌کار جدید</a>
+    <a href="/admin/projects/add" class="btn-primary"><%= t('auto.k_21812ab61558') %></a>
 </div>
 
 <div class="card-modern !p-0 overflow-hidden">
@@ -12,11 +12,11 @@
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-4 text-right text-xs font-bold">تصویر</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold">عنوان</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold">موقعیت</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold">تاریخ ثبت</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold">عملیات</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold"><%= t('auto.k_de5560842bdf') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold"><%= t('auto.k_1a9bdb20dee4') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold"><%= t('auto.k_abd74238a488') %></th>
+                        <th class="px-6 py-4 text-right text-xs font-bold"><%= t('auto.k_6a67beb81ecb') %></th>
+                        <th class="px-6 py-4 text-center text-xs font-bold"><%= t('auto.k_8d1cc546f412') %></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -37,9 +37,9 @@
                             <td class="px-6 py-4 text-sm text-slate-500"><%= new Date(project.createdAt).toLocaleDateString('fa-IR') %></td>
                             <td class="px-6 py-4">
                                 <div class="flex justify-center gap-2">
-                                    <a href="/admin/projects/edit/<%= project.id %>" class="btn-secondary !py-2 !px-3 text-xs">ویرایش</a>
-                                    <form action="/admin/projects/delete/<%= project.id %>" method="POST" onsubmit="return confirm('این نمونه‌کار حذف شود؟');">
-                                        <button class="px-3 py-2 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white">حذف</button>
+                                    <a href="/admin/projects/edit/<%= project.id %>" class="btn-secondary !py-2 !px-3 text-xs"><%= t('auto.k_ac60ae7a6877') %></a>
+                                    <form action="/admin/projects/delete/<%= project.id %>" method="POST" onsubmit="return confirm('<%= t('auto.k_304fb327b637') %>');">
+                                        <button class="px-3 py-2 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white"><%= t('auto.k_2d2bbdc2d694') %></button>
                                     </form>
                                 </div>
                             </td>
@@ -50,8 +50,8 @@
         </div>
     <% } else { %>
         <div class="text-center py-20">
-            <h2 class="text-2xl font-bold text-slate-900 mb-3">هنوز نمونه‌کاری ثبت نشده است</h2>
-            <a href="/admin/projects/add" class="btn-primary mt-5">افزودن اولین نمونه‌کار</a>
+            <h2 class="text-2xl font-bold text-slate-900 mb-3"><%= t('auto.k_dce7b71cdc5c') %></h2>
+            <a href="/admin/projects/add" class="btn-primary mt-5"><%= t('auto.k_a804073aeace') %></a>
         </div>
     <% } %>
 </div>

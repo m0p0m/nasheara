@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Category {
-  id          String    @id @db.VarChar(191)
-  name        String    @unique @db.VarChar(191)
-  slug        String    @unique @db.VarChar(191)
-  description String?   @db.Text
-  mainImage   String?   @db.VarChar(500)
-  products    Product[]
+  id           String    @id @db.VarChar(191)
+  name         String    @unique @db.VarChar(191)
+  slug         String    @unique @db.VarChar(191)
+  description  String?   @db.Text
+  mainImage    String?   @db.VarChar(500)
+  translations Json?
+  products     Product[]
 }
 
 model Product {
@@ -37,6 +38,7 @@ model Product {
   material        String?          @db.VarChar(191)
   dimensions      String?          @db.VarChar(191)
   usageArea       Json
+  translations    Json?
   projects        ProjectProduct[]
 
   @@index([categoryId])
@@ -51,6 +53,7 @@ model Project {
   coverImage      String?          @db.VarChar(500)
   galleryImages   Json
   createdAt       DateTime         @default(now())
+  translations    Json?
   relatedProducts ProjectProduct[]
 }
 
@@ -78,6 +81,7 @@ model Article {
   galleryImages   Json
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  translations    Json?
 }
 
 model Consultation {

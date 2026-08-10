@@ -23,6 +23,20 @@ const normalizeStringArray = (value) => {
 const normalizeKeywords = (keywords) => normalizeStringArray(keywords);
 const normalizeUsageArea = (usageArea) => normalizeStringArray(usageArea);
 
+const normalizeTranslations = translations => {
+    const result = {};
+    for (const locale of ['fa', 'en', 'ar']) {
+        const value = translations && translations[locale] ? translations[locale] : {};
+        result[locale] = {
+            ...value,
+            keywords: normalizeKeywords(value.keywords),
+            usageArea: normalizeUsageArea(value.usageArea),
+            specs: normalizeSpecs(value.specs)
+        };
+    }
+    return result;
+};
+
 const normalizeSpecs = (specs) => {
     if (!specs) return {};
     if (typeof specs === 'object') return specs;
@@ -103,31 +117,34 @@ const addProduct = async (req, res) => {
             const {
                 name, slug, category, stock, description, patternName, color, material,
                 dimensions, usageArea, metaTitle, metaDescription, keywords, isNew,
-                isBestSeller, specs
+                isBestSeller, specs, translations
             } = req.body;
+            const normalizedTranslations = normalizeTranslations(translations);
+            const fa = normalizedTranslations.fa;
 
             const mainImage = req.files.mainImage ? '/uploads/' + req.files.mainImage[0].filename : null;
             const galleryImages = req.files.galleryImages ? req.files.galleryImages.map(file => '/uploads/' + file.filename) : [];
 
             const newProduct = {
-                name,
+                name: fa.name || name,
                 slug,
                 category,
                 stock: normalizeStock(stock),
-                description,
-                patternName,
-                color,
-                material,
-                dimensions,
-                usageArea: normalizeUsageArea(usageArea),
+                description: fa.description || description,
+                patternName: fa.patternName || patternName,
+                color: fa.color || color,
+                material: fa.material || material,
+                dimensions: fa.dimensions || dimensions,
+                usageArea: fa.usageArea.length ? fa.usageArea : normalizeUsageArea(usageArea),
                 mainImage,
                 galleryImages,
-                metaTitle,
-                metaDescription,
-                keywords: normalizeKeywords(keywords),
+                metaTitle: fa.metaTitle || metaTitle,
+                metaDescription: fa.metaDescription || metaDescription,
+                keywords: fa.keywords.length ? fa.keywords : normalizeKeywords(keywords),
                 isNew: Boolean(isNew),
                 isBestSeller: Boolean(isBestSeller),
-                specs: normalizeSpecs(specs)
+                specs: Object.keys(fa.specs).length ? fa.specs : normalizeSpecs(specs),
+                translations: normalizedTranslations
             };
 
             await Product.create(newProduct);
@@ -174,26 +191,29 @@ const editProduct = async (req, res) => {
             const {
                 name, slug, category, stock, description, patternName, color, material,
                 dimensions, usageArea, metaTitle, metaDescription, keywords, isNew,
-                isBestSeller, specs
+                isBestSeller, specs, translations
             } = req.body;
+            const normalizedTranslations = normalizeTranslations(translations);
+            const fa = normalizedTranslations.fa;
 
             const updatedData = {
-                name,
+                name: fa.name || name,
                 slug,
                 category,
                 stock: normalizeStock(stock),
-                description,
-                patternName,
-                color,
-                material,
-                dimensions,
-                usageArea: normalizeUsageArea(usageArea),
-                metaTitle,
-                metaDescription,
-                keywords: normalizeKeywords(keywords),
+                description: fa.description || description,
+                patternName: fa.patternName || patternName,
+                color: fa.color || color,
+                material: fa.material || material,
+                dimensions: fa.dimensions || dimensions,
+                usageArea: fa.usageArea.length ? fa.usageArea : normalizeUsageArea(usageArea),
+                metaTitle: fa.metaTitle || metaTitle,
+                metaDescription: fa.metaDescription || metaDescription,
+                keywords: fa.keywords.length ? fa.keywords : normalizeKeywords(keywords),
                 isNew: Boolean(isNew),
                 isBestSeller: Boolean(isBestSeller),
-                specs: normalizeSpecs(specs)
+                specs: Object.keys(fa.specs).length ? fa.specs : normalizeSpecs(specs),
+                translations: normalizedTranslations
             };
 
             // Replace main image if a new one is uploaded

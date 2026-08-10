@@ -1,5 +1,5 @@
-<h1 class="text-3xl font-bold text-[#1E293B] mb-2">افزودن مقاله جدید</h1>
-<p class="text-[#6B7280] mb-8">مشخصات مقاله را وارد کنید تا در سایت نمایش داده شود. فیلدهای ستاره‌دار الزامی هستند.</p>
+<h1 class="text-3xl font-bold text-[#1E293B] mb-2"><%= t('auto.k_8a110741f98e') %></h1>
+<p class="text-[#6B7280] mb-8"><%= t('auto.k_c72fd3ffb2c4') %></p>
 
 <form action="/admin/articles/add" method="POST" enctype="multipart/form-data" class="space-y-8">
 
@@ -7,36 +7,36 @@
     <div class="card-modern">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-xl font-semibold text-[#1E293B]">اطلاعات اصلی</h2>
-                <p class="text-sm text-[#6B7280] mt-1">عنوان و محتوای مقاله را وارد کنید.</p>
+                <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_4e703f2368ec') %></h2>
+                <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_fbca57f28e30') %></p>
             </div>
             <div class="hidden lg:flex items-center gap-2 text-xs text-[#2563EB] bg-[#F0F9FF] px-3 py-1 rounded-full">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                اطلاعات ضروری
+                <%= t('auto.k_2bd2d577705d') %>
             </div>
         </div>
         <div class="space-y-6">
             <div class="space-y-2">
-                <label for="title" class="block text-sm font-semibold text-[#1E293B]">عنوان مقاله *</label>
-                <input type="text" id="title" name="title" required class="input-field" placeholder="عنوان مقاله را وارد کنید">
+                <label for="title" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_4eeee79ad8f5') %> *</label>
+                <input type="text" id="title" name="translations[fa][title]" required class="input-field" placeholder="<%= t('auto.k_164ebd6c264f') %>">
             </div>
             <div class="space-y-2">
-                <label for="excerpt" class="block text-sm font-semibold text-[#1E293B]">خلاصه مقاله</label>
-                <textarea id="excerpt" name="excerpt" rows="3" class="input-field resize-y" placeholder="خلاصه کوتاه مقاله (حدود 200 کاراکتر)"></textarea>
-                <p class="text-xs text-[#6B7280]">این متن در لیست مقالات و کارت‌های مقاله نمایش داده می‌شود.</p>
+                <label for="excerpt" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_be58d3c901e1') %></label>
+                <textarea id="excerpt" name="translations[fa][excerpt]" rows="3" class="input-field resize-y" placeholder="<%= t('auto.k_29b0a59f3f31') %>"></textarea>
+                <p class="text-xs text-[#6B7280]"><%= t('auto.k_1dda7c8e5d96') %></p>
             </div>
             <div class="space-y-2">
-                <label for="content" class="block text-sm font-semibold text-[#1E293B]">محتوای مقاله *</label>
-                <textarea id="content" name="content" required rows="15" class="input-field resize-y" placeholder="محتوای کامل مقاله را اینجا بنویسید..."></textarea>
+                <label for="content" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_b96281ef64a7') %> *</label>
+                <textarea id="content" name="translations[fa][content]" required rows="15" class="input-field resize-y" placeholder="<%= t('auto.k_1eb3298f727f') %>"></textarea>
             </div>
             <div class="space-y-2">
                 <label class="flex items-center gap-3 text-sm text-[#1E293B]">
                     <input type="checkbox" id="published" name="published" value="on" class="w-4 h-4 rounded border-[#2563EB]/30 text-[#2563EB] focus:ring-[#2563EB]">
-                    منتشر کردن مقاله
+                    <%= t('auto.k_59fde078f2b7') %>
                 </label>
-                <p class="text-xs text-[#6B7280]">اگر این گزینه را فعال کنید، مقاله بلافاصله در سایت نمایش داده می‌شود.</p>
+                <p class="text-xs text-[#6B7280]"><%= t('auto.k_58e297c23f1d') %></p>
             </div>
         </div>
     </div>
@@ -44,46 +44,62 @@
     <!-- Image -->
     <div class="card-modern">
         <div class="mb-6">
-            <h2 class="text-xl font-semibold text-[#1E293B]">تصویر شاخص</h2>
-            <p class="text-sm text-[#6B7280] mt-1">تصویر اصلی مقاله را بارگذاری کنید.</p>
+            <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_1a1b7339c832') %></h2>
+            <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_7a806afe16e0') %></p>
         </div>
         <div class="space-y-2">
-            <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]">تصویر اصلی (حداکثر ۵ مگابایت)</label>
+            <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_3a3abd101449') %></label>
             <input type="file" id="mainImage" name="mainImage" accept="image/*" class="input-field border-dashed">
-            <p class="text-xs text-[#6B7280]">این تصویر در لیست مقالات و بالای صفحه مقاله نمایش داده می‌شود.</p>
+            <p class="text-xs text-[#6B7280]"><%= t('auto.k_2d29df47cd70') %></p>
         </div>
     </div>
 
     <!-- SEO -->
     <div class="card-modern">
         <div class="mb-6">
-            <h2 class="text-xl font-semibold text-[#1E293B]">تنظیمات سئو</h2>
-            <p class="text-sm text-[#6B7280] mt-1">برای بهبود نمایش در نتایج جست‌وجوی گوگل، این بخش را تکمیل کنید.</p>
+            <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_0f10eb61122f') %></h2>
+            <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_afd901c9e30c') %></p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-                <label for="metaTitle" class="block text-sm font-semibold text-[#1E293B]">عنوان متا</label>
-                <input type="text" id="metaTitle" name="metaTitle" placeholder="عنوان برای موتورهای جستجو" class="input-field">
-                <p class="text-xs text-[#6B7280]">اگر خالی بگذارید، عنوان مقاله استفاده می‌شود.</p>
+                <label for="metaTitle" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_0f2bad2af0b2') %></label>
+                <input type="text" id="metaTitle" name="translations[fa][metaTitle]" placeholder="<%= t('auto.k_18975a47732a') %>" class="input-field">
+                <p class="text-xs text-[#6B7280]"><%= t('auto.k_7a9ea9096f50') %></p>
             </div>
             <div class="space-y-2">
-                <label for="metaKeywords" class="block text-sm font-semibold text-[#1E293B]">کلمات کلیدی (با کاما جدا کنید)</label>
-                <input type="text" id="metaKeywords" name="metaKeywords" placeholder="تصفیه آب, فیلتر آب, RO" class="input-field">
+                <label for="metaKeywords" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_1fbcc4f71104') %></label>
+                <input type="text" id="metaKeywords" name="translations[fa][metaKeywords]" class="input-field">
             </div>
         </div>
         <div class="mt-6 space-y-2">
-            <label for="metaDescription" class="block text-sm font-semibold text-[#1E293B]">توضیحات متا</label>
-            <textarea id="metaDescription" name="metaDescription" rows="3" class="input-field resize-y" placeholder="در ۱۵۰-۱۶۰ کاراکتر توضیح دهید که مقاله درباره چیست..."></textarea>
-            <p class="text-xs text-[#6B7280]">اگر خالی بگذارید، از خلاصه مقاله استفاده می‌شود.</p>
+            <label for="metaDescription" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_7d6ba4bee034') %></label>
+            <textarea id="metaDescription" name="translations[fa][metaDescription]" rows="3" class="input-field resize-y"></textarea>
+            <p class="text-xs text-[#6B7280]"><%= t('auto.k_6a2881209877') %></p>
         </div>
     </div>
 
+    <% ['en', 'ar'].forEach(language => { %>
+    <div class="card-modern" dir="<%= language === 'en' ? 'ltr' : 'rtl' %>">
+        <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4ba3e969a5bb') %> <%= language === 'en' ? 'English' : t('auto.k_9970632f55af') %></h2>
+        <div class="space-y-5">
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_1a9bdb20dee4') %></label><input name="translations[<%= language %>][title]" class="input-field"></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_133bc3507ca3') %></label><textarea name="translations[<%= language %>][excerpt]" rows="3" class="input-field"></textarea></div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_72a133dbd52e') %></label><textarea name="translations[<%= language %>][content]" rows="15" class="input-field"></textarea></div>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_0f2bad2af0b2') %></label><input name="translations[<%= language %>][metaTitle]" class="input-field"></div>
+                <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_88c6a2a285c8') %></label><input name="translations[<%= language %>][metaKeywords]" class="input-field"></div>
+            </div>
+            <div class="space-y-2"><label class="block text-sm font-semibold"><%= t('auto.k_7d6ba4bee034') %></label><textarea name="translations[<%= language %>][metaDescription]" rows="3" class="input-field"></textarea></div>
+        </div>
+    </div>
+    <% }); %>
+
     <div class="flex flex-col sm:flex-row justify-end gap-3">
         <a href="/admin/articles" class="btn-secondary h-12">
-            انصراف
+            <%= t('auto.k_106dfb4e0f62') %>
         </a>
         <button type="submit" class="btn-primary px-8 h-12">
-            ذخیره مقاله
+            <%= t('auto.k_73138909d6da') %>
         </button>
     </div>
 </form>

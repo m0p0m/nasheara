@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
+const { i18next, middleware: i18nMiddleware, supportedLocales } = require('./config/i18n');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -28,17 +29,49 @@ app.use(session({
     cookie: { secure: false } // Set to true in production with HTTPS
 }));
 
+app.use(i18nMiddleware.handle(i18next));
+app.use((req, res, next) => {
+    const firstSegment = req.path.split('/').filter(Boolean)[0];
+    const locale = supportedLocales.includes(firstSegment) ? firstSegment : 'fa';
+    const pathWithoutLocale = supportedLocales.includes(firstSegment)
+        ? (req.originalUrl.replace(new RegExp(`^/${firstSegment}(?=/|$)`), '') || '/')
+        : req.originalUrl;
+    req.locale = locale;
+    res.locals.locale = locale;
+    res.locals.dir = locale === 'en' ? 'ltr' : 'rtl';
+    res.locals.t = i18next.getFixedT(locale, 'common');
+    res.locals.localePath = targetPath => {
+        const cleanPath = String(targetPath || '/').replace(/^\/(fa|en|ar)(?=\/|$)/, '') || '/';
+        return `/${locale}${cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`}`;
+    };
+    res.locals.alternateUrls = Object.fromEntries(
+        supportedLocales.map(language => [language, `${app.locals.siteUrl}/${language}${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`])
+    );
+    res.locals.alternateUrls['x-default'] = `${app.locals.siteUrl}/fa${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`;
+    next();
+});
+
 // Routes
 const adminRoutes = require('./routes/admin');
 const categoryRoutes = require('./routes/categories');
 const productRoutes = require('./routes/products');
 const publicRoutes = require('./routes/public'); // New
+const publicController = require('./controllers/publicController');
 const ensureAuthenticated = require('./middleware/auth');
 const productController = require('./controllers/productController');
 const consultationController = require('./controllers/consultationController'); // New
 
-// Public routes
-app.use('/', publicRoutes);
+// Public localized routes and SEO endpoints
+app.get('/', (req, res) => res.redirect(302, '/fa/'));
+app.get('/sitemap.xml', publicController.getSitemap);
+app.get('/robots.txt', publicController.getRobots);
+app.use((req, res, next) => {
+    const isLegacyPublicPath = /^\/(products|projects|articles|about|contact|consultation)(\/|$)/.test(req.path)
+        || /^\/(product|project|article)\//.test(req.path);
+    if (req.method === 'GET' && isLegacyPublicPath) return res.redirect(302, `/fa${req.originalUrl}`);
+    next();
+});
+for (const locale of supportedLocales) app.use(`/${locale}`, publicRoutes);
 
 // Redirect /login to /admin/login
 app.get('/login', (req, res) => {

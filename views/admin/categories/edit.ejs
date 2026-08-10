@@ -10,15 +10,15 @@
         <textarea id="description" name="description" rows="4" class="w-full px-3 py-2 border rounded"><%= category.description %></textarea>
     </div>
     <div class="mb-6">
-        <label class="block text-gray-700 font-bold mb-2">تصویر فعلی:</label>
+        <label class="block text-gray-700 font-bold mb-2"><%= t('auto.k_ff3bc603142b') %></label>
         <% if (category.mainImage) { %>
             <div class="mb-3">
                 <img src="<%= category.mainImage %>" alt="<%= category.name %>" class="w-28 h-28 object-cover rounded-md border">
             </div>
         <% } else { %>
-            <div class="mb-3 text-sm text-gray-500">تصویری برای این دسته وجود ندارد.</div>
+            <div class="mb-3 text-sm text-gray-500"><%= t('auto.k_6deb9571d9ba') %></div>
         <% } %>
-        <label for="mainImage" class="block text-gray-700 font-bold mb-2">بارگذاری تصویر جدید (اختیاری):</label>
+        <label for="mainImage" class="block text-gray-700 font-bold mb-2"><%= t('auto.k_f5d2856397f1') %></label>
         <input type="file" id="mainImage" name="mainImage" accept="image/*" class="w-full px-3 py-2 border rounded">
     </div>
     <div class="text-right">
