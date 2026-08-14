@@ -188,7 +188,7 @@ const getAllArticles = async (req, res) => {
     try {
         const articles = await Article.getPublished(null, req.locale);
         res.render('public/articles', {
-            title: 'مقالات - شرکت تصفیه آب صبا',
+            title: 'مقالات - شرکت تصفیه آب نقش آرا',
             articles: articles,
             layout: 'public/layout',
             currentPath: req.path

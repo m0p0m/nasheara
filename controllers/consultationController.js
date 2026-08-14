@@ -44,9 +44,9 @@ const submitConsultation = async (req, res) => {
 
         // Redirect to a thank you page or show a success message
         res.render('public/thank-you', { 
-            title: 'با تشکر - شرکت تصفیه آب صبا',
+            title: 'با تشکر - نقش آرا کاشی دست‌ساز',
             heading: 'درخواست شما ثبت شد',
-            message: 'مشخصات شما دریافت گردید. کارشناسان صبا تصفیه به زودی برای ارائه مشاوره تخصصی با شما تماس خواهند گرفت.',
+            message: 'درخواست شما دریافت شد. کارشناسان نقش آرا کاشی دست‌ساز به‌زودی برای ارائه مشاوره تخصصی با شما تماس خواهند گرفت.',
             layout: 'public/layout',
             currentPath: req.path
         });

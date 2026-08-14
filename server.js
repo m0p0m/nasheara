@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '1d'
 }));
-const sessionSecret = process.env.SESSION_SECRET || 'sabawhter_default_secret';
+const sessionSecret = process.env.SESSION_SECRET || 'nashearawhter_default_secret';
 if (!process.env.SESSION_SECRET) {
     console.warn('SESSION_SECRET is not set. Using fallback session secret. Please configure SESSION_SECRET in .env or host environment.');
 }

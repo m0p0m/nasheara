@@ -27,7 +27,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : t('auto.k_d26f50636237') %>">
-    <meta property="og:locale" content="fa_IR">
+    <meta property="og:locale" content="<%= locale === 'fa' ? 'fa_IR' : (locale === 'en' ? 'en_US' : 'ar_SA') %>">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
@@ -42,13 +42,21 @@
     <link rel="icon" href="/icons/log.png" type="image/png">
     <link rel="apple-touch-icon" href="/icons/log.png">
 
+    <!-- Fonts: fa/ar use self-hosted Vazirmatn; en uses Fraunces (display) + Inter (body) -->
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "<%= t('auto.k_e6736350dccf') %>",
-        "alternateName": "<%= t('auto.k_3abe6e50c832') %>",
+        "name": "<%= t('atelier.brandName') %>",
+        "alternateName": "<%= t('atelier.brandTag') %>",
         "url": "<%= siteUrl %>",
         "logo": "<%= siteUrl %>/icons/log.png",
         "description": "<%= t('auto.k_1a135a699aa6') %>",
@@ -118,694 +126,177 @@
     }
     </script>
 
-    <!-- Local Business Schema -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "HomeAndConstructionBusiness",
-        "name": "<%= t('auto.k_e6736350dccf') %>",
-        "image": "<%= siteUrl %>/icons/log.png",
-        "telephone": "+982536550672",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "<%= t('auto.k_13b4545e00d4') %>",
-            "addressLocality": "<%= t('auto.k_352a9115c09a') %>",
-            "addressRegion": "<%= t('auto.k_352a9115c09a') %>",
-            "addressCountry": "<%= t('auto.k_79ba78bc6d05') %>"
-        },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": "34.639944",
-            "longitude": "50.875946"
-        },
-        "openingHours": "Sa-Th 08:00-18:00",
-        "priceRange": "<%= t('auto.k_968cb577d09a') %>",
-        "currenciesAccepted": "IRR",
-        "paymentAccepted": "<%= t('auto.k_16839d59c75a') %>"
-    }
-    </script>
-
     <link rel="stylesheet" href="/css/style.css">
-    <style>
-        @keyframes particle-0 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.4;
-            }
-
-            50% {
-                transform: translateY(-15px) translateX(5px);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes particle-1 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.3;
-            }
-
-            50% {
-                transform: translateY(-12px) translateX(-5px);
-                opacity: 0.7;
-            }
-        }
-
-        @keyframes particle-2 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: translateY(-18px) translateX(8px);
-                opacity: 0.9;
-            }
-        }
-
-        @keyframes particle-3 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.4;
-            }
-
-            50% {
-                transform: translateY(-10px) translateX(-3px);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes particle-4 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.3;
-            }
-
-            50% {
-                transform: translateY(-14px) translateX(6px);
-                opacity: 0.7;
-            }
-        }
-
-        @keyframes particle-5 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: translateY(-16px) translateX(-4px);
-                opacity: 0.9;
-            }
-        }
-
-        @keyframes particle-6 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.4;
-            }
-
-            50% {
-                transform: translateY(-13px) translateX(7px);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes particle-7 {
-
-            0%,
-            100% {
-                transform: translateY(0px) translateX(0px);
-                opacity: 0.3;
-            }
-
-            50% {
-                transform: translateY(-11px) translateX(-6px);
-                opacity: 0.7;
-            }
-        }
-
-        .particle-0 {
-            animation: particle-0 3s ease-in-out 0s infinite normal none running;
-        }
-
-        .particle-1 {
-            animation: particle-1 3s ease-in-out 0.3s infinite normal none running;
-        }
-
-        .particle-2 {
-            animation: particle-2 3s ease-in-out 0.6s infinite normal none running;
-        }
-
-        .particle-3 {
-            animation: particle-3 3s ease-in-out 0.9s infinite normal none running;
-        }
-
-        .particle-4 {
-            animation: particle-4 3s ease-in-out 1.2s infinite normal none running;
-        }
-
-        .particle-5 {
-            animation: particle-5 3s ease-in-out 1.5s infinite normal none running;
-        }
-
-        .particle-6 {
-            animation: particle-6 3s ease-in-out 1.8s infinite normal none running;
-        }
-
-        .particle-7 {
-            animation: particle-7 3s ease-in-out 2.1s infinite normal none running;
-        }
-
-        @keyframes scroll {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .animate-scroll {
-            animation: scroll 30s linear infinite;
-            display: flex;
-            width: fit-content;
-        }
-
-        .animate-scroll:hover {
-            animation-play-state: paused;
-        }
-
-        .clients-container {
-            overflow: hidden;
-            position: relative;
-        }
-
-        .clients-wrapper {
-            display: flex;
-            gap: 1.5rem;
-            width: max-content;
-        }
-
-        @media (max-width: 768px) {
-            .animate-scroll {
-                animation-duration: 20s;
-            }
-        }
-
-        .ltr-text {
-            direction: ltr;
-            text-align: left;
-            unicode-bidi: embed;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 
-<body class="min-h-screen bg-white <%= locale === 'en' ? 'font-en' : 'font-fa-ar' %>" dir="<%= dir %>">
+<body class="min-h-screen <%= locale === 'en' ? 'font-en' : 'font-fa-ar' %>" dir="<%= dir %>">
     <!-- Header -->
-    <header
-        class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm shadow-sm py-5"
-        id="header">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between">
-                <!-- Right side: Logo -->
-                <a href="/<%= locale %>/" class="flex items-center gap-3 group">
-                    <div class="relative">
-                        <!-- <%= t('auto.k_103fb4b0da7e') %>>
-                        <div
-                            class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shadow-lg p-2">
-                            <img src="/icons/log.png" alt="<%= t('auto.k_8f11691a9d94') %>" class="w-full h-full object-contain">
-                        </div>
-                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-[#1ECFD0] rounded-full animate-ping"></div>
-                    </div>
-                    <div>
-                        <h2 class="transition-colors text-[#0B1826] font-bold text-lg"><%= t('auto.k_07cafa008fd3') %></h2>
-                        <p class="text-xs text-[#6B7280]"><%= t('auto.k_4626729135e6') %></p>
-                    </div>
+    <header class="site-header" id="siteHeader">
+        <div class="container">
+            <div class="site-header__inner">
+                <a href="/<%= locale %>/" class="site-brand" aria-label="<%= t('atelier.brandName') %>">
+                    <span class="site-brand__mark"><%= t('atelier.brandName') %></span>
+                    <span class="site-brand__tag"><%= t('atelier.brandTag') %></span>
                 </a>
 
-                <!-- Center: Navigation -->
-                <nav class="hidden lg:flex items-center gap-2">
-                    <a href="/<%= locale %>/" class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        <%= t('nav.home') %>
-                        <span
-                            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
-                    </a>
-                    <a href="/<%= locale %>/products"
-                        class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        <%= t('nav.products') %>
-                        <span
-                            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
-                    </a>
-                    <a href="/<%= locale %>/projects" class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        <%= t('nav.projects') %>
-                        <span class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
-                    </a>
-                    <a href="/<%= locale %>/about"
-                        class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        <%= t('nav.about') %>
-                        <span
-                            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
-                    </a>
-                    <a href="/<%= locale %>/articles"
-                        class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        <%= t('nav.articles') %>
-                        <span
-                            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
-                    </a>
-                    <a href="/<%= locale %>/contact"
-                        class="px-4 py-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors relative group">
-                        <%= t('nav.contact') %>
-                        <span
-                            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#0B74DA] group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
-                    </a>
+                <nav class="site-nav hidden lg:flex" aria-label="<%= t('nav.home') %>">
+                    <a href="/<%= locale %>/" class="site-nav__link <%= currentPath === '/' ? 'is-active' : '' %>"><%= t('nav.home') %></a>
+                    <a href="/<%= locale %>/products" class="site-nav__link <%= currentPath && currentPath.startsWith('/products') ? 'is-active' : '' %>"><%= t('nav.products') %></a>
+                    <a href="/<%= locale %>/projects" class="site-nav__link <%= currentPath && currentPath.startsWith('/projects') ? 'is-active' : '' %>"><%= t('nav.projects') %></a>
+                    <a href="/<%= locale %>/about" class="site-nav__link <%= currentPath && currentPath.startsWith('/about') ? 'is-active' : '' %>"><%= t('nav.about') %></a>
+                    <a href="/<%= locale %>/articles" class="site-nav__link <%= currentPath && currentPath.startsWith('/articles') ? 'is-active' : '' %>"><%= t('nav.articles') %></a>
+                    <a href="/<%= locale %>/contact" class="site-nav__link <%= currentPath && currentPath.startsWith('/contact') ? 'is-active' : '' %>"><%= t('nav.contact') %></a>
                 </nav>
 
-                <!-- Left side: Phone and Contact Button -->
-                <div class="hidden lg:flex items-center gap-2" aria-label="<%= t('language.switch') %>">
-                    <a href="<%= alternateUrls.fa %>" lang="fa">FA</a>
-                    <a href="<%= alternateUrls.en %>" lang="en">EN</a>
-                    <a href="<%= alternateUrls.ar %>" lang="ar">AR</a>
-                </div>
-                <div class="hidden lg:flex items-center gap-3">
-                    <div class="flex flex-col items-end">
-                        <a href="tel:09122515229"
-                            class="text-[#0B1826] hover:text-[#0B74DA] transition-colors text-sm font-medium ltr-text">
-                            09122515229
-                        </a>
-                        <span class="text-xs text-[#6B7280]"><%= t('auto.k_d73636babd9b') %></span>
+                <div class="flex items-center gap-4">
+                    <div class="site-lang hidden md:inline-flex" aria-label="<%= t('language.switch') %>">
+                        <% ['fa', 'en', 'ar'].forEach(lang => { %>
+                            <a href="<%= alternateUrls[lang] %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"><%= lang.toUpperCase() %></a>
+                        <% }); %>
                     </div>
-                    <a href="/<%= locale %>/consultation"
-                        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 py-2 bg-[#FF7A3D] hover:bg-[#FF7A3D]/90 text-white rounded-xl px-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                        <%= t('auto.k_69252c124a72') %>
+                    <a href="/<%= locale %>/consultation" class="btn btn-solid btn--sm hidden md:inline-flex">
+                        <%= t('atelier.consultCta') %>
                     </a>
+                    <button class="site-burger lg:hidden" id="mobileMenuBtn" aria-label="<%= t('auto.k_4fcd3460d598') %>" aria-expanded="false">
+                        <span></span><span></span><span></span>
+                    </button>
                 </div>
-
-                <button class="lg:hidden p-2 text-[#0B1826] hover:text-[#0B74DA] transition-colors" id="mobileMenuBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-menu w-6 h-6">
-                        <line x1="4" x2="20" y1="12" y2="12"></line>
-                        <line x1="4" x2="20" y1="6" y2="6"></line>
-                        <line x1="4" x2="20" y1="18" y2="18"></line>
-                    </svg>
-                </button>
             </div>
         </div>
     </header>
 
-    <!-- Mobile Menu -->
-    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none"
-        id="mobileMenuOverlay">
-        <div class="absolute top-0 right-0 w-80 h-full bg-white shadow-2xl transform transition-transform duration-300 translate-x-full"
-            id="mobileMenu">
-            <div class="p-6 space-y-6">
-                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
-                    <h3 class="text-[#0B1826] font-bold"><%= t('auto.k_6b5b757f2483') %></h3>
-                    <button id="closeMobileMenu">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-x w-6 h-6 text-[#6B7280]">
-                            <path d="M18 6 6 18"></path>
-                            <path d="m6 6 12 12"></path>
-                        </svg>
-                    </button>
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+        <div class="mobile-menu__backdrop" id="mobileMenuBackdrop"></div>
+        <div class="mobile-menu__panel">
+            <button class="mobile-menu__close" id="closeMobileMenu" aria-label="<%= t('auto.k_f6839701dc85') %>">&times;</button>
+            <a href="/<%= locale %>/" class="site-brand mb-8" aria-label="<%= t('atelier.brandName') %>">
+                <span class="site-brand__mark"><%= t('atelier.brandName') %></span>
+                <span class="site-brand__tag"><%= t('atelier.brandTag') %></span>
+            </a>
+            <nav class="flex flex-col" aria-label="<%= t('nav.home') %>">
+                <a href="/<%= locale %>/" class="mobile-menu__link"><%= t('nav.home') %></a>
+                <a href="/<%= locale %>/products" class="mobile-menu__link"><%= t('nav.products') %></a>
+                <a href="/<%= locale %>/projects" class="mobile-menu__link"><%= t('nav.projects') %></a>
+                <a href="/<%= locale %>/about" class="mobile-menu__link"><%= t('nav.about') %></a>
+                <a href="/<%= locale %>/articles" class="mobile-menu__link"><%= t('nav.articles') %></a>
+                <a href="/<%= locale %>/contact" class="mobile-menu__link"><%= t('nav.contact') %></a>
+            </nav>
+            <div class="mt-8 space-y-6">
+                <div class="site-lang" aria-label="<%= t('language.switch') %>">
+                    <% ['fa', 'en', 'ar'].forEach(lang => { %>
+                        <a href="<%= alternateUrls[lang] %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"><%= lang.toUpperCase() %></a>
+                    <% }); %>
                 </div>
-                <nav class="space-y-2">
-                    <a href="/<%= locale %>/"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.home') %></a>
-                    <a href="/<%= locale %>/products"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.products') %></a>
-                    <a href="/<%= locale %>/projects"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.projects') %></a>
-                    <a href="/<%= locale %>/about"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('auto.k_02b1718b41d5') %></a>
-                    <a href="/<%= locale %>/articles"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.articles') %></a>
-                    <a href="/<%= locale %>/contact"
-                        class="block w-full text-right px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] hover:text-[#0B74DA] rounded-xl transition-all"><%= t('nav.contact') %></a>
-                </nav>
-                <div class="flex items-center gap-4 px-4" aria-label="<%= t('language.switch') %>">
-                    <a href="<%= alternateUrls.fa %>" lang="fa">FA</a>
-                    <a href="<%= alternateUrls.en %>" lang="en">EN</a>
-                    <a href="<%= alternateUrls.ar %>" lang="ar">AR</a>
-                </div>
-                <div class="pt-4 border-t border-gray-100 space-y-3">
-                    <a href="tel:09122515229"
-                        class="flex items-center gap-3 px-4 py-3 text-[#0B1826] hover:bg-[#E8F7FB] rounded-xl transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-phone w-5 h-5 text-[#0B74DA]">
-                            <path
-                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                            </path>
-                        </svg>
-                        <span class="font-medium ltr-text">09122515229</span>
-                    </a>
-                    <a href="/<%= locale %>/consultation"
-                        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 w-full bg-[#FF7A3D] hover:bg-[#FF7A3D]/90 text-white rounded-xl py-6">
-                        <%= t('auto.k_69252c124a72') %>
-                    </a>
+                <a href="/<%= locale %>/consultation" class="btn btn-solid w-full"><%= t('atelier.consultCta') %></a>
+                <div class="hairline-t pt-5">
+                    <a href="tel:09122515229" class="ltr-text block font-semibold text-lg">0912-251-5229</a>
+                    <span class="text-sm" style="color:var(--color-stone)"><%= t('atelier.phoneSupport') %></span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <main>
+    <main class="<%= currentPath === '/' ? '' : 'pt-[84px]' %>">
         <%- body %>
     </main>
 
     <!-- Footer -->
-    <footer class="text-white relative overflow-hidden mt-12"
-        style="background-image: linear-gradient(180deg, #78b5cf, #44586f 50%, #080d0e)">
-        <div class="absolute top-0 left-0 w-full">
-            <svg viewBox="0 0 1200 60" class="w-full h-auto">
-                <path
-                    d="M0,32L48,37.3C96,43,192,53,288,48C384,43,480,21,576,16C672,11,768,21,864,26.7C960,32,1056,32,1152,29.3C1248,27,1344,21,1392,18.7L1440,16L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
-                    fill="#ffffff"></path>
-            </svg>
-        </div>
-        <div class="border-b border-white/10 pt-16 relative z-10">
-            <div class="container mx-auto px-4 py-12">
-                <div class="max-w-3xl mx-auto">
-                    <div
-                        class="bg-gradient-to-r from-[#0B74DA] to-[#1ECFD0] rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                        <div class="relative z-10">
-                            <div class="text-center mb-8">
-                                <h3 class="text-2xl md:text-3xl mb-3 font-bold"><%= t('auto.k_bb4cb2faa813') %></h3>
-                                <p class="text-white/90"><%= t('auto.k_54108ef202e0') %></p>
-                            </div>
-                            <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                                <input type="email" name="email" required
-                                    class="flex-1 px-4 py-3 bg-white/20 border-white/30 text-white placeholder:text-white/60 rounded-xl h-14 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50"
-                                    placeholder="<%= t('auto.k_87b980b1e99a') %>">
-                                <button type="submit"
-                                    class="inline-flex items-center justify-center text-sm font-medium transition-colors bg-white text-[#0B74DA] hover:bg-white/90 rounded-xl h-14 px-8 whitespace-nowrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-send w-5 h-5 ml-2">
-                                        <path
-                                            d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z">
-                                        </path>
-                                        <path d="m21.854 2.147-10.94 10.939"></path>
-                                    </svg>
-                                    <%= t('auto.k_dd82969f5c95') %>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="container mx-auto px-4 py-16 relative z-10">
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- <%= t('auto.k_f64729f50fff') %>>
-                <div class="lg:col-span-2">
-                    <a href="/<%= locale %>/" class="flex items-center gap-3 mb-6 group">
-                        <div
-                            class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform p-3">
-                            <img src="/icons/log.png" alt="<%= t('auto.k_8f11691a9d94') %>" class="w-full h-full object-contain">
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><%= t('auto.k_07cafa008fd3') %></h2>
-                            <p class="text-sm text-white/60"><%= t('auto.k_4626729135e6') %></p>
-                        </div>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="site-footer__bar">
+                <div class="site-footer__brand">
+                    <a href="/<%= locale %>/" class="site-brand" aria-label="<%= t('atelier.brandName') %>">
+                        <span class="site-brand__mark"><%= t('atelier.brandName') %></span>
+                        <span class="site-brand__tag"><%= t('atelier.brandTag') %></span>
                     </a>
-                    <p class="text-white/80 mb-6 leading-relaxed"><%= t('auto.k_c289a34978b5') %></p>
-
-                    <!-- <%= t('auto.k_f64729f50fff') %>>
-                    <div class="space-y-4 mb-6">
-                        <!-- <%= t('auto.k_165f6ce0e5a7') %>>
-                        <div class="space-y-3">
-                            <h4 class="text-white font-medium mb-2"><%= t('auto.k_67649d7aef42') %></h4>
-                            <div class="space-y-2">
-                                <a href="tel:09122515229"
-                                    class="flex items-center gap-2 text-white/90 hover:text-white transition-colors group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-phone w-4 h-4">
-                                        <path
-                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                        </path>
-                                    </svg>
-                                    <span class="ltr-text">0912-251-5229</span>
-                                </a>
-                                <a href="tel:09384092125"
-                                    class="flex items-center gap-2 text-white/90 hover:text-white transition-colors group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-phone w-4 h-4">
-                                        <path
-                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                        </path>
-                                    </svg>
-                                    <span class="ltr-text">0938-409-2125</span>
-                                </a>
-                                <a href="tel:02536550672"
-                                    class="flex items-center gap-2 text-white/90 hover:text-white transition-colors group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-phone w-4 h-4">
-                                        <path
-                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                                        </path>
-                                    </svg>
-                                    <span class="ltr-text">025-36550672</span>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- <%= t('auto.k_e0a0a0744f1e') %>>
-                        <div class="space-y-3">
-                            <h4 class="text-white font-medium mb-2"><%= t('auto.k_2c7704437658') %></h4>
-                            <div class="flex items-start gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-map-pin w-4 h-4 mt-1">
-                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
-                                </svg>
-                                <p class="text-white/90 leading-relaxed"><%= t('auto.k_f572ddf64198') %></p>
-                            </div>
-                        </div>
+                    <p class="site-footer__text"><%= t('atelier.footerAbout') %></p>
+                    <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="newsletter">
+                        <input type="email" name="email" required placeholder="<%= t('atelier.newsletterPlaceholder') %>" aria-label="<%= t('atelier.newsletterPlaceholder') %>">
+                        <button type="submit"><%= t('atelier.subscribe') %></button>
+                    </form>
+                </div>
+                <div>
+                    <h4 class="site-footer__title"><%= t('atelier.explore') %></h4>
+                    <div class="site-footer__links">
+                        <a href="/<%= locale %>/products"><%= t('nav.products') %></a>
+                        <a href="/<%= locale %>/projects"><%= t('nav.projects') %></a>
+                        <a href="/<%= locale %>/about"><%= t('nav.about') %></a>
+                        <a href="/<%= locale %>/articles"><%= t('nav.articles') %></a>
+                        <a href="/<%= locale %>/contact"><%= t('nav.contact') %></a>
                     </div>
                 </div>
-
-                <!-- <%= t('auto.k_b7091bf2ea25') %>>
                 <div>
-                    <h3 class="text-lg mb-6 relative inline-block font-bold"><%= t('auto.k_bb7fa7e89d8c') %>
-                        <div
-                            class="absolute -bottom-2 right-0 w-12 h-1 bg-gradient-to-r from-[#1ECFD0] to-transparent rounded-full">
-                        </div>
-                    </h3>
-                    <ul class="space-y-3">
-                        <li><a href="/<%= locale %>/about"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_02b1718b41d5') %>
-                            </a></li>
-                        <li><a href="/<%= locale %>/products"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_83cb78bbde58') %>
-                            </a></li>
-                        <li><a href="/<%= locale %>/articles"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_d41e0bc0a701') %>
-                            </a></li>
-                        <li><a href="/<%= locale %>/contact"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_a4a1baccd7b6') %>
-                            </a></li>
-                    </ul>
+                    <h4 class="site-footer__title"><%= t('atelier.atelierContact') %></h4>
+                    <div class="site-footer__contact">
+                        <a href="tel:09122515229" class="ltr-text">0912-251-5229</a>
+                        <a href="tel:09384092125" class="ltr-text">0938-409-2125</a>
+                        <a href="mailto:info@nashearatasfiyeh.com">info@nashearatasfiyeh.com</a>
+                        <span><%= t('auto.k_f572ddf64198') %></span>
+                        <span><%= t('auto.k_f9208a21604c') %></span>
+                    </div>
                 </div>
-
                 <div>
-                    <h3 class="text-lg mb-6 relative inline-block font-bold"><%= t('auto.k_165e4c10bab4') %>
-                        <div
-                            class="absolute -bottom-2 right-0 w-12 h-1 bg-gradient-to-r from-[#1ECFD0] to-transparent rounded-full">
-                        </div>
-                    </h3>
-                    <ul class="space-y-3">
-                        <li><a href="/<%= locale %>/consultation"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_ff4db400724e') %>
-                            </a></li>
-                        <li><a href="/<%= locale %>/#contact"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_4896ab117736') %>
-                            </a></li>
-                        <li><a href="/<%= locale %>/#contact"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_0f9a99e53cbc') %>
-                            </a></li>
-                        <li><a href="/<%= locale %>/#contact"
-                                class="text-white/70 hover:text-white transition-colors flex items-center gap-2 group">
-                                <div
-                                    class="w-1 h-1 rounded-full bg-[#1ECFD0] opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div><%= t('auto.k_8b9f196ac154') %>
-                            </a></li>
-                    </ul>
+                    <h4 class="site-footer__title"><%= t('atelier.newsletterTitle') %></h4>
+                    <p class="site-footer__text" style="margin-top:0.4rem"><%= t('atelier.newsletterSub') %></p>
+                    <div class="mt-5" style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+                        <span class="text-sm" style="color:color-mix(in srgb, var(--color-bone) 60%, transparent)"><%= t('auto.k_193a33bef234') %></span>
+                    </div>
                 </div>
             </div>
-
-            <!-- <%= t('auto.k_063aa2712a93') %>>
-            <div class="border-t border-white/10 pt-8 mb-8">
-                <div class="flex items-center justify-center gap-3 mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-award w-5 h-5 text-[#1ECFD0]">
-                        <path
-                            d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526">
-                        </path>
-                        <circle cx="12" cy="8" r="6"></circle>
-                    </svg>
-                    <h4 class="text-white/80 font-semibold"><%= t('auto.k_8b2baa82ea5f') %></h4>
-                </div>
-
-                <!-- <%= t('auto.k_ae438079ed92') %>>
-                <div class="flex justify-center mt-6">
-                    <div class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                        <a referrerpolicy='origin' target='_blank'
-                            href='https://trustseal.enamad.ir/?id=496386&Code=sE2orZNPNU8gnRGZFPHGlE76jr4SwAj4'
-                            class="block hover:opacity-90 transition-opacity duration-300">
-                            <img referrerpolicy='origin'
-                                src='https://trustseal.enamad.ir/logo.aspx?id=496386&Code=sE2orZNPNU8gnRGZFPHGlE76jr4SwAj4'
-                                alt='<%= t('auto.k_193a33bef234') %>' code='sE2orZNPNU8gnRGZFPHGlE76jr4SwAj4'
-                                class="h-20 w-auto mx-auto">
+            <div class="site-footer__bottom">
+                <p><%= t('atelier.rights').replace('©', '© ' + new Date().getFullYear() + ' ') %></p>
+                <div class="flex items-center gap-5">
+                    <span style="color:color-mix(in srgb, var(--color-bone) 50%, transparent)"><%= t('atelier.followUs') %></span>
+                    <div class="site-footer__social">
+                        <a href="https://www.instagram.com/nashearatasfiyeh" aria-label="Instagram" target="_blank" rel="noopener">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
                         </a>
-                        <p class="text-center text-xs text-gray-600 mt-2 font-medium"><%= t('auto.k_193a33bef234') %></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Copyright <%= t('auto.k_00f10bc8d4ea') %>>
-        <div class="border-t border-white/10 relative z-10">
-            <div class="container mx-auto px-4 py-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p class="text-white/60 text-sm text-center md:text-right">© <%= new Date().getFullYear() %> <%= t('auto.k_da1787a07b69') %></p>
-                    <div class="flex items-center gap-6">
-                        <span class="text-white/60 text-sm hidden md:block"><%= t('auto.k_9b83a942acaf') %></span>
-                        <div class="flex gap-3">
-                            <a href="https://www.instagram.com/sabatasfiyeh"
-                                class="w-10 h-10 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/10 border border-white/10 transition-all hover:scale-110 group">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="lucide lucide-instagram w-5 h-5 text-white/70 group-hover:text-white">
-                                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
-                                </svg>
-                            </a>
-                            <a href="https://www.linkedin.com/company/sabatasfiyeh"
-                                class="w-10 h-10 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/10 border border-white/10 transition-all hover:scale-110 group">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="lucide lucide-linkedin w-5 h-5 text-white/70 group-hover:text-white">
-                                    <path
-                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
-                                    </path>
-                                    <rect width="4" height="12" x="2" y="9"></rect>
-                                    <circle cx="4" cy="4" r="2"></circle>
-                                </svg>
-                            </a>
-                            <a href="https://t.me/sabatasfiyeh"
-                                class="w-10 h-10 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/10 border border-white/10 transition-all hover:scale-110 group">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="lucide lucide-send w-5 h-5 text-white/70 group-hover:text-white">
-                                    <path
-                                        d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z">
-                                    </path>
-                                    <path d="m21.854 2.147-10.94 10.939"></path>
-                                </svg>
-                            </a>
-                        </div>
+                        <a href="https://t.me/nashearatasfiyeh" aria-label="Telegram" target="_blank" rel="noopener">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- <%= t('auto.k_4ee560a9b458') %>>
+    <script src="/js/reveal.js"></script>
+    <script src="/js/swatches.js"></script>
     <script>
-        // Ensure page content isn't hidden behind fixed header: set body padding dynamically
-        function adjustBodyPaddingForHeader() {
-            const header = document.getElementById('header');
-            if (header) {
-                const h = header.offsetHeight;
-                document.body.style.paddingTop = h + 'px';
-            }
-        }
-        window.addEventListener('DOMContentLoaded', adjustBodyPaddingForHeader);
-        window.addEventListener('resize', adjustBodyPaddingForHeader);
+        var siteHeader = document.getElementById('siteHeader');
+        var onHeaderScroll = function () {
+            if (window.scrollY > 24) { siteHeader.classList.add('is-scrolled'); }
+            else { siteHeader.classList.remove('is-scrolled'); }
+        };
+        window.addEventListener('scroll', onHeaderScroll, { passive: true });
+        onHeaderScroll();
 
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        var mobileMenu = document.getElementById('mobileMenu');
+        var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        var closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+        var mobileMenuBackdrop = document.getElementById('mobileMenuBackdrop');
 
         function openMobileMenu() {
-            mobileMenuOverlay.classList.remove('opacity-0', 'pointer-events-none');
-            mobileMenu.classList.remove('translate-x-full');
+            mobileMenu.classList.add('is-open');
+            mobileMenu.setAttribute('aria-hidden', 'false');
+            mobileMenuBtn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
         }
-
-        function closeMobileMenuFunc() {
-            mobileMenuOverlay.classList.add('opacity-0', 'pointer-events-none');
-            mobileMenu.classList.add('translate-x-full');
+        function closeMobileMenuFn() {
+            mobileMenu.classList.remove('is-open');
+            mobileMenu.setAttribute('aria-hidden', 'true');
+            if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         }
-
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileMenu);
-        if (closeMobileMenu) closeMobileMenu.addEventListener('click', closeMobileMenuFunc);
-        if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', (e) => {
-            if (e.target === mobileMenuOverlay) closeMobileMenuFunc();
-        });
-
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('header');
-            if (window.scrollY > 50) {
-                header.classList.add('bg-white', 'shadow-md');
-                header.classList.remove('bg-white/95');
-            } else {
-                header.classList.remove('bg-white', 'shadow-md');
-                header.classList.add('bg-white/95');
-            }
-        });
+        if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener('click', closeMobileMenuFn);
+        if (mobileMenuBackdrop) mobileMenuBackdrop.addEventListener('click', closeMobileMenuFn);
+        if (mobileMenu) {
+            mobileMenu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeMobileMenuFn); });
+        }
     </script>
 </body>
 

@@ -16,13 +16,17 @@ const getHomePage = async (req, res) => {
                     .some(v => String(v).toLowerCase().includes(query.toLowerCase()))
               )
             : allProducts;
-        const products = filtered.slice(0, 8); // Show only 8 products on home page
+const products = filtered.slice(0, 8); // Show only 8 products on home page
         const articles = await Article.getPublished(6, req.locale); // Get 6 latest published articles
+        const projects = (await Project.getAll(req.locale))
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 3);
         res.render('public/home', {
-            title: 'صفحه اصلی - شرکت تصفیه آب صبا',
+            title: 'کاشی طرح‌دار ایرانی | دست‌ساز',
             products: products,
             categories,
             articles: articles,
+            projects,
             q: query,
             layout: 'public/layout',
             currentPath: req.path
@@ -53,7 +57,7 @@ const getAllProducts = async (req, res) => {
             products = products.filter(p => (p.category || '').toLowerCase() === selectedCategory.toLowerCase());
         }
         res.render('public/products', {
-            title: 'محصولات - شرکت تصفیه آب صبا',
+            title: 'همه طرح‌ها | کاشی دست‌ساز',
             products,
             categories,
             q: query,
@@ -73,10 +77,11 @@ const getProductDetail = async (req, res) => {
         const product = await Product.findBySlug(req.params.slug, req.locale);
         if (!product) {
             return res.status(404).render('public/product-detail', {
-                title: 'محصول یافت نشد - شرکت تصفیه آب صبا',
+                title: 'محصول یافت نشد - نقش آرا کاشی دست‌ساز',
                 product: null,
                 relatedProducts: [],
-                layout: 'public/layout'
+                layout: 'public/layout',
+                currentPath: req.path
             });
         }
         const allProducts = await Product.getAll(req.locale);
@@ -190,7 +195,7 @@ const getRobots = (req, res) => {
 const getAboutPage = async (req, res) => {
     try {
         res.render('public/about', {
-            title: 'درباره ما - شرکت تصفیه آب صبا',
+            title: 'درباره ما - نقش آرا کاشی دست‌ساز',
             layout: 'public/layout',
             currentPath: req.path
         });
@@ -204,7 +209,7 @@ const getAboutPage = async (req, res) => {
 const getContactPage = async (req, res) => {
     try {
         res.render('public/contact', {
-            title: 'تماس با ما - شرکت تصفیه آب صبا',
+            title: 'تماس با ما - نقش آرا کاشی دست‌ساز',
             layout: 'public/layout',
             currentPath: req.path
         });

@@ -1,32 +1,37 @@
-<section class="pt-32 pb-16 bg-gradient-to-br from-[var(--bg-milky)] via-white to-[var(--bg-milky)]">
-    <div class="container mx-auto px-4 text-center">
-        <span class="inline-flex px-4 py-2 bg-white rounded-full border text-sm text-primary mb-5"><%= t('auto.k_1e241bc990e9') %></span>
-        <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-5"><%= t('auto.k_e2dd64a638a6') %></h1>
-        <p class="text-lg text-slate-500 max-w-2xl mx-auto"><%= t('auto.k_7ff49a5092af') %></p>
-    </div>
-</section>
+<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+    <div class="container">
+        <div class="section__head" data-reveal>
+            <span class="eyebrow"><%= t('atelier.casesEyebrow') %></span>
+            <h1 class="section__title"><%= t('auto.k_e2dd64a638a6') %></h1>
+            <p class="section__lead"><%= t('auto.k_7ff49a5092af') %></p>
+        </div>
 
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
         <% if (projects && projects.length) { %>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <% projects.forEach(project => { %>
-                    <a href="/<%= locale %>/project/<%= encodeURIComponent(project.slug) %>" class="group card-modern !p-0 overflow-hidden">
-                        <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
-                            <% if (project.coverImage) { %>
-                                <img src="<%= project.coverImage %>" alt="<%= project.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <% } %>
+            <div class="space-y-20 lg:space-y-32 lg:py-6">
+                <% projects.forEach((project, i) => { %>
+                    <a href="/<%= locale %>/project/<%= encodeURIComponent(project.slug) %>"
+                        class="case <%= i % 2 === 1 ? 'case--reverse' : '' %> group" data-reveal>
+                        <div class="case__media">
+                            <img src="<%= project.coverImage || (project.galleryImages && project.galleryImages[0]) || '/placeholder.jpg' %>"
+                                alt="<%= project.title %>" loading="lazy">
                         </div>
-                        <div class="p-6">
-                            <% if (project.location) { %><p class="text-sm text-primary mb-2"><%= project.location %></p><% } %>
-                            <h2 class="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors"><%= project.title %></h2>
-                            <p class="text-sm text-slate-500 mt-3 line-clamp-2"><%= project.description || '' %></p>
+                        <div class="case__body">
+                            <div class="case__num">0<%= i + 1 %></div>
+                            <% if (project.location) { %><div class="case__location"><%= project.location %></div><% } %>
+                            <h2 class="case__title"><%= project.title %></h2>
+                            <% if (project.description) { %><p class="case__desc"><%= project.description %></p><% } %>
+                            <span class="case__link"><%= t('atelier.viewCase') %>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </span>
                         </div>
                     </a>
                 <% }); %>
             </div>
         <% } else { %>
-            <div class="text-center py-20"><h2 class="text-2xl font-bold text-slate-900"><%= t('auto.k_fa992b481d53') %></h2></div>
+            <div class="py-24 text-center">
+                <h2 class="text-2xl font-bold mb-6"><%= t('auto.k_fa992b481d53') %></h2>
+                <a href="/<%= locale %>/" class="btn btn-brass"><%= t('atelier.backHome') %></a>
+            </div>
         <% } %>
     </div>
 </section>

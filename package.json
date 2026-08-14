@@ -14,16 +14,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/m0p0m/sabawhter.git"
+    "url": "git+https://github.com/m0p0m/nashearawhter.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/m0p0m/sabawhter/issues"
+    "url": "https://github.com/m0p0m/nashearawhter/issues"
   },
-  "homepage": "https://github.com/m0p0m/sabawhter#readme",
+  "homepage": "https://github.com/m0p0m/nashearawhter#readme",
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "@tailwindcss/cli": "^4.3.1",
@@ -38,6 +38,7 @@
     "i18next-http-middleware": "^3.9.8",
     "marked": "^17.0.1",
     "multer": "^2.0.2",
+    "nodemon": "^3.1.14",
     "prisma": "^6.19.3",
     "tailwindcss": "^4.3.1",
     "uuid": "^13.0.0"

@@ -1,729 +1,94 @@
-<section class="pp" dir="rtl">
-    <div class="pp-container">
+<% const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · '); %>
 
+<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+    <div class="container">
         <!-- Header -->
-        <div class="pp-header">
-            <div class="pp-badge">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path
-                        d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" />
-                    <circle cx="12" cy="8" r="6" />
-                </svg>
-                <span><%= t('auto.k_251b34b4ff04') %></span>
-            </div>
-            <h1 class="pp-title"><%= t('auto.k_a1d1b94e0ef7') %></h1>
-            <p class="pp-sub"><%= t('auto.k_01282ccc08e4') %></p>
+        <div class="section__head" data-reveal>
+            <span class="eyebrow"><%= t('atelier.categories') %></span>
+            <h1 class="section__title"><%= t('atelier.allPatterns') %></h1>
+            <p class="section__lead"><%= t('auto.k_01282ccc08e4') %></p>
         </div>
 
-        <!-- Filter Box -->
-        <div class="pp-filterbox">
-            <form action="/<%= locale %>/products" method="GET">
-
-                <div class="pp-search-row">
-                    <div class="pp-search-field">
-                        <svg class="pp-search-ico" xmlns="http://www.w3.org/2000/svg" width="17" height="17"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="m21 21-4.3-4.3" />
-                        </svg>
-                        <input type="text" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>"
-                            placeholder="<%= t('auto.k_492ab4c39202') %>" class="pp-search-input">
-                    </div>
-                    <div class="pp-select-field">
-                        <select name="category" class="pp-select">
-                            <option value=""><%= t('auto.k_7b6912ab6fcd') %></option>
-                            <% if (categories) { categories.forEach(c=> { %>
-                                <option value="<%= c.name %>" <%=selectedCategory===c.name ? 'selected' : '' %>><%=
-                                        c.name %>
-                                </option>
-                                <% }) } %>
-                        </select>
-                        <svg class="pp-select-ico" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="m6 9 6 6 6-6" />
-                        </svg>
-                    </div>
-                    <button type="submit" class="pp-btn-search">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="m21 21-4.3-4.3" />
-                        </svg>
-                        <span><%= t('auto.k_1fc039e00500') %></span>
-                    </button>
+        <!-- Filter -->
+        <form action="/<%= locale %>/products" method="GET">
+            <div class="filterbar" data-reveal>
+                <div class="field">
+                    <label class="field__label" for="q"><%= t('atelier.searchPatterns') %></label>
+                    <input class="field__input" type="text" id="q" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>"
+                        placeholder="<%= t('atelier.searchPatterns') %>">
                 </div>
+                <div class="field">
+                    <label class="field__label" for="category"><%= t('atelier.categories') %></label>
+                    <select id="category" name="category">
+                        <option value=""><%= t('atelier.allCategories') %></option>
+                        <% if (categories) { categories.forEach(c => { %>
+                            <option value="<%= c.name %>" <%= selectedCategory === c.name ? 'selected' : '' %>><%= c.name %></option>
+                        <% }); } %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-solid"><%= t('atelier.search') %></button>
+            </div>
 
-                <% if (q || selectedCategory) { %>
-                    <div class="pp-active-filters">
-                        <span class="pp-af-label"><%= t('auto.k_a3ad28e57400') %></span>
-                        <% if (q) { %><span class="pp-tag">«<%= q %>»</span>
+            <% if (categories && categories.length) { %>
+                <div class="pill-row" data-reveal>
+                    <a href="/<%= locale %>/products"
+                        class="pill <%= !selectedCategory ? 'is-on' : '' %>"><%= t('atelier.allPatterns') %></a>
+                    <% categories.forEach(c => { %>
+                        <a href="/<%= locale %>/products?category=<%= encodeURIComponent(c.name) %>"
+                            class="pill <%= selectedCategory === c.name ? 'is-on' : '' %>">
+                            <% if (c.mainImage) { %>
+                                <img class="pill__thumb" src="<%= c.mainImage %>" alt="" loading="lazy">
+                            <% } else { %>
+                                <span class="pill__dot"></span>
                             <% } %>
-                                <% if (selectedCategory) { %><span class="pp-tag">
-                                        <%= selectedCategory %>
-                                    </span>
-                                    <% } %>
-                                        <a href="/<%= locale %>/products" class="pp-clear">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M18 6 6 18" />
-                                                <path d="m6 6 12 12" />
-                                            </svg>
-                                            <%= t('auto.k_5f11ae8e56cd') %>
-                                        </a>
-                    </div>
-                    <% } %>
+                            <%= c.name %>
+                        </a>
+                    <% }); %>
+                </div>
+            <% } %>
 
-                        <% if (categories && categories.length) { %>
-                            <div class="pp-divider"></div>
-                            <p class="pp-cats-label"><%= t('auto.k_fb6c30f397ae') %></p>
-                            <div class="pp-cats-scroll">
-                                <a href="/<%= locale %>/products"
-                                    class="pp-pill <%= !selectedCategory ? 'pp-pill--on' : 'pp-pill--off' %>"><%= t('auto.k_bf742c5a3d64') %></a>
-                                <% categories.forEach(c=> { %>
-                                    <a href="/<%= locale %>/products?category=<%= encodeURIComponent(c.name) %>"
-                                        class="pp-pill <%= selectedCategory === c.name ? 'pp-pill--on' : 'pp-pill--off' %>">
-                                        <% if (c.mainImage) { %>
-                                            <img src="<%= c.mainImage %>" alt="" class="pp-pill-img">
-                                            <% } else { %>
-                                                <span class="pp-pill-dot"></span>
-                                                <% } %>
-                                                    <span>
-                                                        <%= c.name %>
-                                                    </span>
-                                    </a>
-                                    <% }) %>
-                            </div>
-                            <% } %>
+            <% if (q || selectedCategory) { %>
+                <div class="active-filters mb-8" data-reveal>
+                    <span><%= t('atelier.filtersActive') %></span>
+                    <% if (q) { %><span class="pill" style="cursor:default">«<%= q %>»</span><% } %>
+                    <% if (selectedCategory) { %><span class="pill" style="cursor:default"><%= selectedCategory %></span><% } %>
+                    <a href="/<%= locale %>/products"><%= t('atelier.clearFilters') %></a>
+                </div>
+            <% } %>
+        </form>
 
-            </form>
-        </div>
-
-        <!-- Grid -->
-        <% if (products && products.length> 0) { %>
-            <div class="pp-grid">
-                <% products.forEach(product=> { %>
-                    <a href="/<%= locale %>/product/<%= encodeURIComponent(product.slug) %>" class="pp-card">
-                        <div class="pp-card-img">
-                            <img src="<%= product.mainImage || '/placeholder.jpg' %>" alt="<%= product.name %>"
-                                loading="lazy">
-                            <% if (product.isNew) { %><span class="pp-badge pp-badge--new"><%= t('auto.k_64dfbb8da93a') %></span>
-                                <% } %>
-                                    <% if (product.isBestSeller) { %><span class="pp-badge pp-badge--sell"><%= t('auto.k_122eb1e9248c') %></span>
-                                        <% } %>
+        <!-- Masonry gallery -->
+        <% if (products && products.length > 0) { %>
+            <div class="gallery">
+                <% products.forEach((p, i) => { %>
+                    <a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>"
+                        class="gallery__item" data-reveal style="--reveal-delay:<%= (i % 4) * 90 %>ms">
+                        <% if (p.isNew) { %><span class="gallery__badge"><%= t('atelier.newBadge') %></span><% } %>
+                        <% if (p.isBestSeller) { %><span class="gallery__badge" style="inset-inline-start:auto;inset-inline-end:0.9rem"><%= t('atelier.bestSeller') %></span><% } %>
+                        <div class="gallery__media">
+                            <img src="<%= p.mainImage || '/placeholder.jpg' %>" alt="<%= p.name %>" loading="lazy">
                         </div>
-                        <div class="pp-card-body">
-                            <% if (product.category) { %>
-                                <p class="pp-card-cat">
-                                    <%= product.category %>
-                                </p>
-                                <% } %>
-                                    <h3 class="pp-card-name">
-                                        <%= product.name %>
-                                    </h3>
-                                    <% if (product.description && product.description.trim() !=='' ) { %>
-                                        <p class="pp-card-desc">
-                                            <%= product.description.substring(0, 90) %>...
-                                        </p>
-                                        <% } else { %>
-                                            <div style="flex:1"></div>
-                                            <% } %>
-                                                <span class="pp-card-btn">
-                                                    <%= t('auto.k_7cb95a333538') %>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2.5" stroke-linecap="round"
-                                                        stroke-linejoin="round" style="transform:rotate(180deg)">
-                                                        <path d="M5 12h14" />
-                                                        <path d="m12 5 7 7-7 7" />
-                                                    </svg>
-                                                </span>
+                        <div class="gallery__scrim"></div>
+                        <div class="gallery__caption">
+                            <% if (p.category) { %><div class="gallery__cat"><%= p.category %></div><% } %>
+                            <h3 class="gallery__name"><%= p.patternName || p.name %></h3>
+                            <p class="gallery__note"><%= noteOf(p) %></p>
                         </div>
                     </a>
-                    <% }); %>
+                <% }); %>
             </div>
-
-            <% } else { %>
-                <div class="pp-empty">
-                    <div class="pp-empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.5">
-                            <path d="m7.5 4.27 9 5.15" />
-                            <path
-                                d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                            <path d="m3.3 7 8.7 5 8.7-5" />
-                            <path d="M12 22V12" />
-                        </svg>
-                    </div>
-                    <h3 class="pp-empty-title"><%= t('auto.k_eb95102af9f8') %></h3>
-                    <p class="pp-empty-text">
-                        <% if (q || selectedCategory) { %><%= t('auto.k_0dc4306e14bb') %><% } else { %>
-                                <%= t('auto.k_cb499b4618c1') %><% } %>
-                    </p>
-                    <div class="pp-empty-btns">
-                        <% if (q || selectedCategory) { %><a href="/<%= locale %>/products" class="pp-btn-primary"><%= t('auto.k_5f11ae8e56cd') %></a>
-                            <% } %>
-                                <a href="/<%= locale %>/" class="pp-btn-outline"><%= t('auto.k_1bd7e08e1679') %></a>
-                    </div>
-                </div>
+        <% } else { %>
+            <div class="py-24 text-center">
+                <h3 class="text-2xl font-bold mb-3"><%= t('atelier.allPatterns') %></h3>
+                <p class="mb-8" style="color:var(--color-stone)">
+                    <% if (q || selectedCategory) { %><%= t('atelier.emptyFiltered') %><% } else { %><%= t('atelier.emptyProducts') %><% } %>
+                </p>
+                <% if (q || selectedCategory) { %>
+                    <a href="/<%= locale %>/products" class="btn btn-brass"><%= t('atelier.clearFilters') %></a>
+                <% } else { %>
+                    <a href="/<%= locale %>/" class="btn btn-brass"><%= t('atelier.backHome') %></a>
                 <% } %>
-
+            </div>
+        <% } %>
     </div>
 </section>
-
-<style>
-    .pp {
-        --p: var(--primary, #0077B6);
-        --p10: color-mix(in srgb, var(--p) 10%, transparent);
-        --p20: color-mix(in srgb, var(--p) 20%, transparent);
-        --p-dark: color-mix(in srgb, var(--p) 85%, #000);
-        --cta: var(--cta-color, #e67e22);
-        --g50: #f8fafc;
-        --g100: #f1f5f9;
-        --g200: #e2e8f0;
-        --g400: #94a3b8;
-        --g600: #475569;
-        --g700: #334155;
-        --g900: #0f172a;
-        --r: 14px;
-        --rs: 9px;
-        --rp: 999px;
-        direction: rtl;
-        padding: 120px 0 80px;
-        background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
-        min-height: 100vh;
-    }
-
-    .pp-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
-    /* ── Header ── */
-    .pp-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .pp-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 16px;
-        background: #fff;
-        border: 1px solid var(--p20);
-        border-radius: var(--rp);
-        font-size: 13px;
-        color: var(--p);
-        font-weight: 700;
-        margin-bottom: 14px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
-    }
-
-    .pp-title {
-        font-size: clamp(26px, 4vw, 48px);
-        font-weight: 800;
-        color: var(--g900);
-        margin-bottom: 10px;
-        line-height: 1.2;
-    }
-
-    .pp-sub {
-        font-size: 16px;
-        color: var(--g400);
-        max-width: 500px;
-        margin: 0 auto;
-        line-height: 1.7;
-    }
-
-    /* ── Filter Box ── */
-    .pp-filterbox {
-        background: #fff;
-        border-radius: var(--r);
-        border: 1px solid var(--g200);
-        padding: 20px 22px;
-        margin-bottom: 22px;
-        box-shadow: 0 1px 6px rgba(0, 0, 0, .04);
-    }
-
-    /* Search row — stacked mobile, inline desktop */
-    .pp-search-row {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    @media (min-width: 640px) {
-        .pp-search-row {
-            flex-direction: row;
-            align-items: stretch;
-        }
-
-        .pp-search-field {
-            flex: 1 1 0;
-            min-width: 0;
-        }
-
-        .pp-select-field {
-            flex: 0 0 210px;
-        }
-
-        .pp-btn-search {
-            flex: 0 0 auto;
-        }
-    }
-
-    .pp-search-field {
-        position: relative;
-    }
-
-    .pp-search-ico {
-        position: absolute;
-        right: 13px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--g400);
-        pointer-events: none;
-    }
-
-    .pp-search-input {
-        width: 100%;
-        height: 46px;
-        padding: 0 42px 0 14px;
-        border-radius: var(--rs);
-        border: 1.5px solid var(--g200);
-        background: var(--g50);
-        font-size: 14px;
-        color: var(--g900);
-        outline: none;
-        font-family: inherit;
-        transition: border-color .2s, background .2s, box-shadow .2s;
-    }
-
-    .pp-search-input::placeholder {
-        color: var(--g400);
-    }
-
-    .pp-search-input:focus {
-        border-color: var(--p);
-        background: #fff;
-        box-shadow: 0 0 0 3px var(--p10);
-    }
-
-    .pp-select-field {
-        position: relative;
-    }
-
-    .pp-select {
-        width: 100%;
-        height: 46px;
-        padding: 0 14px 0 34px;
-        border-radius: var(--rs);
-        border: 1.5px solid var(--g200);
-        background: var(--g50);
-        font-size: 14px;
-        color: var(--g700);
-        appearance: none;
-        outline: none;
-        cursor: pointer;
-        font-family: inherit;
-        transition: border-color .2s, background .2s, box-shadow .2s;
-    }
-
-    .pp-select:focus {
-        border-color: var(--p);
-        background: #fff;
-        box-shadow: 0 0 0 3px var(--p10);
-    }
-
-    .pp-select-ico {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--g400);
-        pointer-events: none;
-    }
-
-    .pp-btn-search {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        height: 46px;
-        padding: 0 22px;
-        border-radius: var(--rs);
-        background: var(--p);
-        color: #fff;
-        font-size: 14px;
-        font-weight: 700;
-        border: none;
-        cursor: pointer;
-        font-family: inherit;
-        white-space: nowrap;
-        transition: background .2s, transform .1s;
-    }
-
-    .pp-btn-search:hover {
-        background: var(--p-dark);
-    }
-
-    .pp-btn-search:active {
-        transform: scale(.98);
-    }
-
-    /* Active filters */
-    .pp-active-filters {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 14px;
-        padding-top: 14px;
-        border-top: 1px solid var(--g100);
-    }
-
-    .pp-af-label {
-        font-size: 12px;
-        color: var(--g400);
-    }
-
-    .pp-tag {
-        display: inline-flex;
-        align-items: center;
-        padding: 3px 12px;
-        background: var(--p10);
-        color: var(--p);
-        border-radius: var(--rp);
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .pp-clear {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        margin-right: auto;
-        font-size: 12px;
-        color: var(--g400);
-        text-decoration: none;
-        transition: color .2s;
-    }
-
-    .pp-clear:hover {
-        color: #dc2626;
-    }
-
-    /* Category pills */
-    .pp-divider {
-        height: 1px;
-        background: var(--g100);
-        margin: 16px 0 14px;
-    }
-
-    .pp-cats-label {
-        font-size: 11px;
-        color: var(--g400);
-        font-weight: 700;
-        letter-spacing: .05em;
-        margin-bottom: 10px;
-    }
-
-    .pp-cats-scroll {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        padding-bottom: 2px;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .pp-cats-scroll::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* Desktop: wrap pills instead of scroll */
-    @media (min-width: 900px) {
-        .pp-cats-scroll {
-            flex-wrap: wrap;
-            overflow-x: visible;
-        }
-    }
-
-    .pp-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 7px 14px;
-        border-radius: var(--rp);
-        font-size: 13px;
-        font-weight: 600;
-        border: 1.5px solid transparent;
-        text-decoration: none;
-        white-space: nowrap;
-        flex-shrink: 0;
-        transition: all .2s;
-    }
-
-    .pp-pill--on {
-        background: var(--p);
-        color: #fff;
-        border-color: var(--p);
-    }
-
-    .pp-pill--off {
-        background: #fff;
-        color: var(--g700);
-        border-color: var(--g200);
-    }
-
-    .pp-pill--off:hover {
-        border-color: var(--p);
-        color: var(--p);
-    }
-
-    .pp-pill-img {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        object-fit: cover;
-        flex-shrink: 0;
-    }
-
-    .pp-pill-dot {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: var(--p10);
-        flex-shrink: 0;
-        display: inline-block;
-    }
-
-    .pp-pill--on .pp-pill-dot {
-        background: rgba(255, 255, 255, .3);
-    }
-
-    /* ── Product Grid ── */
-    .pp-grid {
-        display: grid;
-        gap: 14px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        margin-bottom: 40px;
-    }
-
-    @media (min-width: 768px) {
-        .pp-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .pp-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 20px;
-        }
-    }
-
-    .pp-card {
-        background: #fff;
-        border-radius: var(--r);
-        border: 1px solid var(--g200);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        transition: border-color .25s, box-shadow .25s, transform .25s;
-    }
-
-    .pp-card:hover {
-        border-color: var(--p);
-        box-shadow: 0 8px 28px rgba(0, 0, 0, .09);
-        transform: translateY(-3px);
-    }
-
-    .pp-card-img {
-        position: relative;
-        aspect-ratio: 1;
-        overflow: hidden;
-        background: var(--g100);
-    }
-
-    .pp-card-img img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform .5s;
-    }
-
-    .pp-card:hover .pp-card-img img {
-        transform: scale(1.06);
-    }
-
-    .pp-badge {
-        position: absolute;
-        top: 9px;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 3px 9px;
-        border-radius: var(--rp);
-        color: #fff;
-    }
-
-    .pp-badge--new {
-        right: 9px;
-        background: var(--p);
-    }
-
-    .pp-badge--sell {
-        left: 9px;
-        background: var(--cta);
-    }
-
-    .pp-card-body {
-        padding: 13px 14px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        gap: 5px;
-    }
-
-    .pp-card-cat {
-        font-size: 10px;
-        color: var(--p);
-        font-weight: 700;
-        letter-spacing: .04em;
-    }
-
-    .pp-card-name {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--g900);
-        line-height: 1.45;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    @media (min-width: 768px) {
-        .pp-card-name {
-            font-size: 14px;
-        }
-    }
-
-    .pp-card-desc {
-        font-size: 11px;
-        color: var(--g400);
-        line-height: 1.55;
-        flex: 1;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    @media (min-width: 768px) {
-        .pp-card-desc {
-            font-size: 12px;
-            -webkit-line-clamp: 3;
-        }
-    }
-
-    .pp-card-btn {
-        margin-top: 10px;
-        padding: 9px 0;
-        border-radius: var(--rs);
-        background: var(--p10);
-        color: var(--p);
-        font-size: 12px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        transition: background .2s, color .2s;
-    }
-
-    .pp-card:hover .pp-card-btn {
-        background: var(--p);
-        color: #fff;
-    }
-
-    /* ── Empty State ── */
-    .pp-empty {
-        text-align: center;
-        padding: 70px 20px;
-    }
-
-    .pp-empty-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        background: var(--g100);
-        color: var(--g400);
-        margin-bottom: 20px;
-    }
-
-    .pp-empty-title {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--g900);
-        margin-bottom: 10px;
-    }
-
-    .pp-empty-text {
-        font-size: 15px;
-        color: var(--g400);
-        line-height: 1.6;
-        max-width: 360px;
-        margin: 0 auto 28px;
-    }
-
-    .pp-empty-btns {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .pp-btn-primary {
-        display: inline-flex;
-        align-items: center;
-        padding: 11px 24px;
-        border-radius: var(--rs);
-        background: var(--p);
-        color: #fff;
-        font-size: 14px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background .2s;
-    }
-
-    .pp-btn-primary:hover {
-        background: var(--p-dark);
-    }
-
-    .pp-btn-outline {
-        display: inline-flex;
-        align-items: center;
-        padding: 11px 24px;
-        border-radius: var(--rs);
-        background: #fff;
-        color: var(--g700);
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        border: 1.5px solid var(--g200);
-        transition: border-color .2s, color .2s;
-    }
-
-    .pp-btn-outline:hover {
-        border-color: var(--p);
-        color: var(--p);
-    }
-</style>
