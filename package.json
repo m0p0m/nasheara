@@ -7,8 +7,6 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "prisma:migrate": "prisma migrate dev",
-    "migrate:data": "node scripts/migrateJsonToMysql.js",
-    "i18n:backfill": "node scripts/backfillTranslations.js",
     "build": "echo \"No build step specified\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

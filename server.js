@@ -15,8 +15,37 @@ app.use(expressLayouts);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// MIME type mapping for common font/static file extensions
+const mimeTypes = {
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.ttf': 'font/ttf',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.otf': 'font/otf',
+    '.css': 'text/css',
+    '.js': 'application/javascript',
+    '.json': 'application/json',
+    '.svg': 'image/svg+xml',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+    '.ico': 'image/x-icon'
+};
+
 app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: '1d'
+    maxAge: '1d',
+    setHeaders: (res, filePath) => {
+        const ext = path.extname(filePath).toLowerCase();
+        if (mimeTypes[ext]) {
+            res.setHeader('Content-Type', mimeTypes[ext]);
+        }
+        if (['.woff', '.woff2', '.ttf', '.eot', '.otf'].includes(ext)) {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+    }
 }));
 const sessionSecret = process.env.SESSION_SECRET || 'nashearawhter_default_secret';
 if (!process.env.SESSION_SECRET) {

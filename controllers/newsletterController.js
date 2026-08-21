@@ -7,12 +7,8 @@ exports.subscribe = async (req, res) => {
             return res.status(400).send('Email is required');
         }
         await Subscriber.subscribe(email);
-        res.render('public/thank-you', {
-            title: 'سپاس از شما',
-            heading: 'به خبرنامه ما خوش آمدید!',
-            message: 'ایمیل شما با موفقیت در سیستم ثبت شد. از این پس آخرین اخبار و تخفیف‌های نقش آرا تصفیه برای شما ارسال خواهد شد.',
-            layout: 'public/layout'
-        });
+        const locale = req.locale || 'fa';
+        res.redirect(`/${locale}/?subscribed=1`);
     } catch (error) {
         console.error('Newsletter subscription error:', error);
         res.status(500).send('An error occurred. Please try again later.');

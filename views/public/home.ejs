@@ -1,5 +1,5 @@
 <%
-  const heroImage = '/icons/111111111.jpg';
+  const heroImage = '/icons/hero1.jpg';
   const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 %>
 
@@ -113,7 +113,7 @@
                 <a href="/<%= locale %>/products?category=<%= encodeURIComponent(cat.name) %>"
                     class="group block">
                     <div class="overflow-hidden mb-4" style="border:1px solid var(--hairline);border-radius:var(--r-tight)">
-                        <img src="<%= (rep && rep.mainImage) || '/icons/111111111.jpg' %>" alt="<%= cat.name %>"
+                        <img src="<%= (rep && rep.mainImage) || '/uploads/naghsh_pages/page_1.png' %>" alt="<%= cat.name %>"
                             class="w-full aspect-[4/5] object-cover transition-transform duration-[900ms] group-hover:scale-105" loading="lazy">
                     </div>
                     <h3 class="text-lg font-bold text-ink group-hover:text-brass transition-colors"><%= cat.name %></h3>
@@ -266,13 +266,12 @@
         </div>
         <div class="flex flex-wrap justify-center gap-4 mt-10" data-reveal>
             <a href="/<%= locale %>/consultation" class="btn btn-brass"><%= t('atelier.consultCta') %></a>
-            <a href="tel:09122515229" class="btn btn-outline ltr-text">0912-251-5229</a>
+            <a href="tel:+989124519443" class="btn btn-outline ltr-text">+98 912 451 9443</a>
         </div>
         <div class="grid sm:grid-cols-3 gap-6 mt-16 text-start" data-reveal>
             <div class="hairline-t pt-5">
                 <div class="text-xs mb-2" style="color:var(--color-stone);letter-spacing:0.14em"><%= t('auto.k_95ba75af28fb') %></div>
-                <a href="tel:09122515229" class="ltr-text font-semibold block">0912-251-5229</a>
-                <a href="tel:09384092125" class="ltr-text font-semibold block mt-1">0938-409-2125</a>
+                <a href="tel:+989124519443" class="ltr-text font-semibold block">+98 912 451 9443</a>
             </div>
             <div class="hairline-t pt-5">
                 <div class="text-xs mb-2" style="color:var(--color-stone);letter-spacing:0.14em"><%= t('auto.k_f1ad423d68cf') %></div>

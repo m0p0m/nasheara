@@ -58,8 +58,8 @@ model Project {
 }
 
 model ProjectProduct {
-  projectId String  @db.VarChar(191)
-  productId String  @db.VarChar(191)
+  projectId String  @db.VarChar(100)
+  productId String  @db.VarChar(100)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -103,6 +103,6 @@ model Consultation {
 
 model NewsletterSubscriber {
   id           String   @id @db.VarChar(191)
-  email        String   @unique @db.VarChar(255)
+  email        String   @unique @db.VarChar(191)
   subscribedAt DateTime @default(now())
 }
