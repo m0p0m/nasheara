@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
@@ -105,4 +106,12 @@ model NewsletterSubscriber {
   id           String   @id @db.VarChar(191)
   email        String   @unique @db.VarChar(191)
   subscribedAt DateTime @default(now())
+}
+
+model AdminUser {
+  id           String   @id @default(cuid()) @db.VarChar(191)
+  username     String   @unique @db.VarChar(191)
+  passwordHash String   @db.VarChar(255)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

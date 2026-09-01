@@ -10,6 +10,7 @@ const listCategories = async (req, res) => {
         res.render('admin/categories/index', { 
             categories, 
             title: 'Manage Categories',
+            currentPage: 'categories',
             layout: 'admin/layout'
         });
     } catch (error) {
@@ -22,6 +23,7 @@ const listCategories = async (req, res) => {
 const showAddForm = (req, res) => {
     res.render('admin/categories/add', { 
         title: 'Add New Category',
+        currentPage: 'categories',
         layout: 'admin/layout'
     });
 };
@@ -56,6 +58,7 @@ const showEditForm = async (req, res) => {
         res.render('admin/categories/edit', { 
             category, 
             title: 'Edit Category',
+            currentPage: 'categories',
             layout: 'admin/layout'
         });
     } catch (error) {

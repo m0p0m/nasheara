@@ -1,188 +1,165 @@
 /* Mobile improvements for better UI/UX */
-:root{
-  --gap:0.75rem;
-  --radius-sm:0.5rem;
-  --radius-md:0.75rem;
-  --radius-lg:1rem;
-  --radius-xl:1.5rem;
-  --radius-2xl:2rem;
-  --radius-3xl:3rem;
+:root {
+  --gap: 0.75rem;
 }
 
-/* Header adjustments */
-.site-header__inner{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0}
-.site-brand__mark{font-weight:700;font-size:1.05rem}
-.site-burger{display:inline-flex;flex-direction:column;gap:4px;width:36px;height:28px;background:none;border:0;padding:4px}
-.site-burger span{display:block;height:3px;background:var(--color-ink);border-radius:2px}
-
-/* Mobile menu panel */
-.mobile-menu__panel{
-  background:var(--color-white);
-  width:86%;
-  max-width:360px;
-  padding:1.25rem;
-  height:100%;
-  overflow:auto;
-  border-left:1px solid var(--color-slate-200);
-}
-.mobile-menu.is-open{display:block}
-.mobile-menu{display:none}
-
-/* Gallery grid responsive */
-.gallery{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:0.6rem;
-}
-.gallery__item{border-radius:var(--radius-sm);overflow:hidden;position:relative;aspect-ratio:3/4}
-.gallery__media img{width:100%;height:100%;object-fit:cover}
-.gallery__caption{
-  padding:0.6rem;
-  background:linear-gradient(180deg,transparent,rgba(0,0,0,0.35));
-  color:var(--color-white);
-  position:absolute;
-  inset-inline-start:0;inset-inline-end:0;bottom:0;
-}
-.gallery__name{font-size:1rem;margin-bottom:0.15rem}
-
-/* Swatch strip responsive */
-.swatches{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:var(--gap);
-}
-.swatch{
-  background:var(--color-white);
-  border:1px solid var(--color-slate-200);
-  border-radius:var(--radius-sm);
-  padding:0.75rem;
-  cursor:pointer;
-  transition:all 0.2s ease;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:0.5rem;
-}
-.swatch:hover{
-  border-color:var(--color-brass);
-  transform:translateY(-2px);
-}
-.swatch__name{font-size:0.9rem;font-weight:600;text-align:center}
-
-/* Product detail gallery */
-.pdetail__thumb img{width:64px;height:64px;object-fit:cover;border-radius:var(--radius-sm)}
-
-/* Product detail responsive layout */
-.pdetail{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--gap);
-}
-.pdetail__media{
-  display:flex;
-  flex-direction:column;
-  gap:var(--gap);
-}
-.pdetail__media .pdetail__thumbs{
-  display:flex;
-  gap:0.5rem;
-  overflow-x:auto;
-  padding:0.25rem 0;
-  scrollbar-width:none;
-}
-.pdetail__media .pdetail__thumbs::-webkit-scrollbar{display:none}
-.pdetail__info{
-  display:flex;
-  flex-direction:column;
-  gap:var(--gap);
+/* ===================== Mobile Menu ===================== */
+/* input.css handles visibility/opacity transitions for .mobile-menu.
+   responsive.css must NOT use display:none on .mobile-menu — it breaks the animation. */
+.mobile-menu__panel {
+  width: min(88vw, 360px);
 }
 
-/* Editorial grid (products/projects on home) */
-.editorial-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--gap);
+/* ===================== Gallery (mobile) ===================== */
+/* input.css uses column-based masonry layout for .gallery.
+   On small screens we reduce to 1 column (same effect but explicit). */
+@media (max-width: 639px) {
+  .gallery {
+    column-count: 1;
+  }
+  .gallery__item {
+    border-radius: var(--radius-sm);
+  }
 }
 
-/* Case cards */
-.case{
-  display:flex;
-  flex-direction:column;
-  gap:var(--gap);
-}
-.case__media{
-  border-radius:var(--radius-lg);
-  overflow:hidden;
-}
-.case__body{
-  padding:1rem;
-}
-.case__num{
-  font-size:1.5rem;
-  font-weight:700;
-  color:var(--color-brass);
-  margin-bottom:0.5rem;
+/* Medium screens: 2 columns */
+@media (min-width: 640px) and (max-width: 1099px) {
+  .gallery {
+    column-count: 2;
+  }
 }
 
-/* Quote cards */
-.quote{
-  background:var(--color-white);
-  border-radius:var(--radius-lg);
-  padding:1.5rem;
-  box-shadow:0 1px 3px rgba(0,0,0,0.05);
+/* ===================== Swatches (mobile) ===================== */
+@media (max-width: 639px) {
+  .swatches {
+    grid-template-columns: 1fr;
+    gap: var(--gap);
+  }
+  .swatch-tray {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-/* Footer stacking */
-.site-footer__bar{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:1rem;
-}
-.site-footer__bottom{
-  display:flex;
-  flex-direction:column;
-  gap:0.75rem;
-  align-items:flex-start;
-}
-
-/* Contact page responsive */
-.card-modern{
-  background:var(--color-white);
-  border-radius:var(--radius-lg);
-  box-shadow:0 1px 3px rgba(0,0,0,0.05);
-  overflow:hidden;
+/* ===================== Product Detail (mobile) ===================== */
+@media (max-width: 1023px) {
+  .pdetail__media .pdetail__thumbs {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0;
+    scrollbar-width: none;
+  }
+  .pdetail__media .pdetail__thumbs::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-/* Accessibility and touch targets */
-.btn{
-  padding:0.6rem 0.9rem;
-  border-radius:var(--radius-sm);
-}
-.mobile-menu__link{padding:0.8rem 0;border-bottom:1px solid rgba(0,0,0,0.04)}
-
-/* Larger screens tweaks */
-@media(min-width:768px){
-  .gallery{grid-template-columns:repeat(3,1fr);gap:1rem}
-  .mobile-menu{display:none}
-  .site-nav{display:flex}
-  .swatches{grid-template-columns:1fr 1fr}
-  .pdetail{grid-template-columns:1fr 1fr;gap:2rem}
-  .editorial-grid{grid-template-columns:repeat(2,1fr)}
+/* ===================== Editorial Grid (mobile) ===================== */
+@media (max-width: 899px) {
+  .editorial-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap);
+  }
+  .editorial-grid > :first-child {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
 }
 
-@media(min-width:1024px){
-  .gallery{grid-template-columns:repeat(4,1fr)}
-  .swatches{grid-template-columns:1fr 1fr}
-  .pdetail{grid-template-columns:1fr 1fr}
-  .editorial-grid{grid-template-columns:repeat(3,1fr)}
-  .case{flex-direction:row}
-  .case__media{flex:1 1 50%}
-  .case__body{flex:1 1 50%;padding-left:2rem}
-  .case--reverse{flex-direction:row-reverse}
-  .case--reverse .case__body{padding-left:0;padding-right:2rem}
+/* ===================== Case / Projects (mobile) ===================== */
+@media (max-width: 1023px) {
+  .case {
+    flex-direction: column;
+    gap: var(--gap);
+  }
 }
 
-@media(min-width:1280px){
-  .swatches{grid-template-columns:1fr 1fr 1fr}
-  .editorial-grid{grid-template-columns:repeat(3,1fr)}
+/* ===================== Cards ===================== */
+.card-modern {
+  overflow: hidden;
+}
+
+/* Public article and consultation pages use the site's jade/brass palette. */
+.article-shell {
+  max-width: 52rem;
+  margin-inline: auto;
+}
+.article-body {
+  color: var(--color-ink);
+  font-size: clamp(1rem, 0.4vw + 0.9rem, 1.125rem);
+  line-height: 2.15;
+}
+.article-body > * + * { margin-top: 1.5rem; }
+.article-body h2, .article-body h3 { color: var(--color-jade-deep); line-height: 1.5; margin-top: 3rem; }
+.article-body h2 { font-size: clamp(1.45rem, 2vw, 2rem); font-weight: 800; border-inline-start: 3px solid var(--color-brass); padding-inline-start: 0.85rem; }
+.article-body h3 { font-size: clamp(1.2rem, 1.5vw, 1.5rem); font-weight: 700; }
+.article-body p, .article-body li { color: var(--color-ink); }
+.article-body ul, .article-body ol { padding-inline-start: 1.5rem; }
+.article-body ul { list-style: disc; }
+.article-body ol { list-style: decimal; }
+.article-body li + li { margin-top: 0.55rem; }
+.article-body a { color: var(--color-jade); font-weight: 700; text-decoration: underline; text-decoration-color: var(--color-brass); text-underline-offset: 0.24em; }
+.article-body a:hover { color: var(--color-brass); }
+.article-body blockquote { border-inline-start: 3px solid var(--color-brass); background: color-mix(in srgb, var(--color-brass) 7%, var(--color-bone)); padding: 1.1rem 1.25rem; font-weight: 600; }
+.article-body img { max-width: 100%; height: auto; border-radius: var(--r-tight); }
+.article-meta { color: var(--color-stone); font-size: 0.85rem; }
+.article-kicker { color: var(--color-brass); font-size: 0.8rem; font-weight: 700; }
+.consultation-page .card-modern { background: var(--color-bone); }
+.consultation-page .input-field, .consultation-page select, .consultation-page textarea { border-color: var(--hairline-strong) !important; border-radius: 0 !important; background: transparent !important; color: var(--color-ink) !important; }
+.consultation-page select, .consultation-page textarea { border-width: 0 0 1px !important; padding-inline: 0.1rem !important; }
+.consultation-page .input-field:focus, .consultation-page select:focus, .consultation-page textarea:focus { border-color: var(--color-brass) !important; box-shadow: none !important; }
+.consultation-page .contact-icon { background: var(--color-jade); border-radius: var(--r-sharp); }
+.consultation-page .contact-icon--brass { background: var(--color-brass); }
+.consultation-page .btn-cta { background: var(--color-jade); }
+.consultation-page .btn-cta:hover { background: var(--color-jade-deep); }
+.gallery__item { display: block; cursor: pointer; }
+.gallery__scrim, .gallery__caption { pointer-events: none; }
+
+/* ===================== Accessibility & Touch Targets ===================== */
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .site-nav__link {
+    padding-block: 0.6rem;
+  }
+  .mobile-menu__link {
+    padding-block: 1rem;
+  }
+}
+
+/* ===================== Larger Screens ===================== */
+@media (min-width: 1024px) {
+  .swatches {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  }
+  .editorial-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .editorial-grid > :first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+
+@media (min-width: 1280px) {
+  .swatches {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===================== Admin Sidebar RTL Fix ===================== */
+@media (max-width: 767px) {
+  .mobile-menu__panel {
+    border-inline-start: 1px solid var(--color-gray-200);
+    border-left: none;
+  }
+}
+
+/* ===================== Safe area padding for notch devices ===================== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .site-footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

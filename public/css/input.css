@@ -877,6 +877,7 @@
   }
 
   .gallery__item {
+    display: block;
     position: relative;
     break-inside: avoid;
     margin-bottom: clamp(1rem, 2vw, 1.75rem);
@@ -884,6 +885,8 @@
     background: color-mix(in srgb, var(--color-brass) 6%, var(--color-bone));
     border: 1px solid var(--hairline);
     border-radius: var(--r-tight);
+    cursor: pointer;
+    isolation: isolate;
   }
   .gallery__media {
     overflow: hidden;
@@ -912,6 +915,7 @@
       color-mix(in srgb, var(--color-jade-deep) 0%, transparent) 40%,
       color-mix(in srgb, var(--color-jade-deep) 88%, transparent) 100%);
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.5s var(--ease-soft);
   }
   .gallery__item:hover .gallery__scrim {
@@ -926,6 +930,7 @@
     transform: translateY(12px);
     opacity: 0;
     transition: opacity 0.5s var(--ease-soft), transform 0.5s var(--ease-soft);
+    pointer-events: none;
   }
   .gallery__item:hover .gallery__caption,
   .gallery__item:focus-within .gallery__caption {
@@ -968,6 +973,15 @@
   .gallery__note {
     font-size: 0.74rem;
     color: color-mix(in srgb, var(--color-bone) 72%, transparent);
+  }
+  .gallery__action {
+    display: inline-flex;
+    margin-top: 0.85rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--color-brass);
+    color: var(--color-bone);
+    font-size: 0.75rem;
+    font-weight: 700;
   }
 
   .gallery__badge {
@@ -1419,6 +1433,23 @@
   }
   .input-field:focus {
     border-bottom-color: var(--color-brass);
+  }
+  .article-editor-action {
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--r-sharp);
+    background: var(--color-bone);
+    color: var(--color-jade);
+    padding: 0.35rem 0.65rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .article-editor-action:hover,
+  .article-editor-action:focus-visible {
+    border-color: var(--color-brass);
+    color: var(--color-brass);
+    outline: none;
   }
 
   /* ---------- Cards / legacy ---------- */

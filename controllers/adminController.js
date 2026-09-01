@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const prisma = require('../lib/prisma');
+const { ensureInitialAdmin, validateAdminCredentials } = require('../lib/adminAuth');
 
 // In-memory store for login attempts. In a real app, use a persistent store like Redis.
 const loginAttempts = {};
@@ -12,6 +14,15 @@ const lockoutDurations = [
     4 * 60 * 60 * 1000   // 4 hours
 ];
 
+// Normalize IP address: convert IPv6-mapped IPv4 (::ffff:127.0.0.1) to plain IPv4 (127.0.0.1)
+// This prevents rate-limit bucket splits on cPanel/reverse-proxy environments
+const normalizeIp = (ip) => {
+    if (!ip) return 'unknown';
+    const str = String(ip);
+    const mapped = str.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+    return mapped ? mapped[1] : str;
+};
+
 const getLogin = (req, res) => {
     const errorMessage = req.session.loginError || null;
     delete req.session.loginError; // Clear error after showing
@@ -23,66 +34,89 @@ const getLogin = (req, res) => {
 };
 
 const postLogin = async (req, res) => {
-    const ip = req.ip;
+    const ip = normalizeIp(req.ip);
     const username = (req.body.username || '').trim();
     const password = (req.body.password || '');
 
-    const attempts = loginAttempts[ip] || { count: 0, lockoutUntil: 0 };
-
-    // Check if the IP is currently locked out
-    if (Date.now() < attempts.lockoutUntil) {
-        const remainingTime = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000 / 60);
-        // It's good practice to not reveal too much info in error messages.
-        // For the admin, a clear message is probably fine.
-        return res.status(429).send(`Too many attempts. Please try again in ${remainingTime} minutes.`);
-    }
-
-    const adminUsername = (process.env.ADMIN_USERNAME || '').trim();
-    const adminPasswordEnv = (process.env.ADMIN_PASSWORD || '');
-
-    if (!adminUsername || !adminPasswordEnv) {
-        console.error('Login configuration missing: ADMIN_USERNAME or ADMIN_PASSWORD not set in .env');
-        req.session.loginError = 'تنظیمات ورود ناقص است. لطفاً ADMIN_USERNAME و ADMIN_PASSWORD را بررسی کنید.';
+    if (!username || !password) {
+        req.session.loginError = 'نام کاربری و رمز عبور لازم است.';
         return res.redirect('/admin/login');
     }
 
-    let isLoginSuccessful = false;
-    if (username === adminUsername) {
-        if (adminPasswordEnv.startsWith('$2a$') || adminPasswordEnv.startsWith('$2b$') || adminPasswordEnv.startsWith('$2y$')) {
-            isLoginSuccessful = await bcrypt.compare(password, adminPasswordEnv);
-        } else {
-            isLoginSuccessful = password === adminPasswordEnv;
-        }
+    const attempts = loginAttempts[ip] || { count: 0, lockoutUntil: 0 };
+
+    if (Date.now() < attempts.lockoutUntil) {
+        const remainingTime = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000 / 60);
+        req.session.loginError = `تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً ${remainingTime} دقیقه دیگر تلاش کنید.`;
+        return res.redirect('/admin/login');
     }
 
-    if (isLoginSuccessful) {
-        // On successful login, reset the attempt counter for that IP
-        delete loginAttempts[ip];
-        req.session.isAuthenticated = true;
-        return res.redirect('/admin/dashboard');
-    } else {
-        // On failed login, increment the attempt counter
-        attempts.count++;
+    try {
+        const totalAdmins = await prisma.adminUser.count();
+        const adminUser = await prisma.adminUser.findUnique({ where: { username } });
+
+        if (!adminUser && totalAdmins === 0) {
+            const seededAdmin = await ensureInitialAdmin({ username, password });
+            if (!seededAdmin || !seededAdmin.user) {
+                throw new Error('Unable to create initial admin account');
+            }
+            delete loginAttempts[ip];
+            req.session.isAuthenticated = true;
+            req.session.adminUsername = seededAdmin.user.username;
+            return res.redirect('/admin/dashboard');
+        }
+
+        if (!adminUser) {
+            attempts.count += 1;
+            if (attempts.count >= MAX_ATTEMPTS) {
+                const lockoutIndex = Math.min(attempts.lockoutLevel || 0, lockoutDurations.length - 1);
+                const duration = lockoutDurations[lockoutIndex];
+                attempts.lockoutUntil = Date.now() + duration;
+                attempts.lockoutLevel = (attempts.lockoutLevel || 0) + 1;
+                attempts.count = 0;
+            }
+
+            loginAttempts[ip] = attempts;
+            req.session.loginError = `نام کاربری یا رمز عبور اشتباه است. (${attempts.count}/${MAX_ATTEMPTS})`;
+            return res.redirect('/admin/login');
+        }
+
+        const isLoginSuccessful = await validateAdminCredentials({
+            username: adminUser.username,
+            password,
+            storedHash: adminUser.passwordHash
+        });
+
+        if (isLoginSuccessful) {
+            delete loginAttempts[ip];
+            req.session.isAuthenticated = true;
+            req.session.adminUsername = adminUser.username;
+            return res.redirect('/admin/dashboard');
+        }
+
+        attempts.count += 1;
 
         if (attempts.count >= MAX_ATTEMPTS) {
-            // Determine the lockout duration based on the number of previous lockouts
             const lockoutIndex = Math.min(attempts.lockoutLevel || 0, lockoutDurations.length - 1);
             const duration = lockoutDurations[lockoutIndex];
             attempts.lockoutUntil = Date.now() + duration;
             attempts.lockoutLevel = (attempts.lockoutLevel || 0) + 1;
-            attempts.count = 0; // Reset count after lockout
+            attempts.count = 0;
         }
 
         loginAttempts[ip] = attempts;
 
-        // Redirect back to login with error message
         if (attempts.count >= MAX_ATTEMPTS && attempts.lockoutUntil) {
             const remainingMinutes = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000 / 60);
             req.session.loginError = `تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً ${remainingMinutes} دقیقه دیگر تلاش کنید.`;
         } else {
             req.session.loginError = `نام کاربری یا رمز عبور اشتباه است. (${attempts.count}/${MAX_ATTEMPTS})`;
         }
-        res.redirect('/admin/login');
+        return res.redirect('/admin/login');
+    } catch (error) {
+        console.error('Admin login error:', error);
+        req.session.loginError = 'خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.';
+        return res.redirect('/admin/login');
     }
 };
 

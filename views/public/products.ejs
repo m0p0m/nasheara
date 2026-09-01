@@ -62,7 +62,8 @@
             <div class="gallery">
                 <% products.forEach((p, i) => { %>
                     <a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>"
-                        class="gallery__item" data-reveal style="--reveal-delay:<%= (i % 4) * 90 %>ms">
+                        class="gallery__item" data-reveal style="--reveal-delay:<%= (i % 4) * 90 %>ms"
+                        aria-label="<%= p.patternName || p.name %>">
                         <% if (p.isNew) { %><span class="gallery__badge"><%= t('atelier.newBadge') %></span><% } %>
                         <% if (p.isBestSeller) { %><span class="gallery__badge" style="inset-inline-start:auto;inset-inline-end:0.9rem"><%= t('atelier.bestSeller') %></span><% } %>
                         <div class="gallery__media">
@@ -73,6 +74,7 @@
                             <% if (p.category) { %><div class="gallery__cat"><%= p.category %></div><% } %>
                             <h3 class="gallery__name"><%= p.patternName || p.name %></h3>
                             <p class="gallery__note"><%= noteOf(p) %></p>
+                            <span class="gallery__action" aria-hidden="true">مشاهدهٔ جزئیات</span>
                         </div>
                     </a>
                 <% }); %>

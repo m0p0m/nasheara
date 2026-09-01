@@ -165,7 +165,7 @@ const getSitemap = async (req, res) => {
             Product.getAll(), Project.getAll(), Article.getAll()
         ]);
         const basePaths = [
-            '/', '/products', '/projects', '/articles', '/about', '/contact',
+            '/', '/products', '/projects', '/articles', '/contact',
             ...products.map(product => `/product/${encodeURIComponent(product.slug)}`),
             ...projects.map(project => `/project/${encodeURIComponent(project.slug)}`),
             ...articles.map(article => `/article/${encodeURIComponent(article.slug)}`)
@@ -191,20 +191,6 @@ const getRobots = (req, res) => {
     );
 };
 
-// Display about page
-const getAboutPage = async (req, res) => {
-    try {
-        res.render('public/about', {
-            title: 'درباره ما - نقش آرا کاشی دست‌ساز',
-            layout: 'public/layout',
-            currentPath: req.path
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('خطایی در بارگذاری صفحه درباره ما رخ داد.');
-    }
-};
-
 // Display contact page
 const getContactPage = async (req, res) => {
     try {
@@ -227,6 +213,5 @@ module.exports = {
     getProjectDetail,
     getSitemap,
     getRobots,
-    getAboutPage,
     getContactPage
 };

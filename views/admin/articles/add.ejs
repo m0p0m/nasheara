@@ -30,6 +30,12 @@
             <div class="space-y-2">
                 <label for="content" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_b96281ef64a7') %> *</label>
                 <textarea id="content" name="translations[fa][content]" required rows="15" class="input-field resize-y" placeholder="<%= t('auto.k_1eb3298f727f') %>"></textarea>
+                <div class="flex flex-wrap gap-2 pt-1 text-xs">
+                    <button type="button" class="article-editor-action" data-editor="content" data-format="h2">عنوان بخش</button>
+                    <button type="button" class="article-editor-action" data-editor="content" data-format="link">افزودن لینک</button>
+                    <button type="button" class="article-editor-action" data-editor="content" data-format="list">فهرست</button>
+                </div>
+                <p class="text-xs text-[#6B7280]">ویرایشگر از Markdown پشتیبانی می‌کند؛ برای لینک، متن را انتخاب و «افزودن لینک» را بزنید.</p>
             </div>
             <div class="space-y-2">
                 <label class="flex items-center gap-3 text-sm text-[#1E293B]">
@@ -103,3 +109,18 @@
         </button>
     </div>
 </form>
+
+<script>
+document.querySelectorAll('.article-editor-action').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var field = document.getElementById(button.dataset.editor);
+        var start = field.selectionStart;
+        var end = field.selectionEnd;
+        var selected = field.value.slice(start, end) || 'متن لینک';
+        var insert = button.dataset.format === 'link' ? '[' + selected + '](https://)' :
+            button.dataset.format === 'h2' ? '\n\n## ' + selected + '\n\n' : '\n- ' + selected;
+        field.setRangeText(insert, start, end, 'end');
+        field.focus();
+    });
+});
+</script>

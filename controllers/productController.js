@@ -85,6 +85,7 @@ const listProducts = async (req, res) => {
             products,
             q,
             title: 'مدیریت محصولات',
+            currentPage: 'dashboard',
             layout: 'admin/layout'
         });
     } catch (error) {
@@ -99,6 +100,7 @@ const showAddForm = async (req, res) => {
         res.render('admin/products/add', { 
             categories, 
             title: 'افزودن محصول جدید',
+            currentPage: 'dashboard',
             layout: 'admin/layout'
         });
     } catch (error) {
@@ -168,6 +170,7 @@ const showEditForm = async (req, res) => {
             product, 
             categories, 
             title: 'ویرایش محصول',
+            currentPage: 'dashboard',
             layout: 'admin/layout'
         });
     } catch (error) {

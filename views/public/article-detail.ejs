@@ -1,55 +1,46 @@
 <% if (article) { %>
-<!-- Hero Section -->
-<section class="relative min-h-[50vh] overflow-hidden pt-20 bg-gradient-to-br from-[var(--bg-milky)] via-white to-[var(--bg-milky)]">
-  <div class="container mx-auto px-4 relative z-10 py-16">
-    <div class="max-w-4xl mx-auto text-center">
-      <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-[var(--primary)]/10 shadow-sm mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-[var(--accent)]">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-        </svg>
-        <span class="text-sm text-slate-500"><%= t('auto.k_00dd211644fd') %></span>
+<% const localeCode = locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-SA' : 'en-US'; %>
+<% const readingMinutes = Math.max(1, Math.ceil((article.content || '').replace(/[#*_`>\[\]()]/g, '').trim().split(/\s+/).filter(Boolean).length / 180)); %>
+<% const labels = locale === 'fa' ? { article: 'مقاله', minutes: 'دقیقه مطالعه', back: 'بازگشت به مقالات' } : locale === 'ar' ? { article: 'مقال', minutes: 'دقائق للقراءة', back: 'العودة إلى المقالات' } : { article: 'Article', minutes: 'min read', back: 'Back to articles' }; %>
+<script type="application/ld+json"><%- JSON.stringify(articleStructuredData).replace(/</g, '\\u003c') %></script>
+<section class="section section--tone-bone" style="padding-top:clamp(7rem,13vw,10rem)">
+  <div class="container px-4">
+    <header class="article-shell text-center" data-reveal>
+      <p class="article-kicker mb-5"><%= labels.article %></p>
+      <h1 class="section__title" style="font-size:clamp(2rem,5vw,4.25rem)"><%= article.title %></h1>
+      <% if (article.excerpt) { %><p class="section__lead mt-6"><%= article.excerpt %></p><% } %>
+      <div class="article-meta mt-7 flex flex-wrap justify-center gap-x-5 gap-y-2">
+        <time datetime="<%= new Date(article.createdAt).toISOString() %>"><%= new Date(article.createdAt).toLocaleDateString(localeCode) %></time>
+        <span><%= readingMinutes %> <%= labels.minutes %></span>
       </div>
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-        <%= article.title %>
-      </h1>
-      <div class="flex items-center justify-center gap-4 text-slate-500">
-        <span class="text-sm">
-          <%= new Date(article.createdAt).toLocaleDateString('fa-IR') %>
-        </span>
-      </div>
-    </div>
+    </header>
   </div>
 </section>
 
-<!-- Article Content -->
-<section class="py-16 bg-white">
-  <div class="container mx-auto px-4">
-    <div class="max-w-4xl mx-auto">
+<section class="section section--tone-ivory">
+  <div class="container px-4">
+    <div class="article-shell">
       <% if (article.mainImage) { %>
-      <div class="mb-12 rounded-3xl overflow-hidden shadow-2xl">
-        <img src="<%= article.mainImage %>" alt="<%= article.title %>" class="w-full h-auto object-cover">
-      </div>
+      <figure class="mb-10 overflow-hidden" style="border-radius:var(--r-tight)" data-reveal>
+        <img src="<%= article.mainImage %>" alt="<%= article.title %>" class="w-full h-auto object-cover" loading="eager">
+        <figcaption class="article-meta mt-3"><%= article.title %></figcaption>
+      </figure>
       <% } %>
 
-      <article class="prose prose-lg max-w-none">
-        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12">
-          <div class="text-slate-900 leading-relaxed prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-ul:list-disc prose-ul:pr-6 prose-ol:pr-6 prose-img:rounded-2xl prose-img:shadow-lg">
-            <%- articleHtml %>
-          </div>
-        </div>
+      <article class="article-body" data-reveal>
+        <%- articleHtml %>
       </article>
 
-      <div class="mt-12 pt-8 border-t border-gray-200">
+      <div class="mt-12 pt-8" style="border-top:1px solid var(--hairline)">
         <a href="/<%= locale %>/articles"
-          class="inline-flex items-center gap-2 text-primary hover:text-[var(--accent)] transition-colors font-semibold">
+          class="btn btn-outline">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="lucide lucide-arrow-right">
             <path d="m12 19 7-7 7-7"></path>
             <path d="M19 12H5"></path>
           </svg>
-          <%= t('auto.k_d42bd70857ab') %>
+          <%= labels.back %>
         </a>
       </div>
     </div>

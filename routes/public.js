@@ -16,9 +16,6 @@ router.get('/product/:slug', publicController.getProductDetail);
 router.get('/projects', publicController.getAllProjects);
 router.get('/project/:slug', publicController.getProjectDetail);
 
-// GET /about - Show about page
-router.get('/about', publicController.getAboutPage);
-
 // GET /articles - Show all articles
 router.get('/articles', require('../controllers/articleController').getAllArticles);
 

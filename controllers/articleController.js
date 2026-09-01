@@ -164,8 +164,27 @@ const getArticleDetail = async (req, res) => {
                 currentPath: req.path
             });
         }
-        const articleHtml = marked.parse(article.content || '');
+        const articleHtml = marked.parse(article.content || '', {
+            gfm: true,
+            breaks: true
+        });
         const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+        const articleStructuredData = {
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: article.title,
+            description: article.metaDescription || article.excerpt || undefined,
+            image: article.mainImage ? `${siteUrl}${article.mainImage}` : undefined,
+            datePublished: article.createdAt,
+            dateModified: article.updatedAt || article.createdAt,
+            mainEntityOfPage: `${siteUrl}/${req.locale}/article/${encodeURIComponent(article.slug)}`,
+            author: { '@type': 'Organization', name: 'نقش آرا' },
+            publisher: {
+                '@type': 'Organization',
+                name: 'نقش آرا',
+                logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/log.png` }
+            }
+        };
         res.render('public/article-detail', {
             title: article.metaTitle || article.title,
             metaDescription: article.metaDescription,
@@ -174,6 +193,7 @@ const getArticleDetail = async (req, res) => {
             ogImage: article.mainImage ? `${siteUrl}${article.mainImage}` : undefined,
             article: article,
             articleHtml,
+            articleStructuredData,
             layout: 'public/layout',
             currentPath: req.path
         });
@@ -209,4 +229,3 @@ module.exports = {
     getArticleDetail,
     getAllArticles
 };
-

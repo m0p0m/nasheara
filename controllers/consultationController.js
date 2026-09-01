@@ -71,6 +71,7 @@ const listConsultations = async (req, res) => {
             title: 'درخواست‌های مشاوره',
             consultations: groupedConsultations,
             layout: 'admin/layout',
+            currentPage: 'consultations',
             currentView: view
         });
     } catch (error) {
