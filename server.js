@@ -88,6 +88,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
 }));
 
+app.use((req, res, next) => {
+    res.setHeader('X-Robots-Tag', 'max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    next();
+});
+
 const sessionSecret = process.env.SESSION_SECRET || 'nashearawhter_default_secret';
 if (!process.env.SESSION_SECRET) {
     console.warn('SESSION_SECRET is not set. Using fallback session secret. Please configure SESSION_SECRET in .env or host environment.');

@@ -2,6 +2,9 @@ const Article = require('../models/article');
 const fs = require('fs').promises;
 const path = require('path');
 const { marked } = require('marked');
+const sanitizeHtml = require('sanitize-html');
+const upload = require('../middleware/upload');
+const slugify = require('../utils/slugify');
 
 // Generate slug from title
 const generateSlug = (title) => {
@@ -9,6 +12,50 @@ const generateSlug = (title) => {
         .toLowerCase()
         .replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
+};
+
+const renderArticleMarkdown = content => {
+    const usedHeadingIds = new Map();
+    const renderer = new marked.Renderer();
+    renderer.heading = function ({ tokens, depth }) {
+        const html = this.parser.parseInline(tokens);
+        const text = tokens.map(token => token.raw || token.text || '').join(' ')
+            .replace(/[`*_[\]()]/g, '');
+        const baseId = slugify(text) || 'section';
+        const count = (usedHeadingIds.get(baseId) || 0) + 1;
+        usedHeadingIds.set(baseId, count);
+        const id = count === 1 ? baseId : `${baseId}-${count}`;
+        return `<h${depth} id="${id}">${html}</h${depth}>\n`;
+    };
+    renderer.html = () => '';
+
+    const rendered = marked.parse(content || '', { gfm: true, breaks: true, renderer });
+    return sanitizeHtml(rendered, {
+        allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img', 'figure', 'figcaption', 'h1', 'h2'],
+        allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            '*': ['id', 'class'],
+            a: ['href', 'name', 'target', 'rel', 'title'],
+            img: ['src', 'alt', 'title', 'width', 'height', 'loading']
+        },
+        allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+        transformTags: {
+            a: sanitizeHtml.simpleTransform('a', { rel: 'noopener noreferrer' }, true),
+            img: sanitizeHtml.simpleTransform('img', { loading: 'lazy' }, true)
+        }
+    });
+};
+
+const uploadInlineImage = (req, res) => {
+    upload(req, res, error => {
+        if (error) return res.status(400).json({ error: 'بارگذاری تصویر ناموفق بود.' });
+        const file = req.files?.mainImage?.[0] || req.files?.galleryImages?.[0];
+        if (!file) return res.status(400).json({ error: 'فایل تصویری انتخاب نشده است.' });
+        return res.status(201).json({
+            url: `/uploads/${file.filename}`,
+            alt: path.basename(file.originalname, path.extname(file.originalname)).replace(/[-_]+/g, ' ')
+        });
+    });
 };
 
 // Admin: List all articles
@@ -164,10 +211,7 @@ const getArticleDetail = async (req, res) => {
                 currentPath: req.path
             });
         }
-        const articleHtml = marked.parse(article.content || '', {
-            gfm: true,
-            breaks: true
-        });
+        const articleHtml = renderArticleMarkdown(article.content);
         const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
         const articleStructuredData = {
             '@context': 'https://schema.org',
@@ -182,7 +226,7 @@ const getArticleDetail = async (req, res) => {
             publisher: {
                 '@type': 'Organization',
                 name: 'نقش آرا',
-                logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/log.png` }
+                logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/naghshe-ara-logo.png` }
             }
         };
         res.render('public/article-detail', {
@@ -226,6 +270,7 @@ module.exports = {
     showEditForm,
     updateArticle,
     deleteArticle,
+    uploadInlineImage,
     getArticleDetail,
     getAllArticles
 };

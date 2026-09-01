@@ -29,13 +29,20 @@
             </div>
             <div class="space-y-2">
                 <label for="content" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_b96281ef64a7') %> *</label>
-                <textarea id="content" name="translations[fa][content]" required rows="15" class="input-field resize-y" placeholder="<%= t('auto.k_1eb3298f727f') %>"></textarea>
-                <div class="flex flex-wrap gap-2 pt-1 text-xs">
-                    <button type="button" class="article-editor-action" data-editor="content" data-format="h2">عنوان بخش</button>
-                    <button type="button" class="article-editor-action" data-editor="content" data-format="link">افزودن لینک</button>
-                    <button type="button" class="article-editor-action" data-editor="content" data-format="list">فهرست</button>
+                <div data-article-editor class="article-editor">
+                    <div class="article-editor__toolbar" role="toolbar" aria-label="ابزار ویرایش مقاله">
+                        <button type="button" class="article-editor-action" data-format="h2">H2</button><button type="button" class="article-editor-action" data-format="h3">H3</button>
+                        <button type="button" class="article-editor-action" data-format="bold">ضخیم</button><button type="button" class="article-editor-action" data-format="italic">مورب</button>
+                        <button type="button" class="article-editor-action" data-format="link">لینک</button><button type="button" class="article-editor-action" data-format="image">تصویر</button>
+                        <button type="button" class="article-editor-action" data-format="list">فهرست</button><button type="button" class="article-editor-action" data-format="ordered">شماره‌دار</button>
+                        <button type="button" class="article-editor-action" data-format="quote">نقل‌قول</button><button type="button" class="article-editor-action" data-format="table">جدول</button><button type="button" class="article-editor-action" data-format="code">کد</button>
+                        <button type="button" class="article-editor-action" data-preview-toggle>پیش‌نمایش</button>
+                    </div>
+                    <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" data-image-upload hidden>
+                    <textarea id="content" name="translations[fa][content]" required rows="18" class="input-field resize-y" placeholder="<%= t('auto.k_1eb3298f727f') %>"></textarea>
+                    <div class="article-body article-editor__preview" data-preview hidden></div>
                 </div>
-                <p class="text-xs text-[#6B7280]">ویرایشگر از Markdown پشتیبانی می‌کند؛ برای لینک، متن را انتخاب و «افزودن لینک» را بزنید.</p>
+                <p class="text-xs text-[#6B7280]">Markdown استاندارد: برای هر مقاله یک H1 خودکار است؛ ساختار متن را با H2 و H3 بسازید. تصویر داخل متن، لینک، جدول و پیش‌نمایش زنده هم در دسترس است.</p>
             </div>
             <div class="space-y-2">
                 <label class="flex items-center gap-3 text-sm text-[#1E293B]">
@@ -52,6 +59,9 @@
         <div class="mb-6">
             <h2 class="text-xl font-semibold text-[#1E293B]"><%= t('auto.k_1a1b7339c832') %></h2>
             <p class="text-sm text-[#6B7280] mt-1"><%= t('auto.k_7a806afe16e0') %></p>
+            <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-slate-700">
+                <strong>راهنمای تصویر مقاله:</strong> تصویر شاخص افقی ۱۲۰۰×۶۳۰ پیکسل (نسبت ۱.۹۱:۱) انتخاب کنید؛ سوژه را در مرکز نگه دارید، متن را روی تصویر ننویسید و فایل WebP یا JPG با حجم کمتر از ۳۰۰ کیلوبایت بارگذاری کنید.
+            </div>
         </div>
         <div class="space-y-2">
             <label for="mainImage" class="block text-sm font-semibold text-[#1E293B]"><%= t('auto.k_3a3abd101449') %></label>
@@ -110,17 +120,5 @@
     </div>
 </form>
 
-<script>
-document.querySelectorAll('.article-editor-action').forEach(function (button) {
-    button.addEventListener('click', function () {
-        var field = document.getElementById(button.dataset.editor);
-        var start = field.selectionStart;
-        var end = field.selectionEnd;
-        var selected = field.value.slice(start, end) || 'متن لینک';
-        var insert = button.dataset.format === 'link' ? '[' + selected + '](https://)' :
-            button.dataset.format === 'h2' ? '\n\n## ' + selected + '\n\n' : '\n- ' + selected;
-        field.setRangeText(insert, start, end, 'end');
-        field.focus();
-    });
-});
-</script>
+<script src="/js/marked.umd.js"></script>
+<script src="/js/article-editor.js"></script>

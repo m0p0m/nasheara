@@ -7,10 +7,10 @@ const upload = require('../middleware/upload');
 // Admin routes
 router.get('/', ensureAuthenticated, articleController.listArticles);
 router.get('/add', ensureAuthenticated, articleController.showAddForm);
+router.post('/upload-image', ensureAuthenticated, articleController.uploadInlineImage);
 router.post('/add', ensureAuthenticated, upload, articleController.addArticle);
 router.get('/edit/:id', ensureAuthenticated, articleController.showEditForm);
 router.post('/edit/:id', ensureAuthenticated, upload, articleController.updateArticle);
 router.post('/delete/:id', ensureAuthenticated, articleController.deleteArticle);
 
 module.exports = router;
-

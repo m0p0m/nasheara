@@ -23,7 +23,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url"
         content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
-    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/log.png' %>">
+    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/naghshe-ara-logo.png' %>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : t('auto.k_d26f50636237') %>">
@@ -34,13 +34,13 @@
     <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : t('auto.k_9bb88d484369') %>">
     <meta name="twitter:description"
         content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_d94f40d44584') %>">
-    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/log.png' %>">
+    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/naghshe-ara-logo.png' %>">
 
     <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
 
     <!-- Favicon and Logo -->
-    <link rel="icon" href="/icons/log.png" type="image/png">
-    <link rel="apple-touch-icon" href="/icons/log.png">
+    <link rel="icon" href="/icons/naghshe-ara-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/naghshe-ara-logo.png">
 
     <!-- Fonts: fa/ar use self-hosted Vazirmatn; en uses Fraunces (display) + Inter (body) -->
     <link rel="stylesheet" href="/css/fonts.css">
@@ -54,11 +54,16 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "Organization",
+        "@type": ["Organization", "LocalBusiness"],
         "name": "<%= t('atelier.brandName') %>",
         "alternateName": "<%= t('atelier.brandTag') %>",
         "url": "<%= siteUrl %>",
-        "logo": "<%= siteUrl %>/icons/log.png",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "<%= siteUrl %>/icons/naghshe-ara-logo.png",
+            "width": 1252,
+            "height": 1151
+        },
         "description": "<%= t('auto.k_1a135a699aa6') %>",
         "address": {
             "@type": "PostalAddress",
@@ -111,6 +116,15 @@
         ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "<%= t('atelier.brandName') %>",
+        "url": "<%= siteUrl %>",
+        "inLanguage": ["fa-IR", "en", "ar"]
+    }
+    </script>
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/responsive.css">
@@ -122,8 +136,7 @@
         <div class="container">
             <div class="site-header__inner">
                 <a href="/<%= locale %>/" class="site-brand" aria-label="<%= t('atelier.brandName') %>">
-                    <span class="site-brand__mark"><%= t('atelier.brandName') %></span>
-                    <span class="site-brand__tag"><%= t('atelier.brandTag') %></span>
+                    <img class="site-brand__logo" src="/icons/naghshe-ara-logo.png" alt="<%= t('atelier.brandName') %>" width="1252" height="1151">
                 </a>
 
                 <nav class="site-nav hidden lg:flex" aria-label="<%= t('nav.home') %>">
@@ -157,8 +170,7 @@
         <div class="mobile-menu__panel">
             <button class="mobile-menu__close" id="closeMobileMenu" aria-label="<%= t('auto.k_f6839701dc85') %>">&times;</button>
             <a href="/<%= locale %>/" class="site-brand mb-8" aria-label="<%= t('atelier.brandName') %>">
-                <span class="site-brand__mark"><%= t('atelier.brandName') %></span>
-                <span class="site-brand__tag"><%= t('atelier.brandTag') %></span>
+                <img class="site-brand__logo" src="/icons/naghshe-ara-logo.png" alt="<%= t('atelier.brandName') %>" width="1252" height="1151">
             </a>
             <nav class="flex flex-col" aria-label="<%= t('nav.home') %>">
                 <a href="/<%= locale %>/" class="mobile-menu__link"><%= t('nav.home') %></a>
@@ -193,8 +205,7 @@
             <div class="site-footer__bar">
                 <div class="site-footer__brand">
                     <a href="/<%= locale %>/" class="site-brand" aria-label="<%= t('atelier.brandName') %>">
-                        <span class="site-brand__mark"><%= t('atelier.brandName') %></span>
-                        <span class="site-brand__tag"><%= t('atelier.brandTag') %></span>
+                        <img class="site-brand__logo" src="/icons/naghshe-ara-logo.png" alt="<%= t('atelier.brandName') %>" width="1252" height="1151">
                     </a>
                     <p class="site-footer__text"><%= t('atelier.footerAbout') %></p>
                     <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="newsletter">

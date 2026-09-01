@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
 // Check file type
 function checkFileType(file, cb){
     // Allowed extensions
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif|webp/;
     // Check extension
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     // Check mime type

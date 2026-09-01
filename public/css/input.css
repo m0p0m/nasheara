@@ -319,8 +319,14 @@
 
   .site-brand {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.55rem;
+  }
+  .site-brand__logo {
+    display: block;
+    width: 3.6rem;
+    height: 3.3rem;
+    object-fit: contain;
   }
   .site-brand__mark {
     font-size: 1.55rem;
@@ -1581,6 +1587,10 @@
   }
   .site-footer__brand .site-brand__mark {
     color: var(--color-bone);
+  }
+  .site-footer__brand .site-brand__logo {
+    width: 5rem;
+    height: 4.6rem;
   }
   .site-footer__text {
     color: color-mix(in srgb, var(--color-bone) 66%, transparent);

@@ -162,7 +162,7 @@ const getSitemap = async (req, res) => {
     try {
         const baseUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
         const [products, projects, articles] = await Promise.all([
-            Product.getAll(), Project.getAll(), Article.getAll()
+            Product.getAll(), Project.getAll(), Article.getPublished()
         ]);
         const basePaths = [
             '/', '/products', '/projects', '/articles', '/contact',
@@ -187,7 +187,7 @@ const getSitemap = async (req, res) => {
 const getRobots = (req, res) => {
     const baseUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
     res.type('text/plain').send(
-        `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${baseUrl}/sitemap.xml\n`
+        `User-agent: *\nAllow: /\nDisallow: /admin\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nSitemap: ${baseUrl}/sitemap.xml\n`
     );
 };
 

@@ -102,6 +102,16 @@
 .article-body a:hover { color: var(--color-brass); }
 .article-body blockquote { border-inline-start: 3px solid var(--color-brass); background: color-mix(in srgb, var(--color-brass) 7%, var(--color-bone)); padding: 1.1rem 1.25rem; font-weight: 600; }
 .article-body img { max-width: 100%; height: auto; border-radius: var(--r-tight); }
+.article-body pre { direction: ltr; overflow-x: auto; border-radius: var(--r-sharp); background: var(--color-jade-deep); color: var(--color-bone); padding: 1.25rem; text-align: left; }
+.article-body code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.88em; }
+.article-body :not(pre) > code { background: color-mix(in srgb, var(--color-brass) 12%, var(--color-bone)); padding: 0.15rem 0.35rem; border-radius: 0.2rem; }
+.article-body table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 0.9em; }
+.article-body th, .article-body td { border: 1px solid var(--hairline); padding: 0.7rem; text-align: start; white-space: nowrap; }
+.article-body th { background: color-mix(in srgb, var(--color-jade) 8%, var(--color-bone)); color: var(--color-jade-deep); }
+.article-editor { border: 1px solid var(--hairline); border-radius: var(--r-tight); padding: 0.8rem; background: var(--color-bone); }
+.article-editor__toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--hairline); }
+.article-editor .input-field { min-height: 24rem; }
+.article-editor__preview { min-height: 24rem; padding: 0.2rem; }
 .article-meta { color: var(--color-stone); font-size: 0.85rem; }
 .article-kicker { color: var(--color-brass); font-size: 0.8rem; font-weight: 700; }
 .consultation-page .card-modern { background: var(--color-bone); }
