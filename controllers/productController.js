@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const Category = require('../models/category');
 const upload = require('../middleware/upload');
+const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -221,8 +222,8 @@ const editProduct = async (req, res) => {
 
             // Replace main image if a new one is uploaded
             if (req.files.mainImage) {
-                if (existingProduct.mainImage) {
-                    await fs.unlink(path.join(__dirname, '..', 'public', existingProduct.mainImage)).catch(console.error);
+                if (existingProduct.mainImage && isSafeUploadPath(existingProduct.mainImage)) {
+                    await deleteUploadFileSafe(existingProduct.mainImage);
                 }
                 updatedData.mainImage = '/uploads/' + req.files.mainImage[0].filename;
             }
@@ -250,13 +251,15 @@ const deleteProduct = async (req, res) => {
             return res.status(404).send('Product not found');
         }
 
-        // Delete associated images
-        if (product.mainImage) {
-            await fs.unlink(path.join(__dirname, '..', 'public', product.mainImage)).catch(console.error);
+        // Delete associated images only if they are safe in-root image resources
+        if (product.mainImage && isSafeUploadPath(product.mainImage)) {
+            await deleteUploadFileSafe(product.mainImage);
         }
         if (product.galleryImages && product.galleryImages.length > 0) {
             for (const imagePath of product.galleryImages) {
-                 await fs.unlink(path.join(__dirname, '..', 'public', imagePath)).catch(console.error);
+                if (isSafeUploadPath(imagePath)) {
+                    await deleteUploadFileSafe(imagePath);
+                }
             }
         }
 

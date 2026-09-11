@@ -26,6 +26,7 @@
 }
 
 :root {
+  /* Canonical palette */
   --color-jade: #1F4A3D;
   --color-jade-deep: #16382E;
   --color-bone: #F6F2E9;
@@ -33,11 +34,27 @@
   --color-ink: #181712;
   --color-stone: #8B8677;
 
-  --color-primary: #1F4A3D;
-  --color-secondary: #B08D57;
-  --color-cta: #B08D57;
-  --color-dark: #181712;
-  --color-bg-milky: #F6F2E9;
+  /* Legacy aliases safely centralized to the same colors */
+  --color-primary: var(--color-jade);
+  --color-secondary: var(--color-brass);
+  --color-cta: var(--color-brass);
+  --color-dark: var(--color-ink);
+  --color-gray-soft: var(--color-stone);
+  --color-bg-milky: var(--color-bone);
+
+  /* Public design-system aliases expected by existing templates and compiled CSS */
+  --primary: var(--color-jade);
+  --primary-deep: var(--color-jade-deep);
+  --secondary: var(--color-brass);
+  --accent: var(--color-brass);
+  --cta: var(--color-brass);
+  --bg-milky: var(--color-bone);
+  --bg: var(--color-bone);
+  --text: var(--color-ink);
+  --muted: var(--color-stone);
+  --surface: var(--color-bone);
+  --surface-soft: color-mix(in srgb, var(--color-bone) 92%, white);
+  --border: var(--hairline);
 
   --hairline: rgba(176, 141, 87, 0.3);
   --hairline-strong: rgba(176, 141, 87, 0.5);
@@ -45,6 +62,19 @@
   --r-tight: 4px;
 
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Typography and spacing tokens for consistency */
+  --font-display: var(--font-en-display);
+  --font-body: var(--font-en-body);
+  --font-rubric: var(--font-fa-ar);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --shadow-soft: 0 12px 30px rgba(24, 23, 18, 0.08);
+  --focus-ring: var(--color-brass);
 }
 
 @layer base {
@@ -66,6 +96,32 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: color-mix(in srgb, var(--color-brass) 25%, transparent);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /* Language-aware typography */

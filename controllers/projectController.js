@@ -1,6 +1,7 @@
 const Project = require('../models/project');
 const Product = require('../models/product');
 const upload = require('../middleware/upload');
+const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -11,10 +12,8 @@ const normalizeArray = value => {
 };
 
 const removeImage = async imagePath => {
-    if (!imagePath) return;
-    await fs.unlink(path.join(__dirname, '..', 'public', imagePath)).catch(error => {
-        if (error.code !== 'ENOENT') console.error('Error deleting project image:', error);
-    });
+    if (!imagePath || !isSafeUploadPath(imagePath)) return;
+    await deleteUploadFileSafe(imagePath);
 };
 
 const listProjects = async (req, res) => {

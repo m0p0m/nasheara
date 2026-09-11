@@ -1,5 +1,6 @@
 const Category = require('../models/category');
 const upload = require('../middleware/upload');
+const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -82,8 +83,8 @@ const editCategory = async (req, res) => {
 
             // Replace main image if a new one is uploaded
             if (req.files && req.files.mainImage) {
-                if (existing.mainImage) {
-                    await fs.unlink(path.join(__dirname, '..', 'public', existing.mainImage)).catch(() => {});
+                if (existing.mainImage && isSafeUploadPath(existing.mainImage)) {
+                    await deleteUploadFileSafe(existing.mainImage);
                 }
                 updatedData.mainImage = '/uploads/' + req.files.mainImage[0].filename;
             }
@@ -100,6 +101,10 @@ const editCategory = async (req, res) => {
 // Handle category deletion
 const deleteCategory = async (req, res) => {
     try {
+        const category = await Category.findById(req.params.id);
+        if (category && category.mainImage && isSafeUploadPath(category.mainImage)) {
+            await deleteUploadFileSafe(category.mainImage);
+        }
         await Category.remove(req.params.id);
         res.redirect('/admin/categories');
     } catch (error) {

@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "prisma:migrate": "prisma migrate dev",
-    "build": "echo \"No build step specified\" && exit 0",
+    "build": "npx tailwindcss -i public/css/input.css -o public/css/style.css --minify",
     "test": "node --test tests/*.test.js"
   },
   "repository": {

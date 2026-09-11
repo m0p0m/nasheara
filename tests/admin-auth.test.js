@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const bcrypt = require('bcrypt');
 
 const { validateAdminCredentials, ensureInitialAdmin } = require('../lib/adminAuth');
+const { isSafeUploadPath } = require('../middleware/upload');
 
 const mockPrismaFactory = (countValue = 0, userOverride = null) => ({
   adminUser: {
@@ -80,4 +81,10 @@ test('ensureInitialAdmin does not fall back to env credentials', async () => {
       delete require.cache[require.resolve('../lib/prisma')];
     }
   }
+});
+
+test('isSafeUploadPath rejects traversal outside the uploads directory', () => {
+  assert.equal(isSafeUploadPath('/uploads/../secret.txt'), false);
+  assert.equal(isSafeUploadPath('/uploads/../../server.js'), false);
+  assert.equal(isSafeUploadPath('/uploads/product-1740000000000.png'), true);
 });

@@ -4,6 +4,7 @@ const path = require('path');
 const { marked } = require('marked');
 const sanitizeHtml = require('sanitize-html');
 const upload = require('../middleware/upload');
+const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const slugify = require('../utils/slugify');
 
 // Generate slug from title
@@ -160,13 +161,8 @@ const updateArticle = async (req, res) => {
 
         if (req.files && req.files.mainImage) {
             // Delete old image if exists
-            if (article.mainImage) {
-                const oldImagePath = path.join(__dirname, '..', 'public', article.mainImage);
-                try {
-                    await fs.unlink(oldImagePath);
-                } catch (err) {
-                    console.error('Error deleting old image:', err);
-                }
+            if (article.mainImage && isSafeUploadPath(article.mainImage)) {
+                await deleteUploadFileSafe(article.mainImage);
             }
             updatedData.mainImage = `/uploads/${req.files.mainImage[0].filename}`;
         }
@@ -183,13 +179,8 @@ const updateArticle = async (req, res) => {
 const deleteArticle = async (req, res) => {
     try {
         const article = await Article.findById(req.params.id);
-        if (article && article.mainImage) {
-            const imagePath = path.join(__dirname, '..', 'public', article.mainImage);
-            try {
-                await fs.unlink(imagePath);
-            } catch (err) {
-                console.error('Error deleting image:', err);
-            }
+        if (article && article.mainImage && isSafeUploadPath(article.mainImage)) {
+            await deleteUploadFileSafe(article.mainImage);
         }
         await Article.remove(req.params.id);
         res.redirect('/admin/articles');
