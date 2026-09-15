@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const prisma = require('../lib/prisma');
-const { ensureInitialAdmin, validateAdminCredentials } = require('../lib/adminAuth');
+const { validateAdminCredentials } = require('../lib/adminAuth');
 
 // In-memory store for login attempts. In a real app, use a persistent store like Redis.
 const loginAttempts = {};
@@ -52,19 +52,7 @@ const postLogin = async (req, res) => {
     }
 
     try {
-        const totalAdmins = await prisma.adminUser.count();
         const adminUser = await prisma.adminUser.findUnique({ where: { username } });
-
-        if (!adminUser && totalAdmins === 0) {
-            const seededAdmin = await ensureInitialAdmin({ username, password });
-            if (!seededAdmin || !seededAdmin.user) {
-                throw new Error('Unable to create initial admin account');
-            }
-            delete loginAttempts[ip];
-            req.session.isAuthenticated = true;
-            req.session.adminUsername = seededAdmin.user.username;
-            return res.redirect('/admin/dashboard');
-        }
 
         if (!adminUser) {
             attempts.count += 1;
@@ -89,9 +77,16 @@ const postLogin = async (req, res) => {
 
         if (isLoginSuccessful) {
             delete loginAttempts[ip];
-            req.session.isAuthenticated = true;
-            req.session.adminUsername = adminUser.username;
-            return res.redirect('/admin/dashboard');
+            req.session.regenerate(err => {
+                if (err) {
+                    console.error('Failed to regenerate admin session:', err);
+                }
+                req.session.isAuthenticated = true;
+                req.session.adminUsername = adminUser.username;
+                req.session.loginError = null;
+                return res.redirect('/admin/dashboard');
+            });
+            return;
         }
 
         attempts.count += 1;
@@ -121,6 +116,9 @@ const postLogin = async (req, res) => {
 };
 
 const getLogout = (req, res) => {
+    if (!req.session) {
+        return res.redirect('/admin/login');
+    }
     req.session.destroy(err => {
         if (err) {
             console.error('Failed to destroy session:', err);

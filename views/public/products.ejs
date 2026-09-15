@@ -37,7 +37,7 @@
                         <a href="/<%= locale %>/products?category=<%= encodeURIComponent(c.name) %>"
                             class="pill <%= selectedCategory === c.name ? 'is-on' : '' %>">
                             <% if (c.mainImage) { %>
-                                <img class="pill__thumb" src="<%= c.mainImage %>" alt="" loading="lazy">
+                                <img class="pill__thumb" src="<%= c.mainImage %>" alt="<%= c.name %>" loading="lazy" decoding="async">
                             <% } else { %>
                                 <span class="pill__dot"></span>
                             <% } %>
@@ -67,7 +67,7 @@
                         <% if (p.isNew) { %><span class="gallery__badge"><%= t('atelier.newBadge') %></span><% } %>
                         <% if (p.isBestSeller) { %><span class="gallery__badge" style="inset-inline-start:auto;inset-inline-end:0.9rem"><%= t('atelier.bestSeller') %></span><% } %>
                         <div class="gallery__media">
-                            <img src="<%= p.mainImage || '/placeholder.jpg' %>" alt="<%= p.name %>" loading="lazy">
+                            <img src="<%= p.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= p.patternName || p.name %>" loading="lazy" decoding="async">
                         </div>
                         <div class="gallery__scrim"></div>
                         <div class="gallery__caption">

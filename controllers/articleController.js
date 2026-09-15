@@ -48,14 +48,11 @@ const renderArticleMarkdown = content => {
 };
 
 const uploadInlineImage = (req, res) => {
-    upload(req, res, error => {
-        if (error) return res.status(400).json({ error: 'بارگذاری تصویر ناموفق بود.' });
-        const file = req.files?.mainImage?.[0] || req.files?.galleryImages?.[0];
-        if (!file) return res.status(400).json({ error: 'فایل تصویری انتخاب نشده است.' });
-        return res.status(201).json({
-            url: `/uploads/${file.filename}`,
-            alt: path.basename(file.originalname, path.extname(file.originalname)).replace(/[-_]+/g, ' ')
-        });
+    const file = req.files?.mainImage?.[0] || req.files?.galleryImages?.[0];
+    if (!file) return res.status(400).json({ error: 'فایل تصویری انتخاب نشده است.' });
+    return res.status(201).json({
+        url: `/uploads/${file.filename}`,
+        alt: path.basename(file.originalname, path.extname(file.originalname)).replace(/[-_]+/g, ' ')
     });
 };
 
@@ -243,7 +240,7 @@ const getAllArticles = async (req, res) => {
     try {
         const articles = await Article.getPublished(null, req.locale);
         res.render('public/articles', {
-            title: 'مقالات - شرکت تصفیه آب نقش آرا',
+            title: 'مقالات کاشی نقش آرا | راهنمای انتخاب و نگهداری کاشی',
             articles: articles,
             layout: 'public/layout',
             currentPath: req.path

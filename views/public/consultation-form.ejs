@@ -39,7 +39,7 @@
             </div>
             <div class="flex-1">
               <h3 class="text-lg text-slate-900 mb-2 font-bold"><%= t('auto.k_95ba75af28fb') %></h3>
-              <a href="tel:+989124519443" class="block text-primary hover:text-[var(--accent)] transition-colors mb-1 dir-ltr text-right font-semibold text-lg">+98 912 451 9443</a>
+              <a href="tel:+989124519443" dir="ltr" class="ltr-text block text-primary hover:text-[var(--accent)] transition-colors mb-1 font-semibold text-lg">+98 912 451 9443</a>
             </div>
           </div>
         </div>
@@ -131,6 +131,7 @@
               </p>
             </div>
             <form action="/<%= locale %>/consultation" method="POST" class="space-y-6" id="contactForm">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
                   <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_2bae41dee0af') %> *</label>
@@ -141,33 +142,9 @@
                 <div>
                   <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_ea8bbfa64be1') %> *</label>
                   <input name="phone" required
-                    class="input-field h-12 dir-ltr text-right"
+                    dir="ltr" class="input-field h-12 ltr-text"
                     placeholder="<%= t('forms.phonePlaceholder') %>" />
                 </div>
-              </div>
-              <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_f1ad423d68cf') %></label>
-                  <input type="email" name="email"
-                    class="input-field h-12"
-                    placeholder="example@company.com" />
-                </div>
-                <div>
-                  <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_19f48eb2efd0') %></label>
-                  <select name="projectType"
-                    class="w-full h-12 px-4 rounded-xl border-2 border-[var(--primary)]/20 focus:border-[var(--primary)] focus:outline-none bg-white text-slate-900">
-                    <option><%= t('auto.k_ad222b1896c8') %></option>
-                    <option><%= t('auto.k_5254df02662a') %></option>
-                    <option><%= t('auto.k_a422ac02f493') %></option>
-                    <option><%= t('auto.k_7a2997ea109a') %></option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_1011d425da72') %></label>
-                <textarea name="message"
-                  class="w-full px-4 py-3 rounded-xl border-2 border-[var(--primary)]/20 focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all duration-300 text-slate-900 min-h-[140px] resize-none"
-                  placeholder="<%= t('auto.k_00c3f1a57f40') %>"></textarea>
               </div>
               <input type="hidden" name="contactTime" value="<%= t('auto.k_7334fd765cb9') %>" />
               <div class="flex gap-4">

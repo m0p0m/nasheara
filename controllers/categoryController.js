@@ -31,22 +31,16 @@ const showAddForm = (req, res) => {
 
 // Process the form to create a new category
 const addCategory = async (req, res) => {
-    upload(req, res, async (err) => {
-        if (err) {
-            return res.status(400).send(`Error uploading files: ${err}`);
-        }
+    try {
+        const { name, description } = req.body;
+        const mainImage = req.files && req.files.mainImage ? '/uploads/' + req.files.mainImage[0].filename : null;
 
-        try {
-            const { name, description } = req.body;
-            const mainImage = req.files && req.files.mainImage ? '/uploads/' + req.files.mainImage[0].filename : null;
-
-            await Category.create({ name, description, mainImage });
-            res.redirect('/admin/categories');
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error creating category');
-        }
-    });
+        await Category.create({ name, description, mainImage });
+        res.redirect('/admin/categories');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error creating category');
+    }
 };
 
 // Show the form for editing an existing category
@@ -69,33 +63,27 @@ const showEditForm = async (req, res) => {
 
 // Process the form to update a category
 const editCategory = async (req, res) => {
-    upload(req, res, async (err) => {
-        if (err) {
-            return res.status(400).send(`Error uploading files: ${err}`);
-        }
+    try {
+        const existing = await Category.findById(req.params.id);
+        if (!existing) return res.status(404).send('Category not found');
 
-        try {
-            const existing = await Category.findById(req.params.id);
-            if (!existing) return res.status(404).send('Category not found');
+        const { name, description } = req.body;
+        const updatedData = { name, description };
 
-            const { name, description } = req.body;
-            const updatedData = { name, description };
-
-            // Replace main image if a new one is uploaded
-            if (req.files && req.files.mainImage) {
-                if (existing.mainImage && isSafeUploadPath(existing.mainImage)) {
-                    await deleteUploadFileSafe(existing.mainImage);
-                }
-                updatedData.mainImage = '/uploads/' + req.files.mainImage[0].filename;
+        // Replace main image if a new one is uploaded
+        if (req.files && req.files.mainImage) {
+            if (existing.mainImage && isSafeUploadPath(existing.mainImage)) {
+                await deleteUploadFileSafe(existing.mainImage);
             }
-
-            await Category.update(req.params.id, updatedData);
-            res.redirect('/admin/categories');
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error updating category');
+            updatedData.mainImage = '/uploads/' + req.files.mainImage[0].filename;
         }
-    });
+
+        await Category.update(req.params.id, updatedData);
+        res.redirect('/admin/categories');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error updating category');
+    }
 };
 
 // Handle category deletion

@@ -173,3 +173,88 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* Product catalogue: keep product photography intact instead of cropping it
+   into masonry shapes. This also makes comparison much easier on mobile. */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  column-count: unset;
+}
+.gallery__item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  border-radius: 0.5rem;
+  background: #fffdf8;
+  box-shadow: 0 8px 24px rgba(24, 23, 18, 0.06);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+.gallery__item:hover,
+.gallery__item:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--color-brass);
+  box-shadow: 0 16px 34px rgba(24, 23, 18, 0.12);
+}
+.gallery__media,
+.gallery__item:nth-child(n) .gallery__media {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.4rem, 1.5vw, 1rem);
+  background: linear-gradient(145deg, #fffaf0, #f1e7d5);
+}
+.gallery__media img {
+  object-fit: contain;
+  transform: none;
+  mix-blend-mode: multiply;
+}
+.gallery__item:hover .gallery__media img { transform: scale(1.025); }
+.gallery__scrim { display: none; }
+.gallery__caption {
+  position: static;
+  min-height: 7.1rem;
+  padding: 0.95rem 1rem 1.1rem;
+  color: var(--color-ink);
+  opacity: 1;
+  transform: none;
+}
+.gallery__cat { color: var(--color-brass); }
+.gallery__name { font-size: clamp(0.95rem, 1.7vw, 1.15rem); }
+.gallery__note { color: var(--color-stone); }
+.gallery__action { color: var(--color-jade); margin-top: 0.55rem; }
+.pdetail__main {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  padding: clamp(0.5rem, 2vw, 1.25rem);
+  background: linear-gradient(145deg, #fffaf0, #f1e7d5);
+}
+.pdetail__main img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.pdetail__thumb img { object-fit: contain; background: #fffaf0; }
+.site-lang--mobile { gap: 0; padding: 0.1rem; }
+.site-lang--mobile a { min-width: 2rem; padding-inline: 0.35rem; text-align: center; }
+.ed-card__media {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #fffaf0, #f1e7d5);
+}
+.ed-card__media img {
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  padding: 0.65rem;
+}
+
+@media (min-width: 640px) {
+  .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

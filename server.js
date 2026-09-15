@@ -1,86 +1,62 @@
 require('dotenv').config();
-const fs = require('fs');
 const express = require('express');
 const session = require('express-session');
+const helmet = require('helmet');
 const MySQLStore = require('express-mysql-session')(session);
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
 const { i18next, middleware: i18nMiddleware, supportedLocales } = require('./config/i18n');
-
-const ensurePublicPermissions = () => {
-    const publicDir = path.join(__dirname, 'public');
-
-    if (!fs.existsSync(publicDir)) {
-        return;
-    }
-
-    const walk = (dirPath) => {
-        for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
-            const fullPath = path.join(dirPath, entry.name);
-            if (entry.isDirectory()) {
-                try {
-                    fs.chmodSync(fullPath, 0o755);
-                    walk(fullPath);
-                } catch (error) {
-                    console.warn(`Unable to chmod directory: ${fullPath}`, error.message);
-                }
-            } else {
-                try {
-                    fs.chmodSync(fullPath, 0o644);
-                } catch (error) {
-                    console.warn(`Unable to chmod file: ${fullPath}`, error.message);
-                }
-            }
-        }
-    };
-
-    try {
-        fs.chmodSync(publicDir, 0o755);
-        walk(publicDir);
-    } catch (error) {
-        console.warn('Unable to normalize public permissions:', error.message);
-    }
-};
-
-ensurePublicPermissions();
+const { readCsrfToken, authorizeCsrf } = require('./middleware/csrf');
+const { loginLimiter, newsletterLimiter, consultationLimiter, uploadLimiter, adminMutationLimiter } = require('./middleware/rateLimit');
 
 const app = express();
-app.set('trust proxy', 1); // Trust first proxy (required on cPanel with Apache/LiteSpeed reverse proxy)
-const PORT = process.env.PORT || 3001;
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+const PORT = process.env.PORT || 3000;
 app.locals.siteUrl = (process.env.SITE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// MIME type mapping for common font/static file extensions
-const mimeTypes = {
-    '.woff': 'font/woff',
-    '.woff2': 'font/woff2',
-    '.ttf': 'font/ttf',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.otf': 'font/otf',
-    '.css': 'text/css',
-    '.js': 'application/javascript',
-    '.json': 'application/json',
-    '.svg': 'image/svg+xml',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.gif': 'image/gif',
-    '.webp': 'image/webp',
-    '.ico': 'image/x-icon'
-};
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            imgSrc: ["'self'", 'data:', 'blob:'],
+            fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
+            connectSrc: ["'self'"],
+            frameAncestors: ["'none'"]
+        }
+    },
+    crossOriginOpenerPolicy: { policy: 'same-origin' },
+    crossOriginResourcePolicy: { policy: 'same-origin' },
+    dnsPrefetchControl: true,
+    frameguard: { action: 'deny' },
+    hidePoweredBy: true,
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    noSniff: true,
+    referrerPolicy: { policy: 'no-referrer' },
+    xPermittedCrossDomainPolicies: true
+}));
 
+app.use((req, res, next) => {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), autoplay=(), clipboard-write=(), fullscreen=(self)');
+    next();
+});
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '1d',
     setHeaders: (res, filePath) => {
         const ext = path.extname(filePath).toLowerCase();
-        if (mimeTypes[ext]) {
-            res.setHeader('Content-Type', mimeTypes[ext]);
-        }
         if (['.woff', '.woff2', '.ttf', '.eot', '.otf'].includes(ext)) {
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
@@ -93,10 +69,11 @@ app.use((req, res, next) => {
     next();
 });
 
-const sessionSecret = process.env.SESSION_SECRET || 'nashearawhter_default_secret';
+const isProduction = process.env.NODE_ENV === 'production';
 if (!process.env.SESSION_SECRET) {
-    console.warn('SESSION_SECRET is not set. Using fallback session secret. Please configure SESSION_SECRET in .env or host environment.');
+    throw new Error('SESSION_SECRET is required before the server can start.');
 }
+const sessionSecret = process.env.SESSION_SECRET;
 
 // Helper: detect if the original client request was HTTPS (works behind cPanel/LiteSpeed reverse proxy)
 const isSecureProxy = (req) => {
@@ -116,12 +93,15 @@ const dbUrl = new URL(process.env.DATABASE_URL);
 const sessionStoreOptions = {
     host: dbUrl.hostname,
     port: parseInt(dbUrl.port, 10) || 3306,
-    user: dbUrl.username,
+    user: decodeURIComponent(dbUrl.username),
     password: decodeURIComponent(dbUrl.password),
     database: dbUrl.pathname.replace(/^\//, ''),
-    createDatabaseTable: true,  // Auto-create the sessions table on first run
-    clearExpired: true,
-    checkExpirationInterval: 900000, // Check for expired sessions every 15 min
+    // This is a cheap `CREATE TABLE IF NOT EXISTS`; keep it enabled so a new
+    // installation cannot fail every login because its session table is absent.
+    createDatabaseTable: true,
+    // Do not start a cleanup timer in every Passenger worker. Expired rows can
+    // be removed by a daily database job (documented in DEPLOYMENT.md).
+    clearExpired: false,
     expiration: 7 * 24 * 60 * 60 * 1000 // 7 days (matches cookie maxAge)
 };
 const sessionStore = new MySQLStore(sessionStoreOptions);
@@ -131,20 +111,29 @@ app.use(session({
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
-        secure: false, // Will be dynamically set per-request below for cPanel HTTPS support
+        secure: isProduction,
+        httpOnly: true,
         sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
 
-// Dynamically set cookie.secure per-request based on x-forwarded-proto header.
-// This MUST run after session() but before route handlers so the cookie is
-// correctly marked secure when behind cPanel's HTTPS reverse proxy.
 app.use((req, res, next) => {
     if (req.session && req.session.cookie) {
-        req.session.cookie.secure = isSecureProxy(req);
+        req.session.cookie.secure = isSecureProxy(req) || isProduction;
+        req.session.cookie.httpOnly = true;
+        req.session.cookie.sameSite = 'lax';
     }
+    // Minting a token marks the session dirty, which persists a row for every
+    // visitor. Defer it so only responses that actually embed the token
+    // (i.e. pages with a form) create a session.
+    Object.defineProperty(res.locals, 'csrfToken', {
+        get: () => (req.session ? readCsrfToken(req) : ''),
+        configurable: true,
+        enumerable: true
+    });
     next();
 });
 
@@ -153,8 +142,8 @@ app.use((req, res, next) => {
     const firstSegment = req.path.split('/').filter(Boolean)[0];
     const locale = supportedLocales.includes(firstSegment) ? firstSegment : 'fa';
     const pathWithoutLocale = supportedLocales.includes(firstSegment)
-        ? (req.originalUrl.replace(new RegExp(`^/${firstSegment}(?=/|$)`), '') || '/')
-        : req.originalUrl;
+        ? (req.path.replace(new RegExp(`^/${firstSegment}(?=/|$)`), '') || '/')
+        : req.path;
     req.locale = locale;
     res.locals.locale = locale;
     res.locals.dir = locale === 'en' ? 'ltr' : 'rtl';
@@ -167,6 +156,9 @@ app.use((req, res, next) => {
         supportedLocales.map(language => [language, `${app.locals.siteUrl}/${language}${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`])
     );
     res.locals.alternateUrls['x-default'] = `${app.locals.siteUrl}/fa${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`;
+    // Never canonicalize a localized page to an unlocalized URL or to a filter
+    // query. Both cases split Google’s indexing signals.
+    res.locals.canonicalUrl = `${app.locals.siteUrl}/${locale}${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`;
     next();
 });
 
@@ -219,8 +211,34 @@ app.get('/admin/dashboard', ensureAuthenticated, productController.listProducts)
 // Protected consultation list route
 app.get('/admin/consultations', ensureAuthenticated, consultationController.listConsultations); // New
 // Mark consultation(s) as contacted (by phone) - POST
-app.post('/admin/consultations/mark/:phone', ensureAuthenticated, consultationController.markContacted);
-app.post('/admin/consultations/mark-id/:id', ensureAuthenticated, consultationController.markContactedById);
+app.post('/admin/consultations/mark/:phone', ensureAuthenticated, adminMutationLimiter, authorizeCsrf, consultationController.markContacted);
+app.post('/admin/consultations/mark-id/:id', ensureAuthenticated, adminMutationLimiter, authorizeCsrf, consultationController.markContactedById);
+
+app.use((req, res) => {
+    if (req.accepts('html')) {
+        return res.status(404).render('public/not-found', {
+            title: '404 - صفحه مورد نظر یافت نشد',
+            layout: 'public/layout',
+            currentPath: req.path,
+            siteUrl: app.locals.siteUrl
+        });
+    }
+    return res.status(404).json({ error: 'Not found' });
+});
+
+app.use((err, req, res, next) => {
+    console.error('Unhandled server error:', err);
+    if (req.accepts('html')) {
+        return res.status(500).render('public/error', {
+            title: 'خطا در بارگذاری صفحه',
+            layout: 'public/layout',
+            currentPath: req.path,
+            siteUrl: app.locals.siteUrl,
+            errorMessage: 'مشکلی در اجرای درخواست رخ داده است.'
+        });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

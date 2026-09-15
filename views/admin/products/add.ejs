@@ -2,6 +2,7 @@
 <p class="text-[#6B7280] mb-8"><%= t('auto.k_a410a6d457ff') %></p>
 
 <form action="/admin/products/add" method="POST" enctype="multipart/form-data" class="space-y-8">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
     <!-- Main Product Info -->
     <div class="card-modern">

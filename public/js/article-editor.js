@@ -63,8 +63,10 @@
         window.alert('حجم تصویر باید کمتر از ۵ مگابایت باشد.');
         return;
       }
+      var csrfField = editor.closest('form').querySelector('input[name="_csrf"]');
       var data = new FormData();
       data.append('mainImage', file);
+      data.append('_csrf', csrfField ? csrfField.value : '');
       try {
         var response = await fetch('/admin/articles/upload-image', { method: 'POST', body: data });
         var result = await response.json();

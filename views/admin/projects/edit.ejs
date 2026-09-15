@@ -2,6 +2,7 @@
 <p class="text-[#6B7280] mb-8"><%= t('auto.k_6885f1dfbc2d') %></p>
 
 <form action="/admin/projects/edit/<%= project.id %>" method="POST" enctype="multipart/form-data" class="space-y-8">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="card-modern">
         <h2 class="text-xl font-semibold mb-6"><%= t('auto.k_4e703f2368ec') %></h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

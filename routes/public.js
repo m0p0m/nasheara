@@ -3,6 +3,8 @@ const router = express.Router();
 const consultationController = require('../controllers/consultationController');
 const publicController = require('../controllers/publicController');
 const newsletterController = require('../controllers/newsletterController');
+const { authorizeCsrf } = require('../middleware/csrf');
+const { consultationLimiter, newsletterLimiter } = require('../middleware/rateLimit');
 
 // GET / - Show the home page
 router.get('/', publicController.getHomePage);
@@ -32,9 +34,9 @@ router.get('/contact', publicController.getContactPage);
 router.get('/consultation', consultationController.showConsultationForm);
 
 // POST /consultation - Handle the form submission
-router.post('/consultation', consultationController.submitConsultation);
+router.post('/consultation', consultationLimiter, authorizeCsrf, consultationController.submitConsultation);
 
 // POST /newsletter/subscribe - Handle newsletter subscription
-router.post('/newsletter/subscribe', newsletterController.subscribe);
+router.post('/newsletter/subscribe', newsletterLimiter, authorizeCsrf, newsletterController.subscribe);
 
 module.exports = router;

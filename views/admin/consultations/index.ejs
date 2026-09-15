@@ -56,6 +56,7 @@
                             </span>
                             <% if (currentView !== 'handled') { %>
                                 <form action="/admin/consultations/mark/<%= encodeURIComponent(consultation.phone) %>" method="POST" onsubmit="return confirm('<%= t('auto.k_92c4be623b2f') %> "<%= t('auto.k_c00c3babf496') %>" <%= t('auto.k_f1f392de9869') %>');">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                     <button type="submit" class="px-3 py-2 bg-green-500 text-white rounded-lg text-sm"><%= t('auto.k_a18b8ed8d281') %></button>
                                 </form>
                             <% } %>
@@ -115,6 +116,7 @@
                                             <% if (!request.contacted) { %>
                                                 <div class="mt-2">
                                                     <form action="/admin/consultations/mark-id/<%= request.id %>" method="POST" onsubmit="return confirm('<%= t('auto.k_d1c75c063a66') %> "<%= t('auto.k_c00c3babf496') %>" <%= t('auto.k_f1f392de9869') %>');">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                                         <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded-lg text-xs"><%= t('auto.k_7c6e4315b5ab') %></button>
                                                     </form>
                                                 </div>

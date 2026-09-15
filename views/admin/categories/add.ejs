@@ -1,6 +1,7 @@
 <h1 class="text-3xl font-bold mb-6">Add New Category</h1>
 
 <form action="/admin/categories/add" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-lg shadow-md max-w-lg mx-auto">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="mb-4">
         <label for="name" class="block text-gray-700 font-bold mb-2">Category Name:</label>
         <input type="text" id="name" name="name" required class="w-full px-3 py-2 border rounded">

@@ -1,0 +1,70 @@
+# راه‌اندازی پایدار روی cPanel
+
+این برنامه برای اجرای Node.js در cPanel/Passenger است. در بخش **Setup Node.js App**، نسخهٔ پشتیبانی‌شدهٔ Node.js را انتخاب کنید، ریشهٔ برنامه را همین پوشه قرار دهید و Startup file را `server.js` بگذارید. سپس `npm ci --omit=dev` را اجرا و برنامه را Restart کنید.
+
+## متغیرهای لازم
+
+این مقادیر را در Environment variables پنل ثبت کنید؛ فایل `.env` واقعی را در ZIP یا Git قرار ندهید:
+
+```env
+NODE_ENV=production
+SITE_URL=https://example.com
+DATABASE_URL=mysql://USER:PASSWORD@localhost:3306/DATABASE
+SESSION_SECRET=a-long-random-secret-at-least-32-characters
+PORT=3000
+ADMIN_USERNAME=your-admin-username
+ADMIN_PASSWORD=your-strong-admin-password
+ADMIN_PROVISION_SECRET=another-long-random-secret
+```
+
+`SITE_URL` باید دقیقاً دامنهٔ اصلی HTTPS، بدون `/` انتهایی، باشد. در غیر این صورت canonical، sitemap و لینک‌های اشتراک‌گذاری برای گوگل نادرست می‌شوند.
+
+## اجرای migration ها
+
+روی سرور فقط `npx prisma migrate deploy` را اجرا کنید. هرگز `prisma migrate dev` را روی دیتابیس واقعی اجرا نکنید: جدول `sessions` را خود برنامه می‌سازد و در تاریخچهٔ migration نیست، پس Prisma آن را drift می‌بیند و پیشنهاد **ریست کامل دیتابیس** می‌دهد.
+
+## ساخت حساب مدیر
+
+حساب مدیر فقط از طریق خط فرمان و **یک‌بار** ساخته می‌شود؛ صفحهٔ ورود هرگز حساب جدید نمی‌سازد. پس از تنظیم سه متغیر `ADMIN_USERNAME`، `ADMIN_PASSWORD` و `ADMIN_PROVISION_SECRET` این دستور را اجرا کنید:
+
+```bash
+npm run admin:create
+```
+
+اگر از قبل حسابی وجود داشته باشد، اسکریپت چیزی نمی‌سازد. پس از ساخت حساب، بهتر است `ADMIN_PASSWORD` را از محیط حذف کنید.
+
+## جدول نشست‌ها
+
+برای جلوگیری از ساخت جدول و اجرای زمان‌بند در هر worker (یکی از دلایل مصرف پردازش و restart شدن Passenger)، جدول زیر را فقط **یک‌بار** در phpMyAdmin اجرا کنید:
+
+```sql
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,
+  `expires` int(11) unsigned NOT NULL,
+  `data` mediumtext COLLATE utf8mb4_bin,
+  PRIMARY KEY (`session_id`),
+  KEY `sessions_expires_idx` (`expires`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+```
+
+برنامه عمداً زمان‌بندِ پاک‌سازی را داخل خودش اجرا نمی‌کند (`clearExpired: false`) تا در هر worker یک تایمر اضافه نسازد. پس پاک‌سازی باید در خود MySQL انجام شود. اگر Event Scheduler هاست فعال است، این رویداد را **یک‌بار** بسازید:
+
+```sql
+CREATE EVENT IF NOT EXISTS `purge_expired_sessions`
+  ON SCHEDULE EVERY 1 DAY
+  DO DELETE FROM sessions WHERE expires < UNIX_TIMESTAMP();
+```
+
+اگر Event Scheduler در دسترس نیست، این دستور را ماهی یک‌بار از phpMyAdmin اجرا کنید:
+
+```sql
+DELETE FROM sessions WHERE expires < UNIX_TIMESTAMP();
+```
+
+## مواردی که نباید آپلود شوند
+
+- `node_modules/` (cPanel باید وابستگی‌ها را از `package-lock.json` نصب کند)
+- `server.zip` و هر ZIP پشتیبان
+- `.env`
+
+پس از انتشار، `https://YOUR-DOMAIN/sitemap.xml` و `https://YOUR-DOMAIN/robots.txt` را باز کنید و همان sitemap را در Google Search Console ثبت یا دوباره ارسال کنید.

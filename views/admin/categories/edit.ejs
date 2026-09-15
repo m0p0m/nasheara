@@ -1,6 +1,7 @@
 <h1 class="text-3xl font-bold mb-6">Edit Category: <%= category.name %></h1>
 
 <form action="/admin/categories/edit/<%= category.id %>" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-lg shadow-md max-w-lg mx-auto">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="mb-4">
         <label for="name" class="block text-gray-700 font-bold mb-2">Category Name:</label>
         <input type="text" id="name" name="name" value="<%= category.name %>" required class="w-full px-3 py-2 border rounded">

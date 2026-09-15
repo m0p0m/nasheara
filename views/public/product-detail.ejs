@@ -6,11 +6,13 @@
     const productStructuredData = {
         '@context': 'https://schema.org',
         '@type': 'Product',
+        '@id': siteUrl + '/' + locale + '/product/' + encodeURIComponent(product.slug) + '#product',
         name: product.name,
         image: productImages,
         description: product.metaDescription || product.description || undefined,
         category: product.category || undefined,
-        url: siteUrl + '/product/' + encodeURIComponent(product.slug)
+        brand: { '@type': 'Brand', name: 'نقش آرا' },
+        url: siteUrl + '/' + locale + '/product/' + encodeURIComponent(product.slug)
     };
     const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 %>
@@ -32,16 +34,16 @@
             <!-- Gallery -->
             <div class="pdetail__media">
                 <div class="pdetail__main" data-reveal>
-                    <img src="<%= product.mainImage || '/placeholder.jpg' %>" alt="<%= product.name %>" id="mainImage">
+                    <img src="<%= product.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= product.patternName || product.name %>" id="mainImage" fetchpriority="high" decoding="async">
                 </div>
                 <% if (product.galleryImages && product.galleryImages.length > 0) { %>
                     <div class="pdetail__thumbs" data-reveal style="--reveal-delay:100ms">
                         <button type="button" class="pdetail__thumb is-active" onclick="changeMainImage('<%= product.mainImage %>')">
-                            <img src="<%= product.mainImage %>" alt="<%= product.name %>">
+                        <img src="<%= product.mainImage %>" alt="<%= product.patternName || product.name %>">
                         </button>
                         <% product.galleryImages.forEach(img => { %>
                             <button type="button" class="pdetail__thumb" onclick="changeMainImage('<%= img %>')">
-                                <img src="<%= img %>" alt="<%= product.name %>">
+                            <img src="<%= img %>" alt="<%= product.patternName || product.name %>">
                             </button>
                         <% }); %>
                     </div>
@@ -154,7 +156,7 @@
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(rp.slug) %>"
                     class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
                     <div class="ed-card__media">
-                        <img src="<%= rp.mainImage || '/placeholder.jpg' %>" alt="<%= rp.name %>" loading="lazy">
+                        <img src="<%= rp.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= rp.patternName || rp.name %>" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (rp.category) { %><div class="ed-card__cat"><%= rp.category %></div><% } %>

@@ -348,6 +348,59 @@
     color: var(--color-brass);
   }
 
+  /* ---------- Empty state / error pages ---------- */
+  .empty-state {
+    min-height: 55vh;
+    display: flex;
+    align-items: center;
+    padding: 5rem 0 4rem;
+    background: var(--color-bone);
+    color: var(--color-ink);
+  }
+
+  .empty-state__box {
+    max-width: min(680px, calc(100vw - 2rem));
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem);
+    background: color-mix(in srgb, var(--color-bone) 84%, white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-tight);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+  }
+
+  .empty-state__code {
+    display: block;
+    font-family: var(--font-en-display);
+    font-size: clamp(4rem, 10vw, 7rem);
+    line-height: 1;
+    color: var(--color-brass);
+    margin-bottom: 1rem;
+  }
+
+  .empty-state__title {
+    font-family: var(--font-fa-ar);
+    font-size: clamp(1.8rem, 3vw, 2.7rem);
+    font-weight: 800;
+    color: var(--color-jade-deep);
+    margin-bottom: 0.8rem;
+  }
+
+  .empty-state__text {
+    color: var(--color-stone);
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 1.6rem;
+  }
+
+  .empty-state__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
   /* ---------- Site header ---------- */
   .site-header {
     position: fixed;

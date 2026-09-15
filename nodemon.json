@@ -1,0 +1,22 @@
+{
+  "watch": [
+    "server.js",
+    "config",
+    "controllers",
+    "lib",
+    "locales",
+    "middleware",
+    "models",
+    "prisma",
+    "routes",
+    "utils",
+    "views"
+  ],
+  "ext": "js,ejs,json",
+  "ignore": [
+    "public/uploads/*",
+    "node_modules/*",
+    "tests/*"
+  ],
+  "delay": 500
+}

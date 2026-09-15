@@ -1,0 +1,12 @@
+<section class="empty-state">
+    <div class="container">
+        <div class="empty-state__box">
+            <span class="empty-state__code">500</span>
+            <h1 class="empty-state__title">خطایی رخ داده است</h1>
+            <p class="empty-state__text"><%= typeof errorMessage !== 'undefined' ? errorMessage : 'امکان بارگذاری این صفحه در حال حاضر وجود ندارد.' %></p>
+            <div class="empty-state__actions">
+                <a href="/<%= locale %>/" class="btn btn-solid">بازگشت به خانه</a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const categoryController = require('../controllers/categoryController');
 const ensureAuthenticated = require('../middleware/auth');
+const upload = require('../middleware/upload');
+const { authorizeCsrf } = require('../middleware/csrf');
+const { adminMutationLimiter } = require('../middleware/rateLimit');
 
 // All these routes are protected and start with '/admin/categories'
 
@@ -12,15 +15,15 @@ router.get('/', ensureAuthenticated, categoryController.listCategories);
 router.get('/add', ensureAuthenticated, categoryController.showAddForm);
 
 // POST /admin/categories/add - Process the add form
-router.post('/add', ensureAuthenticated, categoryController.addCategory);
+router.post('/add', ensureAuthenticated, adminMutationLimiter, upload, authorizeCsrf, categoryController.addCategory);
 
 // GET /admin/categories/edit/:id - Show form to edit a category
 router.get('/edit/:id', ensureAuthenticated, categoryController.showEditForm);
 
 // POST /admin/categories/edit/:id - Process the edit form
-router.post('/edit/:id', ensureAuthenticated, categoryController.editCategory);
+router.post('/edit/:id', ensureAuthenticated, adminMutationLimiter, upload, authorizeCsrf, categoryController.editCategory);
 
 // POST /admin/categories/delete/:id - Delete a category
-router.post('/delete/:id', ensureAuthenticated, categoryController.deleteCategory);
+router.post('/delete/:id', ensureAuthenticated, adminMutationLimiter, authorizeCsrf, categoryController.deleteCategory);
 
 module.exports = router;

@@ -86,7 +86,7 @@
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>"
                     class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group">
                     <div class="ed-card__media">
-                        <img src="<%= p.mainImage || '/placeholder.jpg' %>" alt="<%= p.name %>" loading="lazy">
+                        <img src="<%= p.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= p.patternName || p.name %>" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (p.category) { %><div class="ed-card__cat"><%= p.category %></div><% } %>

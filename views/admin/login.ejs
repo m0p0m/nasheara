@@ -37,6 +37,7 @@
                 </div>
             <% } %>
             <form action="/admin/login" method="POST" class="space-y-6">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <div>
                     <label for="username" class="block text-[#1E293B] text-sm font-bold mb-2">
                         <%= t('auto.k_99c2f82e0cd9') %>

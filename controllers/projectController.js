@@ -40,27 +40,24 @@ const showAddForm = async (req, res) => {
     }
 };
 
-const addProject = (req, res) => {
-    upload(req, res, async error => {
-        if (error) return res.status(400).send(`Error uploading files: ${error}`);
-        try {
-            const { title, slug, location, description, relatedProductIds, translations = {} } = req.body;
-            const fa = translations.fa || {};
-            await Project.create({
-                title: fa.title || title, slug, location: fa.location || location,
-                description: fa.description || description, translations,
-                coverImage: req.files.coverImage ? `/uploads/${req.files.coverImage[0].filename}` : null,
-                galleryImages: req.files.galleryImages
-                    ? req.files.galleryImages.map(file => `/uploads/${file.filename}`)
-                    : [],
-                relatedProductIds: normalizeArray(relatedProductIds)
-            });
-            res.redirect('/admin/projects');
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('خطایی در افزودن نمونه‌کار رخ داد.');
-        }
-    });
+const addProject = async (req, res) => {
+    try {
+        const { title, slug, location, description, relatedProductIds, translations = {} } = req.body;
+        const fa = translations.fa || {};
+        await Project.create({
+            title: fa.title || title, slug, location: fa.location || location,
+            description: fa.description || description, translations,
+            coverImage: req.files.coverImage ? `/uploads/${req.files.coverImage[0].filename}` : null,
+            galleryImages: req.files.galleryImages
+                ? req.files.galleryImages.map(file => `/uploads/${file.filename}`)
+                : [],
+            relatedProductIds: normalizeArray(relatedProductIds)
+        });
+        res.redirect('/admin/projects');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('خطایی در افزودن نمونه‌کار رخ داد.');
+    }
 };
 
 const showEditForm = async (req, res) => {
@@ -76,34 +73,31 @@ const showEditForm = async (req, res) => {
     }
 };
 
-const editProject = (req, res) => {
-    upload(req, res, async error => {
-        if (error) return res.status(400).send(`Error uploading files: ${error}`);
-        try {
-            const project = await Project.findById(req.params.id);
-            if (!project) return res.status(404).send('نمونه‌کار یافت نشد.');
-            const { title, slug, location, description, relatedProductIds, translations = {} } = req.body;
-            const fa = translations.fa || {};
-            const updatedData = {
-                title: fa.title || title, slug, location: fa.location || location,
-                description: fa.description || description, translations,
-                relatedProductIds: normalizeArray(relatedProductIds)
-            };
-            if (req.files.coverImage) {
-                await removeImage(project.coverImage);
-                updatedData.coverImage = `/uploads/${req.files.coverImage[0].filename}`;
-            }
-            if (req.files.galleryImages) {
-                const additions = req.files.galleryImages.map(file => `/uploads/${file.filename}`);
-                updatedData.galleryImages = (project.galleryImages || []).concat(additions);
-            }
-            await Project.update(req.params.id, updatedData);
-            res.redirect('/admin/projects');
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('خطایی در ویرایش نمونه‌کار رخ داد.');
+const editProject = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        if (!project) return res.status(404).send('نمونه‌کار یافت نشد.');
+        const { title, slug, location, description, relatedProductIds, translations = {} } = req.body;
+        const fa = translations.fa || {};
+        const updatedData = {
+            title: fa.title || title, slug, location: fa.location || location,
+            description: fa.description || description, translations,
+            relatedProductIds: normalizeArray(relatedProductIds)
+        };
+        if (req.files.coverImage) {
+            await removeImage(project.coverImage);
+            updatedData.coverImage = `/uploads/${req.files.coverImage[0].filename}`;
         }
-    });
+        if (req.files.galleryImages) {
+            const additions = req.files.galleryImages.map(file => `/uploads/${file.filename}`);
+            updatedData.galleryImages = (project.galleryImages || []).concat(additions);
+        }
+        await Project.update(req.params.id, updatedData);
+        res.redirect('/admin/projects');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('خطایی در ویرایش نمونه‌کار رخ داد.');
+    }
 };
 
 const deleteProject = async (req, res) => {

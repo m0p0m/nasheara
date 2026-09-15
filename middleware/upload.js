@@ -4,22 +4,30 @@ const fs = require('fs');
 
 const UPLOAD_ROOT = path.resolve(__dirname, '..', 'public', 'uploads');
 
-const pathContainsTraversal = input => {
-    if (!input) return false;
-    return input.includes('..') || input.includes('\\') || input.includes('/') && input.split('/').some(part => part === '..');
+const normalizeUploadPath = value => {
+    if (!value || typeof value !== 'string') return '';
+    const normalized = value.replace(/\\/g, '/').trim();
+    return normalized.replace(/^\/+(?:uploads\/)?/, '').replace(/^uploads\//, '');
 };
 
 const isSafeUploadPath = imagePath => {
     if (!imagePath || typeof imagePath !== 'string') return false;
-    const normalized = imagePath.replace(/\\/g, '/');
+    const normalized = imagePath.replace(/\\/g, '/').trim();
+    if (!normalized || normalized.includes('\0')) return false;
     if (normalized.includes('..')) return false;
-    const target = path.resolve(UPLOAD_ROOT, normalized.replace(/^\/uploads\//, ''));
-    return target.startsWith(UPLOAD_ROOT);
+
+    const relativePath = normalizeUploadPath(normalized);
+    if (!relativePath || relativePath.startsWith('/') || relativePath.includes('..')) return false;
+
+    const target = path.resolve(UPLOAD_ROOT, relativePath);
+    const relative = path.relative(UPLOAD_ROOT, target);
+    return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
 };
 
 const deleteUploadFileSafe = async imagePath => {
     if (!imagePath || !isSafeUploadPath(imagePath)) return false;
-    const diskPath = path.join(path.resolve(__dirname, '..', 'public'), imagePath.startsWith('/') ? imagePath.replace(/^\//, '') : imagePath);
+    const relativePath = normalizeUploadPath(imagePath);
+    const diskPath = path.resolve(UPLOAD_ROOT, relativePath);
     try {
         await fs.promises.unlink(diskPath);
         return true;
