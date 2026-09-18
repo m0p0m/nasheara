@@ -22,7 +22,7 @@
     <div class="article-shell">
       <% if (article.mainImage) { %>
       <figure class="mb-10 overflow-hidden" style="border-radius:var(--r-tight)" data-reveal>
-        <img src="<%= article.mainImage %>" alt="<%= article.title %>" class="w-full h-auto object-cover" loading="eager">
+        <img src="<%= img(article.mainImage, 1280) %>"<%- responsive(article.mainImage, [800, 1280, 1600], '(min-width: 1024px) 60vw, 100vw') %> alt="<%= article.title %>" class="w-full h-auto object-cover" loading="eager" fetchpriority="high" decoding="async">
         <figcaption class="article-meta mt-3"><%= article.title %></figcaption>
       </figure>
       <% } %>

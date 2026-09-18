@@ -18,32 +18,31 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 
 <section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
     <div class="container">
-        <nav class="flex items-center gap-3 text-sm mb-10" style="color:var(--color-stone)" data-reveal>
-            <a href="/<%= locale %>/projects" class="hover:text-brass transition-colors"><%= t('atelier.casesEyebrow') %></a>
+        <nav class="flex items-center gap-3 text-sm mb-10" style="color:var(--color-stone-ink)" data-reveal>
+            <a href="/<%= locale %>/projects" class="hover:text-brass transition-colors inline-block py-2"><%= t('atelier.casesEyebrow') %></a>
             <span>/</span>
             <span class="text-ink"><%= project.title %></span>
         </nav>
 
         <div class="pdetail">
             <!-- Gallery -->
-            <div class="pdetail__media">
+            <div class="pdetail__media" data-gallery>
                 <div class="pdetail__main" data-reveal>
-                    <img id="projectMainImage"
-                        src="<%= project.coverImage || (project.galleryImages && project.galleryImages[0]) || '/placeholder.jpg' %>"
-                        alt="<%= project.title %>">
+                    <% const mainImg = project.coverImage || (project.galleryImages && project.galleryImages[0]) || '/placeholder.jpg'; %>
+                    <img data-gallery-main
+                        src="<%= img(mainImg, 1280) %>"<%- responsive(mainImg, [800, 1280, 1600], '(min-width: 1024px) 50vw, 100vw') %>
+                        alt="<%= project.title %>" width="1200" height="900" fetchpriority="high" decoding="async">
                 </div>
                 <% if (project.galleryImages && project.galleryImages.length) { %>
                     <div class="pdetail__thumbs pdetail__thumbs--spread" data-reveal style="--reveal-delay:100ms">
                         <% if (project.coverImage) { %>
-                            <button type="button" class="pdetail__thumb is-active"
-                                onclick="document.getElementById('projectMainImage').src=this.firstElementChild.getAttribute('src')">
-                                <img src="<%= project.coverImage %>" alt="<%= project.title %>">
+                            <button type="button" class="pdetail__thumb is-active" data-gallery-thumb="<%= img(project.coverImage, 1280) %>">
+                                <img src="<%= img(project.coverImage, 160) %>" alt="<%= project.title %>" width="96" height="96" loading="lazy" decoding="async">
                             </button>
                         <% } %>
                         <% project.galleryImages.forEach(image => { %>
-                            <button type="button" class="pdetail__thumb"
-                                onclick="document.getElementById('projectMainImage').src=this.firstElementChild.getAttribute('src')">
-                                <img src="<%= image %>" alt="<%= project.title %>">
+                            <button type="button" class="pdetail__thumb" data-gallery-thumb="<%= img(image, 1280) %>">
+                                <img src="<%= img(image, 160) %>" alt="<%= project.title %>" width="96" height="96" loading="lazy" decoding="async">
                             </button>
                         <% }); %>
                     </div>
@@ -83,7 +82,7 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(rp.slug) %>"
                     class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
                     <div class="ed-card__media">
-                        <img src="<%= rp.mainImage || '/placeholder.jpg' %>" alt="<%= rp.name %>" loading="lazy">
+                        <img src="<%= img(rp.mainImage || '/placeholder.jpg', 480) %>"<%- responsive(rp.mainImage || '/placeholder.jpg', [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= rp.name %>" width="800" height="800" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (rp.category) { %><div class="ed-card__cat"><%= rp.category %></div><% } %>

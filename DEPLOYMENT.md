@@ -2,6 +2,10 @@
 
 این برنامه برای اجرای Node.js در cPanel/Passenger است. در بخش **Setup Node.js App**، نسخهٔ پشتیبانی‌شدهٔ Node.js را انتخاب کنید، ریشهٔ برنامه را همین پوشه قرار دهید و Startup file را `server.js` بگذارید. سپس `npm ci --omit=dev` را اجرا و برنامه را Restart کنید.
 
+## تصاویر بهینه (sharp)
+
+نسخه‌های کوچک و WebP تصاویر با مسیر `/img/w{width}/uploads/...` توسط `lib/images.js` ساخته و در پوشهٔ `cache/images` (خارج از Git) ذخیره می‌شوند؛ این پوشه باید قابل نوشتن باشد. بستهٔ `sharp` باینری آماده برای Linux x64 دارد و با `npm ci` نصب می‌شود؛ اگر روی هاست لود نشد (لاگ: `sharp unavailable`)، سایت با تصاویر اصلی کار می‌کند ولی سنگین می‌شود — در آن صورت `npm rebuild sharp` را در همان محیط Node اجرا کنید.
+
 ## متغیرهای لازم
 
 این مقادیر را در Environment variables پنل ثبت کنید؛ فایل `.env` واقعی را در ZIP یا Git قرار ندهید:

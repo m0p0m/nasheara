@@ -4,6 +4,7 @@ const upload = require('../middleware/upload');
 const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const fs = require('fs').promises;
 const path = require('path');
+const { SHAPES, isShape } = require('../lib/tileShapes');
 
 const normalizeStock = (value) => {
     if (value === undefined || value === null) return null;
@@ -22,6 +23,31 @@ const normalizeStringArray = (value) => {
 };
 
 const normalizeKeywords = (keywords) => normalizeStringArray(keywords);
+
+const normalizeCm = value => {
+    const n = parseFloat(String(value ?? '').replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(',', '.'));
+    return Number.isFinite(n) && n > 0 && n < 500 ? n : null;
+};
+
+// The cut-out must keep its alpha channel, so only PNG/WebP are stored; any
+// other upload is discarded so a JPEG never ends up tiled as a rectangle.
+const cutoutUpload = async files => {
+    const file = files && files.tileCutout && files.tileCutout[0];
+    if (!file) return null;
+    if (/image\/(png|webp)/.test(file.mimetype || '')) return '/uploads/' + file.filename;
+    await deleteUploadFileSafe('/uploads/' + file.filename);
+    return null;
+};
+
+const visualizerFields = async (body, files) => {
+    const cutout = await cutoutUpload(files);
+    return {
+        tileShape: isShape(body.tileShape) ? body.tileShape : null,
+        tileWidthCm: normalizeCm(body.tileWidthCm),
+        tileHeightCm: normalizeCm(body.tileHeightCm),
+        ...(cutout ? { tileCutout: cutout } : {})
+    };
+};
 const normalizeUsageArea = (usageArea) => normalizeStringArray(usageArea);
 
 const normalizeTranslations = translations => {
@@ -70,26 +96,38 @@ const normalizeSpecs = (specs) => {
     return result;
 };
 
-// Display list of all products
+// Display list of all products (paged, filtered in the database)
+const PAGE_SIZE = 20;
 const listProducts = async (req, res) => {
     try {
         const q = (req.query.q || '').trim();
-        const all = await Product.getAll();
-        const products = q
-            ? all.filter(p =>
-                [p.name, p.description, p.category]
-                    .filter(Boolean)
-                    .some(v => String(v).toLowerCase().includes(q.toLowerCase()))
-              )
-            : all;
-        res.render('admin/products/index', { 
-            products,
+        const categoryId = (req.query.category || '').trim() || null;
+        const page = parseInt(req.query.page, 10) || 1;
+        const [listing, categories] = await Promise.all([
+            Product.listPage({ q, categoryId, page, pageSize: PAGE_SIZE }),
+            Category.getAll()
+        ]);
+        const buildQuery = overrides => {
+            const params = new URLSearchParams();
+            const merged = { q, category: categoryId || '', page: listing.page, ...overrides };
+            if (merged.q) params.set('q', merged.q);
+            if (merged.category) params.set('category', merged.category);
+            if (merged.page && merged.page > 1) params.set('page', merged.page);
+            const str = params.toString();
+            return `/admin/products${str ? `?${str}` : ''}`;
+        };
+        res.render('admin/products/index', {
+            ...listing,
             q,
+            categoryId,
+            categories,
+            buildQuery,
             title: 'مدیریت محصولات',
             currentPage: 'dashboard',
             layout: 'admin/layout'
         });
     } catch (error) {
+        console.error(error);
         res.status(500).send('Error reading products data');
     }
 };
@@ -99,7 +137,8 @@ const showAddForm = async (req, res) => {
     try {
         const categories = await Category.getAll();
         res.render('admin/products/add', { 
-            categories, 
+            categories,
+            tileShapes: SHAPES,
             title: 'افزودن محصول جدید',
             currentPage: 'dashboard',
             layout: 'admin/layout'
@@ -142,7 +181,8 @@ const addProduct = async (req, res) => {
             isNew: Boolean(isNew),
             isBestSeller: Boolean(isBestSeller),
             specs: Object.keys(fa.specs).length ? fa.specs : normalizeSpecs(specs),
-            translations: normalizedTranslations
+            translations: normalizedTranslations,
+            ...(await visualizerFields(req.body, req.files))
         };
 
         await Product.create(newProduct);
@@ -163,7 +203,8 @@ const showEditForm = async (req, res) => {
         }
         res.render('admin/products/edit', { 
             product, 
-            categories, 
+            categories,
+            tileShapes: SHAPES,
             title: 'ویرایش محصول',
             currentPage: 'dashboard',
             layout: 'admin/layout'
@@ -206,8 +247,16 @@ const editProduct = async (req, res) => {
             isNew: Boolean(isNew),
             isBestSeller: Boolean(isBestSeller),
             specs: Object.keys(fa.specs).length ? fa.specs : normalizeSpecs(specs),
-            translations: normalizedTranslations
+            translations: normalizedTranslations,
+            ...(await visualizerFields(req.body, req.files))
         };
+        if (updatedData.tileCutout && existingProduct.tileCutout && isSafeUploadPath(existingProduct.tileCutout)) {
+            await deleteUploadFileSafe(existingProduct.tileCutout);
+        }
+        if (req.body.removeTileCutout === 'on' && !updatedData.tileCutout) {
+            if (existingProduct.tileCutout && isSafeUploadPath(existingProduct.tileCutout)) await deleteUploadFileSafe(existingProduct.tileCutout);
+            updatedData.tileCutout = null;
+        }
 
         // Replace main image if a new one is uploaded
         if (req.files.mainImage) {

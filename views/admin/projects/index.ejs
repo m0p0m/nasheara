@@ -38,7 +38,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex justify-center gap-2">
                                     <a href="/admin/projects/edit/<%= project.id %>" class="btn-secondary !py-2 !px-3 text-xs"><%= t('auto.k_ac60ae7a6877') %></a>
-                                    <form action="/admin/projects/delete/<%= project.id %>" method="POST" onsubmit="return confirm('<%= t('auto.k_304fb327b637') %>');">
+                                    <form action="/admin/projects/delete/<%= project.id %>" method="POST" data-confirm="<%= t('auto.k_304fb327b637') %>">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <button class="px-3 py-2 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white"><%= t('auto.k_2d2bbdc2d694') %></button>
                                     </form>

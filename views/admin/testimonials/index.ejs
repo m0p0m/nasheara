@@ -1,0 +1,80 @@
+<div class="mb-8">
+    <div class="flex flex-col xl:flex-row justify-between items-start gap-4 mb-6">
+        <div>
+            <h1 class="text-4xl font-bold text-slate-900 mb-2">نظرات مشتریان</h1>
+            <p class="text-slate-500">نظرهایی که «منتشرشده» باشند در صفحهٔ اصلی نمایش داده می‌شوند. اگر هیچ نظر منتشرشده‌ای نباشد، آن بخش پنهان می‌ماند.</p>
+        </div>
+    </div>
+
+    <% if (error) { %>
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700"><%= error %></div>
+    <% } %>
+
+    <form action="/admin/testimonials/add" method="POST" class="card-modern mb-8">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">افزودن نظر جدید</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="t-name" class="block text-sm font-semibold text-slate-700 mb-2">نام مشتری *</label>
+                <input id="t-name" name="name" type="text" required maxlength="191" class="input-field" placeholder="مثلاً علی احمدی">
+            </div>
+            <div>
+                <label for="t-location" class="block text-sm font-semibold text-slate-700 mb-2">شهر / پروژه</label>
+                <input id="t-location" name="location" type="text" maxlength="191" class="input-field" placeholder="مثلاً قم">
+            </div>
+            <div>
+                <label for="t-rating" class="block text-sm font-semibold text-slate-700 mb-2">امتیاز</label>
+                <select id="t-rating" name="rating" class="input-field">
+                    <% [5, 4, 3, 2, 1].forEach(n => { %><option value="<%= n %>"><%= '★'.repeat(n) %></option><% }); %>
+                </select>
+            </div>
+        </div>
+        <div class="mt-4">
+            <label for="t-text" class="block text-sm font-semibold text-slate-700 mb-2">متن نظر *</label>
+            <textarea id="t-text" name="text" required minlength="10" rows="3" class="input-field resize-y" placeholder="نظر مشتری را همان‌طور که گفته بنویسید…"></textarea>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-6">
+            <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="published" checked class="w-4 h-4"> انتشار در سایت</label>
+            <label class="flex items-center gap-2 text-sm text-slate-700">ترتیب نمایش <input type="number" name="sortOrder" value="0" class="input-field !w-24 !py-1.5"></label>
+            <button type="submit" class="btn-primary mr-auto">ذخیره نظر</button>
+        </div>
+    </form>
+</div>
+
+<div class="card-modern !p-0 overflow-hidden">
+    <% if (testimonials && testimonials.length) { %>
+        <ul class="divide-y divide-slate-200">
+            <% testimonials.forEach(item => { %>
+                <li class="p-5 flex flex-col md:flex-row md:items-start gap-4 <%= item.published ? '' : 'bg-slate-50' %>">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="font-bold text-slate-900"><%= item.name %></span>
+                            <% if (item.location) { %><span class="text-sm text-slate-500">· <%= item.location %></span><% } %>
+                            <span class="text-amber-500 text-sm" aria-label="<%= item.rating %> از ۵"><%= '★'.repeat(item.rating) %><span class="text-slate-300"><%= '★'.repeat(5 - item.rating) %></span></span>
+                            <% if (item.published) { %>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">منتشرشده</span>
+                            <% } else { %>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-slate-200 text-slate-600">پیش‌نویس</span>
+                            <% } %>
+                            <span class="text-xs text-slate-400">ترتیب <%= item.sortOrder %></span>
+                        </div>
+                        <p class="text-slate-700 leading-7"><%= item.text %></p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-none">
+                        <form action="/admin/testimonials/toggle/<%= item.id %>" method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="btn-secondary !py-2 !px-3 text-xs"><%= item.published ? 'پنهان کن' : 'منتشر کن' %></button>
+                        </form>
+                        <a href="/admin/testimonials/edit/<%= item.id %>" class="btn-secondary !py-2 !px-3 text-xs">ویرایش</a>
+                        <form action="/admin/testimonials/delete/<%= item.id %>" method="POST" data-confirm="این نظر حذف شود؟">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all">حذف</button>
+                        </form>
+                    </div>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <div class="text-center py-16 text-slate-500">هنوز نظری ثبت نشده است. اولین نظر را با فرم بالا اضافه کنید.</div>
+    <% } %>
+</div>

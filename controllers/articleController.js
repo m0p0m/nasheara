@@ -193,7 +193,8 @@ const getArticleDetail = async (req, res) => {
         const article = await Article.findBySlug(req.params.slug, req.locale);
         if (!article || !article.published) {
             return res.status(404).render('public/article-detail', {
-                title: 'مقاله یافت نشد',
+                title: res.locals.t('seo.notFoundTitle'),
+                noindex: true,
                 article: null,
                 layout: 'public/layout',
                 currentPath: req.path
@@ -214,7 +215,7 @@ const getArticleDetail = async (req, res) => {
             publisher: {
                 '@type': 'Organization',
                 name: 'نقش آرا',
-                logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/naghshe-ara-logo.png` }
+                logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/logo-1024.png` }
             }
         };
         res.render('public/article-detail', {
@@ -240,7 +241,8 @@ const getAllArticles = async (req, res) => {
     try {
         const articles = await Article.getPublished(null, req.locale);
         res.render('public/articles', {
-            title: 'مقالات کاشی نقش آرا | راهنمای انتخاب و نگهداری کاشی',
+            title: res.locals.t('seo.articlesTitle'),
+            metaDescription: res.locals.t('seo.articlesDesc'),
             articles: articles,
             layout: 'public/layout',
             currentPath: req.path

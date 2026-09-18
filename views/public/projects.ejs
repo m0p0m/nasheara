@@ -12,8 +12,9 @@
                     <a href="/<%= locale %>/project/<%= encodeURIComponent(project.slug) %>"
                         class="case <%= i % 2 === 1 ? 'case--reverse' : '' %> group" data-reveal>
                         <div class="case__media">
-                            <img src="<%= project.coverImage || (project.galleryImages && project.galleryImages[0]) || '/placeholder.jpg' %>"
-                                alt="<%= project.title %>" loading="lazy">
+                            <% const coverImg = project.coverImage || (project.galleryImages && project.galleryImages[0]) || '/placeholder.jpg'; %>
+                            <img width="1200" height="900" loading="lazy" decoding="async" src="<%= img(coverImg, 1024) %>"<%- responsive(coverImg, [640, 1024, 1280], '(min-width: 1024px) 50vw, 100vw') %>
+                                alt="<%= project.title %>">
                         </div>
                         <div class="case__body">
                             <div class="case__num">0<%= i + 1 %></div>

@@ -23,6 +23,13 @@ const normalizeIp = (ip) => {
     return mapped ? mapped[1] : str;
 };
 
+// Flash messages live in the session; save before redirecting so the next
+// request is guaranteed to see them.
+const failLogin = (req, res, message) => {
+    req.session.loginError = message;
+    req.session.save(() => res.redirect('/admin/login'));
+};
+
 const getLogin = (req, res) => {
     const errorMessage = req.session.loginError || null;
     delete req.session.loginError; // Clear error after showing
@@ -39,16 +46,14 @@ const postLogin = async (req, res) => {
     const password = (req.body.password || '');
 
     if (!username || !password) {
-        req.session.loginError = 'نام کاربری و رمز عبور لازم است.';
-        return res.redirect('/admin/login');
+        return failLogin(req, res, 'نام کاربری و رمز عبور لازم است.');
     }
 
     const attempts = loginAttempts[ip] || { count: 0, lockoutUntil: 0 };
 
     if (Date.now() < attempts.lockoutUntil) {
         const remainingTime = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000 / 60);
-        req.session.loginError = `تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً ${remainingTime} دقیقه دیگر تلاش کنید.`;
-        return res.redirect('/admin/login');
+        return failLogin(req, res, `تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً ${remainingTime} دقیقه دیگر تلاش کنید.`);
     }
 
     try {
@@ -65,8 +70,7 @@ const postLogin = async (req, res) => {
             }
 
             loginAttempts[ip] = attempts;
-            req.session.loginError = `نام کاربری یا رمز عبور اشتباه است. (${attempts.count}/${MAX_ATTEMPTS})`;
-            return res.redirect('/admin/login');
+            return failLogin(req, res, `نام کاربری یا رمز عبور اشتباه است. (${attempts.count}/${MAX_ATTEMPTS})`);
         }
 
         const isLoginSuccessful = await validateAdminCredentials({
@@ -84,7 +88,12 @@ const postLogin = async (req, res) => {
                 req.session.isAuthenticated = true;
                 req.session.adminUsername = adminUser.username;
                 req.session.loginError = null;
-                return res.redirect('/admin/dashboard');
+                // Persist before redirecting: the browser follows the redirect
+                // faster than the MySQL store writes, which bounced logins back.
+                req.session.save(saveErr => {
+                    if (saveErr) console.error('Failed to save admin session:', saveErr);
+                    return res.redirect('/admin/dashboard');
+                });
             });
             return;
         }
@@ -103,15 +112,12 @@ const postLogin = async (req, res) => {
 
         if (attempts.count >= MAX_ATTEMPTS && attempts.lockoutUntil) {
             const remainingMinutes = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000 / 60);
-            req.session.loginError = `تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً ${remainingMinutes} دقیقه دیگر تلاش کنید.`;
-        } else {
-            req.session.loginError = `نام کاربری یا رمز عبور اشتباه است. (${attempts.count}/${MAX_ATTEMPTS})`;
+            return failLogin(req, res, `تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً ${remainingMinutes} دقیقه دیگر تلاش کنید.`);
         }
-        return res.redirect('/admin/login');
+        return failLogin(req, res, `نام کاربری یا رمز عبور اشتباه است. (${attempts.count}/${MAX_ATTEMPTS})`);
     } catch (error) {
         console.error('Admin login error:', error);
-        req.session.loginError = 'خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.';
-        return res.redirect('/admin/login');
+        return failLogin(req, res, 'خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.');
     }
 };
 

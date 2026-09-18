@@ -6,7 +6,7 @@
 <!-- ===== Hero ===== -->
 <section class="hero">
     <div class="hero__media">
-        <img src="/icons/1.png" alt="کاشی، بلوک و نمای ساختمان">
+        <img src="<%= img('/icons/1.png', 1600) %>"<%- responsive('/icons/1.png', [800, 1280, 1600, 2048], '100vw') %> alt="<%= t('atelier.brandName') %> — <%= t('atelier.brandTag') %>" width="1672" height="941" fetchpriority="high" decoding="async">
         <!-- <img src="<%= heroImage %>" alt="<%= t('atelier.brandTag') %>"> -->
     </div>
     <div class="hero__scrim"></div>
@@ -20,7 +20,7 @@
             <p class="hero__sub"><%= t('atelier.heroSub') %></p>
             <div class="hero__actions">
                 <a href="/<%= locale %>/products" class="btn btn-brass"><%= t('atelier.heroCta') %></a>
-                <a href="/<%= locale %>/consultation" class="btn btn-outline-bone"><%= t('atelier.heroCta2') %></a>
+                <a href="/<%= locale %>/visualizer" class="btn btn-outline-bone"><%= t('nav.visualizer') %></a>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
                 <div class="swatch-preview__meta">
                     <div>
                         <span class="swatch-preview__note" data-swatch-cat></span>
-                        <h3 class="swatch-preview__name" data-swatch-name></h3>
+                        <p class="swatch-preview__name" data-swatch-name></p>
                     </div>
                     <span class="swatch-preview__note" data-swatch-note></span>
                 </div>
@@ -51,13 +51,13 @@
                 </div>
                 <div class="swatch-tray" data-reveal>
                     <% products.slice(0, 10).forEach(p => { %>
-                        <button type="button" class="swatch" data-img="<%= p.mainImage || '' %>"
+                        <button type="button" class="swatch" data-img="<%= p.mainImage ? img(p.mainImage, 800) : '' %>"
                             data-name="<%= p.patternName || p.name %>"
                             data-note="<%= noteOf(p) %>"
                             data-cat="<%= p.category || t('atelier.fromCollection') %>"
                             aria-label="<%= p.name %>">
                             <% if (p.mainImage) { %>
-                                <img src="<%= p.mainImage %>" alt="<%= p.name %>" loading="lazy">
+                                <img src="<%= img(p.mainImage, 160) %>" alt="<%= p.name %>" width="160" height="160" loading="lazy" decoding="async">
                             <% } else { %>
                                 <span class="swatch--blank">✦</span>
                             <% } %>
@@ -86,7 +86,7 @@
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>"
                     class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group">
                     <div class="ed-card__media">
-                        <img src="<%= p.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= p.patternName || p.name %>" loading="lazy" decoding="async">
+                        <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= p.patternName || p.name %>" width="800" height="800" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (p.category) { %><div class="ed-card__cat"><%= p.category %></div><% } %>
@@ -108,14 +108,21 @@
             <span class="eyebrow"><%= t('atelier.collectionsEyebrow') %></span>
             <h2 class="section__title"><%= t('atelier.collectionsTitle') %></h2>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6" data-reveal>
-            <% categories.forEach(cat => { %>
-                <% const rep = (typeof products !== 'undefined' && products) ? products.find(p => p.category === cat.name) : null; %>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6" data-reveal>
+            <% categories.forEach((cat, ci) => { %>
+                <% const rep = (typeof products !== 'undefined' && products) ? products.find(p => p.category === cat.name && p.mainImage) : null; const catImg = cat.mainImage || (rep && rep.mainImage); %>
                 <a href="/<%= locale %>/products?category=<%= encodeURIComponent(cat.name) %>"
                     class="group block">
-                    <div class="overflow-hidden mb-4" style="border:1px solid var(--hairline);border-radius:var(--r-tight)">
-                        <img src="<%= (rep && rep.mainImage) || '/uploads/naghsh_pages/page_1.png' %>" alt="<%= cat.name %>"
+                    <div class="overflow-hidden mb-4 cat-cover" style="border:1px solid var(--hairline);border-radius:var(--r-tight)">
+                        <% if (catImg) { %>
+                        <img src="<%= img(catImg, 480) %>"<%- responsive(catImg, [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= cat.name %>" width="600" height="750"
                             class="w-full aspect-[4/5] object-cover transition-transform duration-[900ms] group-hover:scale-105" loading="lazy">
+                        <% } else { %>
+                        <svg class="w-full aspect-[4/5] transition-transform duration-[900ms] group-hover:scale-105" viewBox="0 0 200 250" aria-hidden="true" style="display:block;background:color-mix(in srgb, var(--color-brass) 9%, var(--color-bone));color:var(--color-brass)">
+                            <defs><pattern id="girih-<%= ci %>" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M20 0 L40 20 L20 40 L0 20 Z" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.55"/><path d="M20 9 L31 20 L20 31 L9 20 Z" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.55"/><circle cx="20" cy="20" r="2" fill="currentColor" opacity="0.6"/></pattern></defs>
+                            <rect width="200" height="250" fill="url(#girih-<%= ci %>)"/>
+                        </svg>
+                        <% } %>
                     </div>
                     <h3 class="text-lg font-bold text-ink group-hover:text-brass transition-colors"><%= cat.name %></h3>
                     <span class="case__link mt-2"><%= t('atelier.moreInfo') %>
@@ -145,8 +152,9 @@
                 <a href="/<%= locale %>/project/<%= encodeURIComponent(proj.slug) %>"
                     class="case <%= i % 2 === 1 ? 'case--reverse' : '' %> group" data-reveal>
                     <div class="case__media">
-                        <img src="<%= proj.coverImage || (proj.galleryImages && proj.galleryImages[0]) || '/placeholder.jpg' %>"
-                            alt="<%= proj.title %>" loading="lazy">
+                        <% const caseImg = proj.coverImage || (proj.galleryImages && proj.galleryImages[0]) || '/placeholder.jpg'; %>
+                        <img src="<%= img(caseImg, 1024) %>"<%- responsive(caseImg, [640, 1024, 1280], '(min-width: 1024px) 50vw, 100vw') %>
+                            alt="<%= proj.title %>" width="1200" height="900" loading="lazy" decoding="async">
                     </div>
                     <div class="case__body">
                         <div class="case__num">0<%= i + 1 %></div>
@@ -184,49 +192,31 @@
 </section>
 
 <!-- ===== Testimonials ===== -->
+<% if (testimonials && testimonials.length) { %>
 <section class="section section--tone-bone hairline-y">
     <div class="container container--narrow">
         <div class="section__head text-center mx-auto" data-reveal>
             <span class="eyebrow eyebrow--plain justify-center"><%= t('atelier.testimonialsEyebrow') %></span>
             <h2 class="section__title mx-auto" style="text-align:center"><%= t('atelier.testimonialsTitle') %></h2>
         </div>
-        <div class="grid md:grid-cols-3 gap-10">
-            <div class="quote" data-reveal>
-                <div class="quote__stars">★★★★★</div>
-                <p class="quote__text">«<%= t('auto.k_b32769d3f965') %></p>
-                <div class="quote__person">
-                    <span class="quote__avatar"><%= t('auto.k_80add0b9e028') %></span>
+        <div class="grid md:grid-cols-<%= Math.min(3, testimonials.length) %> gap-10">
+            <% testimonials.forEach((item, i) => { %>
+            <figure class="quote" data-reveal style="--reveal-delay:<%= i * 120 %>ms">
+                <div class="quote__stars" aria-label="<%= item.rating %>/5"><%= '★'.repeat(item.rating) %></div>
+                <blockquote class="quote__text">«<%= item.text %>»</blockquote>
+                <figcaption class="quote__person">
+                    <span class="quote__avatar" aria-hidden="true"><%= String(item.name).trim().charAt(0) %></span>
                     <div>
-                        <div class="quote__name"><%= t('auto.k_ef96e9d7f072') %></div>
-                        <div class="quote__where"><%= t('auto.k_352a9115c09a') %></div>
+                        <div class="quote__name"><%= item.name %></div>
+                        <% if (item.location) { %><div class="quote__where"><%= item.location %></div><% } %>
                     </div>
-                </div>
-            </div>
-            <div class="quote" data-reveal style="--reveal-delay:120ms">
-                <div class="quote__stars">★★★★★</div>
-                <p class="quote__text">«<%= t('auto.k_1ec0b204ad83') %></p>
-                <div class="quote__person">
-                    <span class="quote__avatar"><%= t('auto.k_d8fe6f076d79') %></span>
-                    <div>
-                        <div class="quote__name"><%= t('auto.k_4e7ed49cad40') %></div>
-                        <div class="quote__where"><%= t('auto.k_352a9115c09a') %></div>
-                    </div>
-                </div>
-            </div>
-            <div class="quote" data-reveal style="--reveal-delay:240ms">
-                <div class="quote__stars">★★★★★</div>
-                <p class="quote__text">«<%= t('auto.k_bc27af2206b7') %></p>
-                <div class="quote__person">
-                    <span class="quote__avatar"><%= t('auto.k_84be511ca748') %></span>
-                    <div>
-                        <div class="quote__name"><%= t('auto.k_cf17fd2cc1f6') %></div>
-                        <div class="quote__where"><%= t('auto.k_f73693f90702') %></div>
-                    </div>
-                </div>
-            </div>
+                </figcaption>
+            </figure>
+            <% }); %>
         </div>
     </div>
 </section>
+<% } %>
 
 <!-- ===== Articles ===== -->
 <% if (articles && articles.length) { %>
@@ -238,17 +228,17 @@
                 <h2 class="section__title"><%= t('atelier.articlesTitle') %></h2>
                 <p class="section__lead"><%= t('atelier.articlesLead') %></p>
             </div>
-            <a href="/<%= locale %>/articles" class="btn btn-outline btn--sm"><%= t('auto.k_46dd186fe2eb') %></a>
+            <a href="/<%= locale %>/articles" class="btn btn-outline btn--sm"><%= t('atelier.allArticles') %></a>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <% articles.slice(0, 3).forEach(a => { %>
                 <a href="/<%= locale %>/article/<%= a.slug %>" class="group block" data-reveal>
                     <div class="overflow-hidden mb-5" style="border:1px solid var(--hairline);border-radius:var(--r-tight)">
-                        <img src="<%= a.mainImage || '/placeholder.jpg' %>" alt="<%= a.title %>"
+                        <img src="<%= img(a.mainImage || '/placeholder.jpg', 640) %>"<%- responsive(a.mainImage || '/placeholder.jpg', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= a.title %>" width="1200" height="825" decoding="async"
                             class="w-full aspect-[16/11] object-cover transition-transform duration-[900ms] group-hover:scale-105" loading="lazy">
                     </div>
                     <h3 class="font-bold text-lg group-hover:text-brass transition-colors"><%= a.title %></h3>
-                    <% if (a.excerpt) { %><p class="text-sm mt-2 line-clamp-2" style="color:var(--color-stone)"><%= a.excerpt %></p><% } %>
+                    <% if (a.excerpt) { %><p class="text-sm mt-2 line-clamp-2" style="color:var(--color-stone-ink)"><%= a.excerpt %></p><% } %>
                 </a>
             <% }); %>
         </div>
@@ -270,15 +260,15 @@
         </div>
         <div class="grid sm:grid-cols-3 gap-6 mt-16 text-start" data-reveal>
             <div class="hairline-t pt-5">
-                <div class="text-xs mb-2" style="color:var(--color-stone);letter-spacing:0.14em"><%= t('auto.k_95ba75af28fb') %></div>
+                <div class="text-xs mb-2" style="color:var(--color-stone-ink);letter-spacing:0.14em"><%= t('auto.k_95ba75af28fb') %></div>
                 <a href="tel:+989124519443" class="ltr-text font-semibold block">+98 912 451 9443</a>
             </div>
             <div class="hairline-t pt-5">
-                <div class="text-xs mb-2" style="color:var(--color-stone);letter-spacing:0.14em"><%= t('auto.k_f1ad423d68cf') %></div>
+                <div class="text-xs mb-2" style="color:var(--color-stone-ink);letter-spacing:0.14em"><%= t('auto.k_f1ad423d68cf') %></div>
                 <a href="mailto:info@nashearatasfiyeh.com" class="font-semibold">info@nashearatasfiyeh.com</a>
             </div>
             <div class="hairline-t pt-5">
-                <div class="text-xs mb-2" style="color:var(--color-stone);letter-spacing:0.14em"><%= t('auto.k_efda82e0907c') %></div>
+                <div class="text-xs mb-2" style="color:var(--color-stone-ink);letter-spacing:0.14em"><%= t('auto.k_efda82e0907c') %></div>
                 <p class="text-sm leading-relaxed"><%= t('auto.k_f572ddf64198') %></p>
             </div>
         </div>

@@ -1,0 +1,111 @@
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-slate-900 mb-2">ویرایش صحنه</h1>
+    <p class="text-slate-500"><%= scene.name %></p>
+</div>
+
+<% if (error) { %>
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700"><%= error %></div>
+<% } %>
+<% if (saved) { %>
+    <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">ذخیره شد. <a href="/fa/visualizer?scene=<%= scene.id %>" target="_blank" rel="noopener" class="underline">مشاهده در سایت</a></div>
+<% } %>
+
+<form action="/admin/scenes/edit/<%= scene.id %>" method="POST" enctype="multipart/form-data" class="space-y-8">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="card-modern">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+            <button type="button" class="scene-mode is-on" data-scene-mode="corners">۱. گوشه‌های ناحیهٔ کاشی‌کاری</button>
+            <button type="button" class="scene-mode" data-scene-mode="mask">۲. جدا کردن اجزای جلوی دیوار</button>
+        </div>
+        <div data-scene-panel="corners">
+            <p class="text-sm text-slate-500 mb-4">چهار دایره را روی گوشه‌های ناحیه‌ای بگذارید که باید کاشی شود (بالا-چپ، بالا-راست، پایین-راست، پایین-چپ). شبکهٔ راهنما خانه‌های <strong>۲۰×۲۰ سانتی‌متر واقعی</strong> را نشان می‌دهد و نسبت ابعاد دیوار به‌طور خودکار از هندسهٔ همین چهار گوشه محاسبه می‌شود؛ فقط کافی است گوشه‌ها دقیق روی لبه‌های ناحیه باشند و عرض واقعی را وارد کنید.</p>
+        </div>
+        <div data-scene-panel="mask" hidden>
+            <p class="text-sm text-slate-500 mb-4">روی چیزهایی که <strong>جلوی دیوار</strong> هستند و باید روی کاشی‌ها بیفتند (شیر آب، گلدان، ظرف…) رنگ بزنید. هنگام ذخیره، همان قسمت‌های عکس به‌صورت PNG شفاف به‌عنوان «لایهٔ جلو» ذخیره می‌شود. برای دقت بیشتر قلم را کوچک کنید و روی لبه‌ها آرام بکشید.</p>
+        </div>
+        <div class="scene-editor" data-scene-editor data-quad="<%= JSON.stringify(scene.quad) %>" data-overlay="<%= scene.overlay || '' %>">
+            <img src="<%= scene.image %>" alt="" data-scene-photo>
+            <canvas class="scene-editor__mask" data-scene-mask></canvas>
+            <svg data-scene-svg aria-hidden="true"></svg>
+        </div>
+        <input type="hidden" name="quad" data-scene-quad value="<%= JSON.stringify(scene.quad) %>">
+        <div class="mt-4 flex flex-wrap items-center gap-4" data-scene-panel="corners">
+            <button type="button" class="btn-secondary !py-2 !px-3 text-xs" data-scene-reset>بازنشانی گوشه‌ها</button>
+            <span class="text-xs text-slate-600" data-scene-auto-msg></span>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-4" data-scene-panel="mask" hidden>
+            <button type="button" class="scene-tool is-on" data-scene-tool="paint">قلم</button>
+            <button type="button" class="scene-tool" data-scene-tool="erase">پاک‌کن</button>
+            <label class="flex items-center gap-2 text-xs text-slate-600">اندازهٔ قلم <input type="range" min="0.5" max="12" step="0.5" value="3" data-scene-brush></label>
+            <button type="button" class="btn-secondary !py-2 !px-3 text-xs" data-scene-mask-clear>پاک کردن همه</button>
+            <span class="text-xs text-slate-500">قسمت‌های قرمز = لایهٔ جلو. با «ذخیره» اعمال می‌شود.</span>
+        </div>
+    </div>
+
+    <div class="card-modern">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">مشخصات</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="s-name" class="block text-sm font-semibold text-slate-700 mb-2">نام (فارسی) *</label>
+                <input id="s-name" name="name" type="text" required maxlength="191" class="input-field" value="<%= scene.name %>">
+            </div>
+            <div>
+                <label for="s-nameEn" class="block text-sm font-semibold text-slate-700 mb-2">نام انگلیسی</label>
+                <input id="s-nameEn" name="nameEn" type="text" maxlength="191" class="input-field" value="<%= scene.nameEn || '' %>" placeholder="Kitchen backsplash">
+            </div>
+            <div>
+                <label for="s-nameAr" class="block text-sm font-semibold text-slate-700 mb-2">نام عربی</label>
+                <input id="s-nameAr" name="nameAr" type="text" maxlength="191" class="input-field" value="<%= scene.nameAr || '' %>" dir="rtl">
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div>
+                <label for="s-w" class="block text-sm font-semibold text-slate-700 mb-2">عرض واقعی ناحیه (سانتی‌متر)</label>
+                <input id="s-w" name="wallWidthCm" type="number" min="20" max="2000" step="1" class="input-field" value="<%= scene.wallWidthCm %>">
+            </div>
+            <div>
+                <label for="s-h" class="block text-sm font-semibold text-slate-700 mb-2">ارتفاع ناحیه (محاسبهٔ خودکار)</label>
+                <input id="s-h" name="wallHeightCm" type="number" readonly class="input-field bg-slate-50 text-slate-500" value="<%= scene.wallHeightCm %>">
+                <p class="text-xs text-slate-500 mt-1">از هندسهٔ چهار گوشه و عرض محاسبه می‌شود تا کاشی‌ها هیچ‌وقت کشیده نشوند.</p>
+            </div>
+            <div>
+                <label for="s-light" class="block text-sm font-semibold text-slate-700 mb-2">حفظ نور و سایهٔ عکس: <span data-scene-light-value><%= Math.round(scene.lighting * 100) %></span>٪</label>
+                <input id="s-light" name="lighting" type="range" min="0" max="1" step="0.05" value="<%= scene.lighting %>" class="w-full" data-scene-light>
+                <p class="text-xs text-slate-500 mt-1">صفر یعنی کاشی‌ها تخت و بدون نور عکس؛ ۱۰۰ یعنی روشنایی دیوار عکس کاملاً روی کاشی‌ها بیفتد.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-modern">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">تصاویر</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <label for="s-image" class="block text-sm font-semibold text-slate-700">تعویض عکس صحنه</label>
+                <input id="s-image" name="sceneImage" type="file" accept="image/jpeg,image/png,image/webp" class="input-field border-dashed">
+                <p class="text-xs text-slate-500">بعد از تعویض عکس، گوشه‌ها را دوباره تنظیم کنید.</p>
+            </div>
+            <div class="space-y-2">
+                <label for="s-overlay" class="block text-sm font-semibold text-slate-700">لایهٔ جلو (PNG شفاف)</label>
+                <input id="s-overlay" name="sceneOverlay" type="file" accept="image/png,image/webp" class="input-field border-dashed">
+                <p class="text-xs text-slate-500">به‌جای آپلود دستی می‌توانید از ابزار «جدا کردن اجزای جلوی دیوار» در بالا استفاده کنید. فایل دستی باید PNG شفاف و <em>دقیقاً هم‌اندازهٔ عکس صحنه</em> باشد.</p>
+                <% if (scene.overlay) { %>
+                    <div class="flex items-center gap-4 pt-2">
+                        <img src="<%= scene.overlay %>" alt="" width="128" height="80" class="w-32 h-20 object-cover rounded-xl border border-slate-200" style="background:repeating-conic-gradient(#e5e7eb 0 25%,#fff 0 50%) 0 0/16px 16px">
+                        <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="removeOverlay" class="w-4 h-4"> حذف لایهٔ جلو</label>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-modern flex flex-wrap items-center gap-6">
+        <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="isActive" <%= scene.isActive ? 'checked' : '' %> class="w-4 h-4"> نمایش در سایت</label>
+        <label class="flex items-center gap-2 text-sm text-slate-700">ترتیب نمایش <input type="number" name="sortOrder" value="<%= scene.sortOrder %>" class="input-field !w-24 !py-1.5"></label>
+        <div class="mr-auto flex items-center gap-3">
+            <a href="/admin/scenes" class="btn-secondary">بازگشت</a>
+            <button type="submit" class="btn-primary">ذخیره</button>
+        </div>
+    </div>
+</form>
+<script src="<%= asset('/js/admin-scene.js') %>" defer></script>

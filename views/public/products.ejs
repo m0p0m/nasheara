@@ -37,7 +37,7 @@
                         <a href="/<%= locale %>/products?category=<%= encodeURIComponent(c.name) %>"
                             class="pill <%= selectedCategory === c.name ? 'is-on' : '' %>">
                             <% if (c.mainImage) { %>
-                                <img class="pill__thumb" src="<%= c.mainImage %>" alt="<%= c.name %>" loading="lazy" decoding="async">
+                                <img class="pill__thumb" src="<%= img(c.mainImage, 160) %>" alt="<%= c.name %>" width="40" height="40" loading="lazy" decoding="async">
                             <% } else { %>
                                 <span class="pill__dot"></span>
                             <% } %>
@@ -67,22 +67,22 @@
                         <% if (p.isNew) { %><span class="gallery__badge"><%= t('atelier.newBadge') %></span><% } %>
                         <% if (p.isBestSeller) { %><span class="gallery__badge" style="inset-inline-start:auto;inset-inline-end:0.9rem"><%= t('atelier.bestSeller') %></span><% } %>
                         <div class="gallery__media">
-                            <img src="<%= p.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= p.patternName || p.name %>" loading="lazy" decoding="async">
+                            <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= p.patternName || p.name %> — <%= p.category || t('atelier.brandTag') %>" width="800" height="800" loading="lazy" decoding="async">
                         </div>
                         <div class="gallery__scrim"></div>
                         <div class="gallery__caption">
                             <% if (p.category) { %><div class="gallery__cat"><%= p.category %></div><% } %>
-                            <h3 class="gallery__name"><%= p.patternName || p.name %></h3>
+                            <h2 class="gallery__name"><%= p.patternName || p.name %></h2>
                             <p class="gallery__note"><%= noteOf(p) %></p>
-                            <span class="gallery__action" aria-hidden="true">مشاهدهٔ جزئیات</span>
+                            <span class="gallery__action" aria-hidden="true"><%= t('atelier.viewDetails') %></span>
                         </div>
                     </a>
                 <% }); %>
             </div>
         <% } else { %>
             <div class="py-24 text-center">
-                <h3 class="text-2xl font-bold mb-3"><%= t('atelier.allPatterns') %></h3>
-                <p class="mb-8" style="color:var(--color-stone)">
+                <h2 class="text-2xl font-bold mb-3"><%= t('atelier.allPatterns') %></h2>
+                <p class="mb-8" style="color:var(--color-stone-ink)">
                     <% if (q || selectedCategory) { %><%= t('atelier.emptyFiltered') %><% } else { %><%= t('atelier.emptyProducts') %><% } %>
                 </p>
                 <% if (q || selectedCategory) { %>

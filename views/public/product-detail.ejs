@@ -1,49 +1,34 @@
 <% if (product) { %>
 <%
-    const productImages = [product.mainImage, ...(product.galleryImages || [])]
-        .filter(Boolean)
-        .map(image => image.startsWith('http') ? image : siteUrl + image);
-    const productStructuredData = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        '@id': siteUrl + '/' + locale + '/product/' + encodeURIComponent(product.slug) + '#product',
-        name: product.name,
-        image: productImages,
-        description: product.metaDescription || product.description || undefined,
-        category: product.category || undefined,
-        brand: { '@type': 'Brand', name: 'نقش آرا' },
-        url: siteUrl + '/' + locale + '/product/' + encodeURIComponent(product.slug)
-    };
     const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 %>
-<script type="application/ld+json"><%- JSON.stringify(productStructuredData).replace(/</g, '\\u003c') %></script>
 
 <section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
     <div class="container">
 
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-3 text-sm mb-10" style="color:var(--color-stone)" data-reveal>
-            <a href="/<%= locale %>/" class="hover:text-brass transition-colors"><%= t('atelier.home') %></a>
+        <nav class="flex items-center gap-3 text-sm mb-10" style="color:var(--color-stone-ink)" data-reveal>
+            <a href="/<%= locale %>/" class="hover:text-brass transition-colors inline-block py-2"><%= t('atelier.home') %></a>
             <span>/</span>
-            <a href="/<%= locale %>/products" class="hover:text-brass transition-colors"><%= t('nav.products') %></a>
+            <a href="/<%= locale %>/products" class="hover:text-brass transition-colors inline-block py-2"><%= t('nav.products') %></a>
             <span>/</span>
             <span class="text-ink"><%= product.patternName || product.name %></span>
         </nav>
 
         <div class="pdetail">
             <!-- Gallery -->
-            <div class="pdetail__media">
+            <div class="pdetail__media" data-gallery>
                 <div class="pdetail__main" data-reveal>
-                    <img src="<%= product.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= product.patternName || product.name %>" id="mainImage" fetchpriority="high" decoding="async">
+                    <img src="<%= img(product.mainImage || '/icons/naghshe-ara-logo.png', 1024) %>"<%- responsive(product.mainImage || '/icons/naghshe-ara-logo.png', [640, 1024, 1280], '(min-width: 1024px) 50vw, 100vw') %> alt="<%= product.patternName || product.name %> — <%= [product.color, product.material].filter(Boolean).join('، ') || t('atelier.brandTag') %>" width="1000" height="1000" data-gallery-main fetchpriority="high" decoding="async">
                 </div>
                 <% if (product.galleryImages && product.galleryImages.length > 0) { %>
                     <div class="pdetail__thumbs" data-reveal style="--reveal-delay:100ms">
-                        <button type="button" class="pdetail__thumb is-active" onclick="changeMainImage('<%= product.mainImage %>')">
-                        <img src="<%= product.mainImage %>" alt="<%= product.patternName || product.name %>">
+                        <button type="button" class="pdetail__thumb is-active" data-gallery-thumb="<%= img(product.mainImage, 1024) %>">
+                        <img src="<%= img(product.mainImage, 160) %>" alt="<%= product.patternName || product.name %>" width="96" height="96" loading="lazy" decoding="async">
                         </button>
-                        <% product.galleryImages.forEach(img => { %>
-                            <button type="button" class="pdetail__thumb" onclick="changeMainImage('<%= img %>')">
-                            <img src="<%= img %>" alt="<%= product.patternName || product.name %>">
+                        <% product.galleryImages.forEach(image => { %>
+                            <button type="button" class="pdetail__thumb" data-gallery-thumb="<%= img(image, 1024) %>">
+                            <img src="<%= img(image, 160) %>" alt="<%= product.patternName || product.name %>" width="96" height="96" loading="lazy" decoding="async">
                             </button>
                         <% }); %>
                     </div>
@@ -102,8 +87,9 @@
                             </dd>
                         </div>
                     <% } %>
+                    <% const builtIn = new Set([t('atelier.patternName'), t('atelier.color'), t('atelier.material'), t('atelier.dimensions'), t('atelier.usageArea')]); %>
                     <% if (product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length) { %>
-                        <% Object.entries(product.specs).forEach(([key, value]) => { %>
+                        <% Object.entries(product.specs).filter(([key]) => !builtIn.has(String(key).trim())).forEach(([key, value]) => { %>
                             <div class="spec__row">
                                 <dt class="spec__key"><%= key %></dt>
                                 <dd class="spec__val"><%= value %></dd>
@@ -120,23 +106,29 @@
                         <%= t('atelier.backToPatterns') %>
                     </a>
                 </div>
+                <% if (product.tileCutout) { %>
+                <a href="/<%= locale %>/visualizer?product=<%= encodeURIComponent(product.slug) %>" class="btn btn-outline w-full mt-3" style="border-color:var(--color-brass);color:var(--color-jade)">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+                    <%= t('atelier.vizOnProduct') %>
+                </a>
+                <% } %>
 
                 <div class="grid grid-cols-2 gap-x-8 gap-y-4 pt-10" data-reveal style="--reveal-delay:280ms">
                     <div class="hairline-t pt-4">
                         <div class="font-semibold text-sm"><%= t('auto.k_15e1c23fe67a') %></div>
-                        <div class="text-xs mt-1" style="color:var(--color-stone)"><%= t('auto.k_6479eed024ea') %></div>
+                        <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= t('auto.k_6479eed024ea') %></div>
                     </div>
                     <div class="hairline-t pt-4">
                         <div class="font-semibold text-sm"><%= t('auto.k_438ef1007502') %></div>
-                        <div class="text-xs mt-1" style="color:var(--color-stone)"><%= t('auto.k_3d871fc609bf') %></div>
+                        <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= t('auto.k_3d871fc609bf') %></div>
                     </div>
                     <div class="hairline-t pt-4">
                         <div class="font-semibold text-sm"><%= t('auto.k_db80b9884a5e') %></div>
-                        <div class="text-xs mt-1" style="color:var(--color-stone)"><%= t('auto.k_9c428cc9b156') %></div>
+                        <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= t('auto.k_9c428cc9b156') %></div>
                     </div>
                     <div class="hairline-t pt-4">
                         <div class="font-semibold text-sm"><%= t('auto.k_41bd65830b61') %></div>
-                        <div class="text-xs mt-1" style="color:var(--color-stone)"><%= product.manufacturer || t('atelier.brandName') %></div>
+                        <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= product.manufacturer || t('atelier.brandName') %></div>
                     </div>
                 </div>
             </div>
@@ -156,7 +148,7 @@
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(rp.slug) %>"
                     class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
                     <div class="ed-card__media">
-                        <img src="<%= rp.mainImage || '/icons/naghshe-ara-logo.png' %>" alt="<%= rp.patternName || rp.name %>" loading="lazy" decoding="async">
+                        <img src="<%= img(rp.mainImage || '/icons/naghshe-ara-logo.png', 480) %>"<%- responsive(rp.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= rp.patternName || rp.name %>" width="800" height="800" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (rp.category) { %><div class="ed-card__cat"><%= rp.category %></div><% } %>
@@ -170,27 +162,10 @@
 </section>
 <% } %>
 
-<script>
-    function changeMainImage(src) {
-        var main = document.getElementById('mainImage');
-        main.style.opacity = '0';
-        setTimeout(function () {
-            main.src = src;
-            main.onload = function () { main.style.opacity = '1'; };
-        }, 180);
-        var thumbs = document.querySelectorAll('.pdetail__thumb');
-        thumbs.forEach(function (t) { t.classList.remove('is-active'); });
-        var active = Array.prototype.find.call(thumbs, function (t) {
-            var s = t.querySelector('img') ? t.querySelector('img').getAttribute('src') : '';
-            return s === src || src.indexOf(s) >= 0 || s.indexOf(src) >= 0;
-        });
-        if (active) active.classList.add('is-active');
-    }
-</script>
 <% } else { %>
 <section class="section section--tone-bone text-center" style="padding-top:12rem;padding-bottom:12rem">
     <h1 class="text-3xl font-bold mb-4"><%= t('auto.k_fd2028ee66ca') %></h1>
-    <p class="mb-8" style="color:var(--color-stone)"><%= t('auto.k_da0fa8186da7') %></p>
+    <p class="mb-8" style="color:var(--color-stone-ink)"><%= t('auto.k_da0fa8186da7') %></p>
     <a href="/<%= locale %>/products" class="btn btn-brass"><%= t('atelier.allPatterns') %></a>
 </section>
 <% } %>

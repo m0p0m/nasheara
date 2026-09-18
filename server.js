@@ -2,12 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
+const compression = require('compression');
 const MySQLStore = require('express-mysql-session')(session);
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
 const { i18next, middleware: i18nMiddleware, supportedLocales } = require('./config/i18n');
 const { readCsrfToken, authorizeCsrf } = require('./middleware/csrf');
 const { loginLimiter, newsletterLimiter, consultationLimiter, uploadLimiter, adminMutationLimiter } = require('./middleware/rateLimit');
+const images = require('./lib/images');
 
 const app = express();
 app.disable('x-powered-by');
@@ -30,6 +32,7 @@ app.use(helmet({
             imgSrc: ["'self'", 'data:', 'blob:'],
             fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
             connectSrc: ["'self'"],
+            frameSrc: ['https://www.openstreetmap.org'],
             frameAncestors: ["'none'"]
         }
     },
@@ -53,13 +56,23 @@ app.use((req, res, next) => {
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), autoplay=(), clipboard-write=(), fullscreen=(self)');
     next();
 });
+app.use(compression());
+// Resized WebP variants of uploads/icons (see lib/images.js)
+app.use('/img', images.router);
+app.locals.img = images.imageUrl;
+app.locals.srcset = images.srcset;
+app.locals.responsive = images.responsive;
+app.locals.asset = images.asset;
 app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: '1d',
+    // CSS/JS are linked with ?v=<mtime> (app.locals.asset), so they can be cached long too.
+    maxAge: '30d',
     setHeaders: (res, filePath) => {
         const ext = path.extname(filePath).toLowerCase();
         if (['.woff', '.woff2', '.ttf', '.eot', '.otf'].includes(ext)) {
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.ico'].includes(ext)) {
+            res.setHeader('Cache-Control', 'public, max-age=2592000');
         }
     }
 }));
@@ -173,13 +186,13 @@ const productController = require('./controllers/productController');
 const consultationController = require('./controllers/consultationController'); // New
 
 // Public localized routes and SEO endpoints
-app.get('/', (req, res) => res.redirect(302, '/fa/'));
+app.get('/', (req, res) => res.redirect(301, '/fa/'));
 app.get('/sitemap.xml', publicController.getSitemap);
 app.get('/robots.txt', publicController.getRobots);
 app.use((req, res, next) => {
     const isLegacyPublicPath = /^\/(products|projects|articles|contact|consultation)(\/|$)/.test(req.path)
         || /^\/(product|project|article)\//.test(req.path);
-    if (req.method === 'GET' && isLegacyPublicPath) return res.redirect(302, `/fa${req.originalUrl}`);
+    if (req.method === 'GET' && isLegacyPublicPath) return res.redirect(301, `/fa${req.originalUrl}`);
     next();
 });
 for (const locale of supportedLocales) app.use(`/${locale}`, publicRoutes);
@@ -218,6 +231,7 @@ app.use((req, res) => {
     if (req.accepts('html')) {
         return res.status(404).render('public/not-found', {
             title: '404 - صفحه مورد نظر یافت نشد',
+            noindex: true,
             layout: 'public/layout',
             currentPath: req.path,
             siteUrl: app.locals.siteUrl
@@ -227,10 +241,45 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+    if (err && err.name === 'MulterError') {
+        const messages = {
+            LIMIT_FILE_SIZE: 'حجم هر تصویر باید کمتر از ۵ مگابایت باشد.',
+            LIMIT_FILE_COUNT: 'تعداد تصاویر بیشتر از حد مجاز است.',
+            LIMIT_UNEXPECTED_FILE: 'فیلد تصویر نامعتبر است.',
+            LIMIT_PART_COUNT: 'فرم بیش از حد بزرگ است؛ تعداد فیلدها را کم کنید.'
+        };
+        const message = messages[err.code] || 'بارگذاری فایل ناموفق بود.';
+        if (req.accepts('html')) {
+            return res.status(400).render('public/error', {
+                title: 'خطا در ارسال فرم',
+                layout: 'public/layout',
+                noindex: true,
+                currentPath: req.path,
+                siteUrl: app.locals.siteUrl,
+                errorMessage: message
+            });
+        }
+        return res.status(400).json({ error: message });
+    }
+    if (err && err.message === 'Error: Images Only!') {
+        const message = 'فقط تصویر با فرمت JPG، PNG، GIF یا WebP قابل بارگذاری است.';
+        if (req.accepts('html')) {
+            return res.status(400).render('public/error', {
+                title: 'خطا در ارسال فرم',
+                layout: 'public/layout',
+                noindex: true,
+                currentPath: req.path,
+                siteUrl: app.locals.siteUrl,
+                errorMessage: message
+            });
+        }
+        return res.status(400).json({ error: message });
+    }
     console.error('Unhandled server error:', err);
     if (req.accepts('html')) {
         return res.status(500).render('public/error', {
             title: 'خطا در بارگذاری صفحه',
+            noindex: true,
             layout: 'public/layout',
             currentPath: req.path,
             siteUrl: app.locals.siteUrl,

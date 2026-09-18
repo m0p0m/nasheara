@@ -10,7 +10,8 @@ const showConsultationForm = async (req, res) => {
         const products = await Product.getAll(req.locale);
         const selectedProduct = req.query.product || '';
         res.render('public/consultation-form', {
-            title: 'درخواست مشاوره',
+            title: res.locals.t('seo.consultationTitle'),
+            metaDescription: res.locals.t('seo.consultationDesc'),
             products,
             selectedProduct,
             layout: 'public/layout',
@@ -45,6 +46,7 @@ const submitConsultation = async (req, res) => {
         // Redirect to a thank you page or show a success message
         res.render('public/thank-you', { 
             title: 'با تشکر - نقش آرا کاشی دست‌ساز',
+            noindex: true,
             heading: 'درخواست شما ثبت شد',
             message: 'درخواست شما دریافت شد. کارشناسان نقش آرا کاشی دست‌ساز به‌زودی برای ارائه مشاوره تخصصی با شما تماس خواهند گرفت.',
             layout: 'public/layout',

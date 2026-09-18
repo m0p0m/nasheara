@@ -62,9 +62,11 @@ const upload = multer({
     limits: {
         fileSize: 5 * 1024 * 1024,
         files: 10,
-        parts: 20,
-        fields: 50,
-        fieldSize: 100 * 1024
+        // The product form alone posts ~35 fields (three languages, specs, SEO)
+        // plus dynamic spec rows; keep a ceiling but leave real headroom.
+        parts: 250,
+        fields: 240,
+        fieldSize: 200 * 1024
     },
     fileFilter: function(req, file, cb){
         checkFileType(file, cb);
@@ -72,6 +74,9 @@ const upload = multer({
 }).fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'coverImage', maxCount: 1 },
+    { name: 'tileCutout', maxCount: 1 },
+    { name: 'sceneImage', maxCount: 1 },
+    { name: 'sceneOverlay', maxCount: 1 },
     { name: 'galleryImages', maxCount: 5 }
 ]);
 

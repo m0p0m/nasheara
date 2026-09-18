@@ -32,7 +32,7 @@
           class="group flex-shrink-0 w-[78vw] max-w-[300px] snap-start bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
           <div class="relative aspect-[16/10] bg-[var(--bg-milky)] overflow-hidden">
             <% if (article.mainImage) { %>
-            <img src="<%= article.mainImage %>" alt="<%= article.title %>" class="w-full h-full object-cover">
+            <img src="<%= img(article.mainImage, 1024) %>"<%- responsive(article.mainImage, [640, 1024, 1280], '(min-width: 1024px) 50vw, 100vw') %> alt="<%= article.title %>" width="1200" height="630" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
             <% } else { %>
             <div class="w-full h-full flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text text-primary opacity-30">
@@ -66,7 +66,7 @@
         class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 flex-col h-full">
         <div class="relative aspect-video overflow-hidden bg-gradient-to-br from-[var(--bg-milky)] to-white">
           <% if (article.mainImage) { %>
-          <img src="<%= article.mainImage %>" alt="<%= article.title %>"
+          <img src="<%= img(article.mainImage, 640) %>"<%- responsive(article.mainImage, [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= article.title %>" width="1200" height="630" loading="lazy" decoding="async"
             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
           <% } else { %>
           <div class="w-full h-full flex items-center justify-center">

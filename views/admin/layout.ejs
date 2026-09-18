@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/icons/favicon-64.png" sizes="64x64" type="image/png">
+    <link rel="stylesheet" href="<%= asset('/css/style.css') %>">
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen <%= locale === 'en' ? 'font-en' : 'font-fa-ar' %>">
     <div class="flex min-h-screen bg-slate-100">
@@ -61,6 +62,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                     </svg>
                     <span class="font-medium"><%= t('auto.k_4014616c302e') %></span>
+                </a>
+                <a href="/admin/testimonials" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100 text-slate-700 <%= typeof currentPage !== 'undefined' && currentPage === 'testimonials' ? 'bg-slate-100 border-r-4 border-primary' : '' %>">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.48 3.5a.56.56 0 011.04 0l2.1 4.26 4.7.68a.56.56 0 01.31.96l-3.4 3.31.8 4.68a.56.56 0 01-.81.59L12 15.77l-4.2 2.21a.56.56 0 01-.82-.59l.8-4.68-3.4-3.31a.56.56 0 01.31-.96l4.7-.68 2.1-4.26z"/></svg>
+                    <span class="font-medium">نظرات مشتریان</span>
+                </a>
+                <a href="/admin/scenes" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100 text-slate-700 <%= typeof currentPage !== 'undefined' && currentPage === 'scenes' ? 'bg-slate-100 border-r-4 border-primary' : '' %>">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 8.5a1.5 1.5 0 100 .01"/></svg>
+                    <span class="font-medium">صحنه‌های شبیه‌ساز</span>
                 </a>
                 <div class="pt-4 mt-4 border-t border-slate-200">
                     <form action="/admin/logout" method="POST">
@@ -133,6 +142,14 @@
                     </svg>
                     <span class="font-medium"><%= t('auto.k_4014616c302e') %></span>
                 </a>
+                <a href="/admin/testimonials" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 <%= typeof currentPage !== 'undefined' && currentPage === 'testimonials' ? 'bg-white/10 border-r-4 border-accent' : '' %>" data-mobile-close>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.48 3.5a.56.56 0 011.04 0l2.1 4.26 4.7.68a.56.56 0 01.31.96l-3.4 3.31.8 4.68a.56.56 0 01-.81.59L12 15.77l-4.2 2.21a.56.56 0 01-.82-.59l.8-4.68-3.4-3.31a.56.56 0 01.31-.96l4.7-.68 2.1-4.26z"/></svg>
+                    <span class="font-medium">نظرات مشتریان</span>
+                </a>
+                <a href="/admin/scenes" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 <%= typeof currentPage !== 'undefined' && currentPage === 'scenes' ? 'bg-white/10 border-r-4 border-accent' : '' %>" data-mobile-close>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 8.5a1.5 1.5 0 100 .01"/></svg>
+                    <span class="font-medium">صحنه‌های شبیه‌ساز</span>
+                </a>
                     <div class="pt-4 mt-4 border-t border-white/10">
                         <form action="/admin/logout" method="POST">
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -176,40 +193,6 @@
         </div>
     </div>
 
-    <script>
-        (function () {
-            const toggleButton = document.getElementById('mobileSidebarToggle');
-            const closeButton = document.getElementById('mobileSidebarClose');
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('mobileSidebarOverlay');
-            const panel = document.getElementById('mobileSidebarPanel');
-            const closeTargets = document.querySelectorAll('[data-mobile-close]');
-
-            if (!toggleButton || !sidebar || !overlay || !panel) return;
-
-            const openSidebar = () => {
-                sidebar.classList.remove('pointer-events-none');
-                overlay.classList.remove('opacity-0');
-                overlay.classList.add('opacity-100');
-                panel.classList.remove('translate-x-full');
-                document.body.classList.add('overflow-hidden');
-            };
-
-            const closeSidebar = () => {
-                panel.classList.add('translate-x-full');
-                overlay.classList.remove('opacity-100');
-                overlay.classList.add('opacity-0');
-                document.body.classList.remove('overflow-hidden');
-                setTimeout(() => {
-                    sidebar.classList.add('pointer-events-none');
-                }, 300);
-            };
-
-            toggleButton.addEventListener('click', openSidebar);
-            overlay.addEventListener('click', closeSidebar);
-            closeTargets.forEach((el) => el.addEventListener('click', closeSidebar));
-            if (closeButton) closeButton.addEventListener('click', closeSidebar);
-        })();
-    </script>
+    <script src="<%= asset('/js/admin.js') %>" defer></script>
 </body>
 </html>

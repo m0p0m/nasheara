@@ -10,7 +10,7 @@ const { adminMutationLimiter } = require('../middleware/rateLimit');
 
 // GET /admin/products - List all products (will be the main dashboard)
 // Note: We'll adjust the main dashboard route later to point here.
-// router.get('/', ensureAuthenticated, productController.listProducts);
+router.get('/', ensureAuthenticated, productController.listProducts);
 
 // GET /admin/products/add - Show form to add a new product
 router.get('/add', ensureAuthenticated, productController.showAddForm);

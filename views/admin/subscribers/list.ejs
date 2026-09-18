@@ -27,7 +27,7 @@
                                     <%= new Date(sub.subscribedAt).toLocaleDateString('fa-IR') %>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <form action="/admin/subscribers/delete/<%= sub.id %>" method="POST" onsubmit="return confirm('<%= t('auto.k_91692ccf1edd') %>')">
+                                    <form action="/admin/subscribers/delete/<%= sub.id %>" method="POST" data-confirm="<%= t('auto.k_91692ccf1edd') %>">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <button type="submit" class="text-red-600 hover:text-red-800 transition-colors">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

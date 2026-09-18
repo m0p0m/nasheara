@@ -30,6 +30,9 @@ router.get('/robots.txt', publicController.getRobots);
 // GET /contact - Show contact page
 router.get('/contact', publicController.getContactPage);
 
+// GET /visualizer - Room visualizer (tool lands here in the next iteration)
+router.get('/visualizer', publicController.getVisualizerPage);
+
 // GET /consultation - Show the consultation form
 router.get('/consultation', consultationController.showConsultationForm);
 

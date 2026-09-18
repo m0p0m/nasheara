@@ -54,7 +54,7 @@
                                         </svg>
                                         <%= t('auto.k_ac60ae7a6877') %>
                                     </a>
-                                    <form action="/admin/categories/delete/<%= category.id %>" method="POST" class="inline" onsubmit="return confirm('<%= t('auto.k_029b75166a9a') %>');">
+                                    <form action="/admin/categories/delete/<%= category.id %>" method="POST" class="inline" data-confirm="<%= t('auto.k_029b75166a9a') %>">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <button type="submit" class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

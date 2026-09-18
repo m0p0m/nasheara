@@ -47,7 +47,8 @@ const productData = async (input, current = null) => {
     const data = {};
     const scalarFields = [
         'name', 'stock', 'description', 'mainImage', 'metaTitle', 'metaDescription',
-        'isNew', 'isBestSeller', 'patternName', 'color', 'material', 'dimensions'
+        'isNew', 'isBestSeller', 'patternName', 'color', 'material', 'dimensions',
+        'tileShape', 'tileCutout', 'tileWidthCm', 'tileHeightCm'
     ];
     for (const field of scalarFields) if (Object.prototype.hasOwnProperty.call(input, field)) data[field] = input[field];
     for (const field of ['galleryImages', 'keywords', 'usageArea']) {
@@ -76,6 +77,47 @@ const productData = async (input, current = null) => {
 };
 
 const getAll = async (locale = 'fa') => (await prisma.product.findMany({ include: { categoryRecord: true } })).map(record => toProduct(record, locale));
+
+// Admin listing: filtering and paging happen in the database and only the
+// columns the table shows are selected, so the page stays light at 100+ rows.
+const listPage = async ({ q = '', categoryId = null, page = 1, pageSize = 20 } = {}) => {
+    const where = {
+        ...(categoryId ? { categoryId } : {}),
+        ...(q ? { OR: [
+            { name: { contains: q } },
+            { patternName: { contains: q } },
+            { slug: { contains: q } },
+            { description: { contains: q } }
+        ] } : {})
+    };
+    const safePage = Math.max(1, parseInt(page, 10) || 1);
+    const [total, rows, categoryCounts, withoutImage] = await Promise.all([
+        prisma.product.count({ where }),
+        prisma.product.findMany({
+            where,
+            orderBy: [{ createdAt: 'desc' }],
+            skip: (safePage - 1) * pageSize,
+            take: pageSize,
+            select: {
+                id: true, name: true, patternName: true, slug: true, mainImage: true, stock: true,
+                isNew: true, isBestSeller: true, createdAt: true,
+                categoryRecord: { select: { id: true, name: true } }
+            }
+        }),
+        prisma.product.groupBy({ by: ['categoryId'], _count: { _all: true } }),
+        prisma.product.count({ where: { mainImage: null } })
+    ]);
+    const pageCount = Math.max(1, Math.ceil(total / pageSize));
+    return {
+        products: rows.map(({ categoryRecord, ...row }) => ({ ...row, category: categoryRecord ? categoryRecord.name : null, categoryId: categoryRecord ? categoryRecord.id : null })),
+        total,
+        page: Math.min(safePage, pageCount),
+        pageCount,
+        pageSize,
+        categoryCounts: Object.fromEntries(categoryCounts.map(c => [c.categoryId || '', c._count._all])),
+        withoutImage
+    };
+};
 
 const findById = async (id, locale = 'fa') => toProduct(await prisma.product.findUnique({ where: { id }, include: { categoryRecord: true } }), locale);
 
@@ -110,4 +152,4 @@ const remove = async id => {
     return result.count ? undefined : null;
 };
 
-module.exports = { getAll, findById, findBySlug, create, update, remove, slugify };
+module.exports = { getAll, listPage, findById, findBySlug, create, update, remove, slugify };

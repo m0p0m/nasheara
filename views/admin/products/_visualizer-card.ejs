@@ -1,0 +1,53 @@
+<%
+    const vp = typeof product !== 'undefined' && product ? product : {};
+    const shapes = typeof tileShapes !== 'undefined' ? tileShapes : {};
+%>
+<!-- Visualizer -->
+<div class="card-modern">
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold text-[#1E293B]">شبیه‌ساز فضا</h2>
+        <p class="text-sm text-[#6B7280] mt-1">فقط محصولاتی که «تصویر PNG کاشی» دارند در شبیه‌ساز سایت نمایش داده می‌شوند. شکل کاشی مشخص می‌کند چیدمان چطور انجام شود (لوزی، شش‌ضلعی، پولکی…).</p>
+        <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-slate-700">
+            <strong>تصویر PNG کاشی:</strong> عکس <em>یک</em> کاشی کاملاً از روبه‌رو با <em>پس‌زمینهٔ شفاف</em> (PNG یا WebP) که دقیقاً تا لبه‌های کاشی بریده شده باشد؛ بدون سایه یا حاشیهٔ اضافه. حداقل ۴۰۰ پیکسل در بزرگ‌ترین ضلع.
+            <ul class="list-disc pr-5 mt-1 text-xs text-slate-600">
+                <li>شش‌ضلعی: یک رأس رو به بالا باشد (نه ضلع صاف).</li>
+                <li>لوزی: رأس‌ها بالا و پایین باشند.</li>
+                <li>پولکی و اسلیمی: نوک باریک رو به پایین باشد.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+            <label for="tileShape" class="block text-sm font-semibold text-[#1E293B]">شکل کاشی</label>
+            <select id="tileShape" name="tileShape" class="input-field">
+                <option value="">تشخیص خودکار از نام</option>
+                <% Object.entries(shapes).forEach(([key, shape]) => { %>
+                    <option value="<%= key %>" <%= vp.tileShape === key ? 'selected' : '' %>><%= shape.label %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="space-y-2">
+            <label for="tileWidthCm" class="block text-sm font-semibold text-[#1E293B]">عرض واقعی کاشی (سانتی‌متر)</label>
+            <input type="number" step="0.1" min="1" max="200" id="tileWidthCm" name="tileWidthCm" value="<%= vp.tileWidthCm || '' %>" class="input-field" placeholder="مثلاً ۲۰">
+            <p class="text-xs text-[#6B7280]">ارتفاع از نسبت خود تصویر PNG محاسبه می‌شود تا کاشی هیچ‌وقت کشیده نشود. اگر خالی بماند از فیلد «ابعاد» یا پیش‌فرض شکل استفاده می‌شود.</p>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="space-y-2">
+            <label for="tileCutout" class="block text-sm font-semibold text-[#1E293B]">تصویر PNG کاشی (پس‌زمینهٔ شفاف)</label>
+            <input type="file" id="tileCutout" name="tileCutout" accept="image/png,image/webp" class="input-field border-dashed">
+            <p class="text-xs text-[#6B7280]">فایل‌های JPG پذیرفته نمی‌شوند چون شفافیت ندارند.</p>
+        </div>
+        <% if (vp.tileCutout) { %>
+        <div class="space-y-2">
+            <span class="block text-sm font-semibold text-[#1E293B]">تصویر فعلی</span>
+            <div class="flex items-center gap-4">
+                <img src="<%= vp.tileCutout %>" alt="" width="96" height="96" class="w-24 h-24 object-contain rounded-xl border border-gray-200" style="background:repeating-conic-gradient(#e5e7eb 0 25%,#fff 0 50%) 0 0/16px 16px">
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="removeTileCutout" class="w-4 h-4"> حذف تصویر</label>
+            </div>
+        </div>
+        <% } else { %>
+        <div class="flex items-center rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">این محصول هنوز در شبیه‌ساز نمایش داده نمی‌شود.</div>
+        <% } %>
+    </div>
+</div>

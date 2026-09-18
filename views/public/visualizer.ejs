@@ -1,0 +1,119 @@
+<%
+    const i18n = {
+        summary: t('atelier.vizSummary'),
+        consultNote: t('atelier.vizConsultNote'),
+        plain: t('atelier.vizScenePlain'),
+        noWebgl: t('atelier.vizNoWebgl')
+    };
+    const shapeLabel = key => locale === 'en' ? (shapes[key] ? shapes[key].labelEn : key) : (shapes[key] ? shapes[key].label : key);
+    const glazes = [
+        ['original', t('atelier.vizGlazeOriginal'), null],
+        ['ruby', 'Ruby', '#9B2C1F'], ['amber', 'Amber', '#C98A2E'], ['olive', 'Olive', '#7C8A3C'],
+        ['jade', 'Jade', '#2F5A4A'], ['cobalt', 'Cobalt', '#2B4C8C'], ['plum', 'Plum', '#6E3A5C'],
+        ['ink', 'Ink', '#2B2724'], ['bone', 'Bone', '#EFE6D6']
+    ];
+    const grouts = [['light', '#D9D2C6'], ['sand', '#C9B99F'], ['grey', '#9A9690'], ['dark', '#3C3934'], ['white', '#F3EFE8']];
+%>
+<section class="section section--tone-bone" style="padding-top:clamp(5.5rem,9vw,7rem)">
+    <div class="container">
+        <div class="section__head" style="margin-bottom:2rem">
+            <span class="eyebrow"><%= t('nav.visualizer') %></span>
+            <h1 class="section__title"><%= t('atelier.vizTitle') %></h1>
+            <p class="section__lead"><%= t('atelier.vizLead') %></p>
+        </div>
+
+        <% if (!tiles.length) { %>
+            <p class="section__lead"><%= t('atelier.vizNoTiles') %></p>
+        <% } else { %>
+        <div class="vz" data-visualizer
+             data-tiles="<%= JSON.stringify(tiles) %>"
+             data-scenes="<%= JSON.stringify(scenes) %>"
+             data-shapes="<%= JSON.stringify(shapes) %>"
+             data-i18n="<%= JSON.stringify(i18n) %>"
+             data-initial="<%= initialSlug || '' %>"
+             data-initial-scene="<%= initialScene || '' %>">
+
+            <div class="vz__stage-col">
+                <div class="viz-stage">
+                    <canvas aria-label="<%= t('atelier.vizTitle') %>" role="img"></canvas>
+                    <p class="vz__brush-hint" data-brush-hint hidden><%= t('atelier.vizBrushHint') %></p>
+                </div>
+                <p class="vz__notice" data-notice hidden></p>
+                <div class="vz__stage-bar">
+                    <p class="vz__summary" data-summary aria-live="polite"></p>
+                    <div class="vz__stage-actions">
+                        <button type="button" class="btn btn-outline btn--sm" data-download><%= t('atelier.vizDownload') %></button>
+                        <a class="btn btn-brass btn--sm" data-consult data-base="/<%= locale %>/consultation" href="/<%= locale %>/consultation"><%= t('atelier.vizConsult') %></a>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="vz__panel">
+                <div class="vz__group">
+                    <h2 class="vz__label"><%= t('atelier.vizScene') %></h2>
+                    <div class="vz__scenes" data-scenes></div>
+                </div>
+
+                <div class="vz__group">
+                    <h2 class="vz__label"><%= t('atelier.vizTile') %> <span class="vz__shape"><%= t('atelier.vizShape') %>: <strong data-shape-label></strong></span></h2>
+                    <div class="vz__tiles">
+                        <% tiles.forEach(tile => { %>
+                            <button type="button" class="vz__tile" data-tile="<%= tile.slug %>" aria-pressed="false" title="<%= tile.name %>">
+                                <img src="<%= tile.thumb %>" alt="" width="72" height="72" loading="lazy" decoding="async" class="vz__tile-cutout">
+                                <span class="vz__tile-name"><%= tile.name %></span>
+                                <span class="vz__tile-shape"><%= shapeLabel(tile.shape) %></span>
+                            </button>
+                        <% }); %>
+                    </div>
+                    <div class="vz__brush">
+                        <button type="button" class="vz__chip vz__chip--brush" data-brush-toggle aria-pressed="false">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                            <%= t('atelier.vizBrush') %>
+                        </button>
+                        <button type="button" class="vz__chip" data-clear-paint><%= t('atelier.vizClear') %></button>
+                    </div>
+                </div>
+
+                <div class="vz__group" data-layout-group>
+                    <h2 class="vz__label"><%= t('atelier.vizLayout') %></h2>
+                    <div class="vz__chips">
+                        <button type="button" class="vz__chip" data-layout="straight" aria-pressed="true"><%= t('atelier.vizLayoutStraight') %></button>
+                        <button type="button" class="vz__chip" data-layout="offset" aria-pressed="false"><%= t('atelier.vizLayoutOffset') %></button>
+                        <button type="button" class="vz__chip" data-layout="diagonal" aria-pressed="false"><%= t('atelier.vizLayoutDiagonal') %></button>
+                    </div>
+                </div>
+
+                <div class="vz__group vz__group--row">
+                    <label class="vz__range">
+                        <span class="vz__label"><%= t('atelier.vizScale') %></span>
+                        <input type="range" min="0.6" max="1.6" step="0.05" value="1" data-scale>
+                    </label>
+                    <label class="vz__range">
+                        <span class="vz__label"><%= t('atelier.vizGroutWidth') %></span>
+                        <input type="range" min="0.1" max="1" step="0.05" value="0.3" data-grout-width>
+                    </label>
+                </div>
+
+                <div class="vz__group">
+                    <h2 class="vz__label"><%= t('atelier.vizGrout') %></h2>
+                    <div class="vz__swatches">
+                        <% grouts.forEach(([id, hex]) => { %>
+                            <button type="button" class="vz__swatch" data-grout="<%= id %>" aria-pressed="false" aria-label="<%= id %>" style="--sw:<%= hex %>"></button>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <div class="vz__group">
+                    <h2 class="vz__label"><%= t('atelier.vizGlaze') %></h2>
+                    <div class="vz__swatches">
+                        <% glazes.forEach(([id, label, hex]) => { %>
+                            <button type="button" class="vz__swatch <%= hex ? '' : 'vz__swatch--text' %>" data-glaze="<%= id %>" aria-pressed="false" aria-label="<%= label %>" title="<%= label %>" style="--sw:<%= hex || 'transparent' %>"><%= hex ? '' : label %></button>
+                        <% }); %>
+                    </div>
+                </div>
+            </aside>
+        </div>
+        <% } %>
+    </div>
+</section>
+<script src="<%= asset('/js/visualizer.js') %>" defer></script>

@@ -11,7 +11,7 @@
       <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight" style="color:var(--color-jade-deep)">
         <%= t('auto.k_a4a1baccd7b6') %>
       </h1>
-      <p class="text-xl leading-relaxed" style="color:var(--color-stone)">
+      <p class="text-xl leading-relaxed" style="color:var(--color-stone-ink)">
         <%= t('auto.k_b0074248138e') %>
       </p>
     </div>
@@ -134,14 +134,14 @@
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_2bae41dee0af') %> *</label>
-                  <input name="name" required
+                  <label for="consultName" class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_2bae41dee0af') %> *</label>
+                  <input id="consultName" name="name" type="text" autocomplete="name" required
                     class="input-field h-12"
                     placeholder="<%= t('auto.k_2a2bc8eb58e0') %>" />
                 </div>
                 <div>
-                  <label class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_ea8bbfa64be1') %> *</label>
-                  <input name="phone" required
+                  <label for="consultPhone" class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_ea8bbfa64be1') %> *</label>
+                  <input id="consultPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required
                     dir="ltr" class="input-field h-12 ltr-text"
                     placeholder="<%= t('forms.phonePlaceholder') %>" />
                 </div>

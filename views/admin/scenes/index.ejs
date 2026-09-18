@@ -1,0 +1,77 @@
+<div class="mb-8">
+    <div class="flex flex-col xl:flex-row justify-between items-start gap-4 mb-6">
+        <div>
+            <h1 class="text-4xl font-bold text-slate-900 mb-2">صحنه‌های شبیه‌ساز</h1>
+            <p class="text-slate-500">هر صحنه یک عکس واقعی از فضاست (مثلاً بین کابینتی آشپزخانه) که کاربر کاشی‌ها را روی آن می‌بیند. بعد از افزودن، چهار گوشهٔ ناحیهٔ کاشی‌کاری را روی عکس مشخص کنید.</p>
+        </div>
+    </div>
+
+    <% if (error) { %>
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700"><%= error %></div>
+    <% } %>
+
+    <form action="/admin/scenes/add" method="POST" enctype="multipart/form-data" class="card-modern mb-8">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <h2 class="text-xl font-semibold text-slate-900 mb-2">افزودن صحنهٔ جدید</h2>
+        <div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-slate-700">
+            <strong>عکس مناسب:</strong> عکس واقعی و باکیفیت (حداقل ۱۶۰۰ پیکسل عرض) که ناحیهٔ کاشی‌کاری در آن <em>دیوار ساده و روشن</em> باشد؛ نور و سایهٔ همان دیوار روی کاشی‌ها حفظ می‌شود. اگر جلوی دیوار وسیله‌ای هست (شیر آب، گلدان…)، همان وسیله‌ها را جداگانه به‌صورت PNG شفاف به‌عنوان «لایهٔ جلو» آپلود کنید تا روی کاشی‌ها بیفتند.
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="s-name" class="block text-sm font-semibold text-slate-700 mb-2">نام صحنه (فارسی) *</label>
+                <input id="s-name" name="name" type="text" required maxlength="191" class="input-field" placeholder="مثلاً بین کابینتی">
+            </div>
+            <div>
+                <label for="s-image" class="block text-sm font-semibold text-slate-700 mb-2">عکس صحنه *</label>
+                <input id="s-image" name="sceneImage" type="file" required accept="image/jpeg,image/png,image/webp" class="input-field border-dashed">
+            </div>
+            <div>
+                <label for="s-overlay" class="block text-sm font-semibold text-slate-700 mb-2">لایهٔ جلو (PNG شفاف، اختیاری)</label>
+                <input id="s-overlay" name="sceneOverlay" type="file" accept="image/png,image/webp" class="input-field border-dashed">
+            </div>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-6">
+            <label class="flex items-center gap-2 text-sm text-slate-700">ترتیب نمایش <input type="number" name="sortOrder" value="0" class="input-field !w-24 !py-1.5"></label>
+            <button type="submit" class="btn-primary mr-auto">افزودن و تنظیم گوشه‌ها</button>
+        </div>
+    </form>
+</div>
+
+<div class="card-modern !p-0 overflow-hidden">
+    <% if (scenes && scenes.length) { %>
+        <ul class="divide-y divide-slate-200">
+            <% scenes.forEach(item => { %>
+                <li class="p-5 flex flex-col md:flex-row md:items-center gap-4 <%= item.isActive ? '' : 'bg-slate-50' %>">
+                    <img src="<%= item.image %>" alt="" width="160" height="100" class="w-40 h-24 object-cover rounded-xl border border-slate-200 flex-none">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="font-bold text-slate-900"><%= item.name %></span>
+                            <% if (item.nameEn) { %><span class="text-sm text-slate-500">· <%= item.nameEn %></span><% } %>
+                            <% if (item.isActive) { %>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">فعال</span>
+                            <% } else { %>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-slate-200 text-slate-600">غیرفعال</span>
+                            <% } %>
+                            <span class="text-xs text-slate-400">ترتیب <%= item.sortOrder %></span>
+                        </div>
+                        <p class="text-sm text-slate-600">ناحیهٔ کاشی‌کاری: <%= item.wallWidthCm %> × <%= item.wallHeightCm %> سانتی‌متر · نور عکس: <%= Math.round(item.lighting * 100) %>٪<% if (item.overlay) { %> · لایهٔ جلو دارد<% } %></p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-none">
+                        <a href="/fa/visualizer?scene=<%= item.id %>" target="_blank" rel="noopener" class="btn-secondary !py-2 !px-3 text-xs">مشاهده در سایت</a>
+                        <form action="/admin/scenes/toggle/<%= item.id %>" method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="btn-secondary !py-2 !px-3 text-xs"><%= item.isActive ? 'غیرفعال کن' : 'فعال کن' %></button>
+                        </form>
+                        <a href="/admin/scenes/edit/<%= item.id %>" class="btn-secondary !py-2 !px-3 text-xs">ویرایش / گوشه‌ها</a>
+                        <form action="/admin/scenes/delete/<%= item.id %>" method="POST" data-confirm="این صحنه و عکس‌هایش حذف شود؟">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all">حذف</button>
+                        </form>
+                    </div>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <div class="text-center py-16 text-slate-500">هنوز صحنه‌ای ثبت نشده است. تا وقتی صحنه‌ای نباشد، شبیه‌ساز فقط «دیوار ساده» را نشان می‌دهد.</div>
+    <% } %>
+</div>

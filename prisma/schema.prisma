@@ -40,9 +40,32 @@ model Product {
   dimensions      String?          @db.VarChar(191)
   usageArea       Json
   translations    Json?
+  tileShape       String?          @db.VarChar(32)
+  tileCutout      String?          @db.VarChar(500)
+  tileWidthCm     Float?
+  tileHeightCm    Float?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
   projects        ProjectProduct[]
 
   @@index([categoryId])
+}
+
+model VisualizerScene {
+  id           String   @id @db.VarChar(191)
+  name         String   @db.VarChar(191)
+  nameEn       String?  @db.VarChar(191)
+  nameAr       String?  @db.VarChar(191)
+  image        String   @db.VarChar(500)
+  overlay      String?  @db.VarChar(500)
+  quad         Json
+  wallWidthCm  Float    @default(240)
+  wallHeightCm Float    @default(60)
+  lighting     Float    @default(0.8)
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model Project {
@@ -114,4 +137,18 @@ model AdminUser {
   passwordHash String   @db.VarChar(255)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid()) @db.VarChar(191)
+  name      String   @db.VarChar(191)
+  location  String?  @db.VarChar(191)
+  text      String   @db.Text
+  rating    Int      @default(5)
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([published, sortOrder])
 }
