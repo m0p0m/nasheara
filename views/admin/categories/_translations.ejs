@@ -1,0 +1,15 @@
+<%# English/Arabic name and description of a category. An empty language
+    keeps that language's category page out of Google (see lib/seo.js). %>
+<% ['en', 'ar'].forEach(language => { const tr = (typeof category !== 'undefined' && category && category.translations && category.translations[language]) || {}; %>
+<fieldset class="mb-6 border rounded p-4" dir="<%= language === 'en' ? 'ltr' : 'rtl' %>">
+    <legend class="px-2 font-bold text-gray-700"><%= language === 'en' ? 'English' : 'العربية' %></legend>
+    <div class="mb-4">
+        <label class="block text-gray-700 font-bold mb-2" for="name-<%= language %>">Category Name (<%= language %>):</label>
+        <input type="text" id="name-<%= language %>" name="translations[<%= language %>][name]" value="<%= tr.name || '' %>" class="w-full px-3 py-2 border rounded">
+    </div>
+    <div>
+        <label class="block text-gray-700 font-bold mb-2" for="description-<%= language %>">Description (<%= language %>):</label>
+        <textarea id="description-<%= language %>" name="translations[<%= language %>][description]" rows="8" class="w-full px-3 py-2 border rounded"><%= tr.description || '' %></textarea>
+    </div>
+</fieldset>
+<% }); %>

@@ -32,10 +32,10 @@ const showAddForm = (req, res) => {
 // Process the form to create a new category
 const addCategory = async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, translations = {} } = req.body;
         const mainImage = req.files && req.files.mainImage ? '/uploads/' + req.files.mainImage[0].filename : null;
 
-        await Category.create({ name, description, mainImage });
+        await Category.create({ name, description, mainImage, translations: { en: translations.en, ar: translations.ar } });
         res.redirect('/admin/categories');
     } catch (error) {
         console.error(error);
@@ -67,8 +67,8 @@ const editCategory = async (req, res) => {
         const existing = await Category.findById(req.params.id);
         if (!existing) return res.status(404).send('Category not found');
 
-        const { name, description } = req.body;
-        const updatedData = { name, description };
+        const { name, description, translations = {} } = req.body;
+        const updatedData = { name, description, translations: { en: translations.en, ar: translations.ar } };
 
         // Replace main image if a new one is uploaded
         if (req.files && req.files.mainImage) {

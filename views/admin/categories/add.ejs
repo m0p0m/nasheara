@@ -1,6 +1,6 @@
 <h1 class="text-3xl font-bold mb-6">Add New Category</h1>
 
-<form action="/admin/categories/add" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-lg shadow-md max-w-lg mx-auto">
+<form action="/admin/categories/add" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="mb-4">
         <label for="name" class="block text-gray-700 font-bold mb-2">Category Name:</label>
@@ -8,8 +8,10 @@
     </div>
     <div class="mb-6">
         <label for="description" class="block text-gray-700 font-bold mb-2">Description:</label>
-        <textarea id="description" name="description" rows="4" class="w-full px-3 py-2 border rounded"></textarea>
+        <textarea id="description" name="description" rows="10" class="w-full px-3 py-2 border rounded"></textarea>
+        <p class="mt-2 text-xs leading-6 text-gray-600">این متن بالای صفحهٔ دسته‌بندی نمایش داده می‌شود؛ ۱۵۰ تا ۳۰۰ کلمه دربارهٔ کاربرد، جنس و مزیت‌ها بنویسید. برای پاراگراف جدید Enter بزنید.</p>
     </div>
+    <%- include('_translations') %>
     <div class="mb-6">
         <label for="mainImage" class="block text-gray-700 font-bold mb-2"><%= t('auto.k_c18926c03981') %></label>
         <input type="file" id="mainImage" name="mainImage" accept="image/*" class="w-full px-3 py-2 border rounded">
