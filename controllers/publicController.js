@@ -13,7 +13,13 @@ const getHomePage = async (req, res) => {
     try {
         const query = (req.query.q || '').trim();
         const allProducts = await Product.getAll(req.locale);
-        const categories = await Category.getAll(req.locale);
+        // A category without its own cover falls back to any product image in it,
+        // not just one of the 8 products shown on the home page.
+        const categories = (await Category.getAll(req.locale)).map(cat => {
+            if (cat.mainImage) return cat;
+            const rep = allProducts.find(p => p.category === cat.name && p.mainImage);
+            return rep ? { ...cat, mainImage: rep.mainImage } : cat;
+        });
         const filtered = query
             ? allProducts.filter(p =>
                 [p.name, p.description, p.category]
@@ -299,7 +305,12 @@ const getVisualizerPage = async (req, res) => {
     try {
         const [products, scenes] = await Promise.all([Product.getAll(req.locale), Scene.getActive()]);
         // The engine samples cut-outs at ~512px and photos at 2048px, so ship those sizes.
-        const tiles = products.filter(hasCutout).map(visualizerSpec).map(tile => ({ ...tile, thumb: imageUrl(tile.cutout, 160), cutout: imageUrl(tile.cutout, 1024) }));
+        const tiles = products.filter(hasCutout).map(visualizerSpec).map(tile => ({
+            ...tile,
+            thumb: imageUrl(tile.variants[0].cutout, 160),
+            cutout: imageUrl(tile.variants[0].cutout, 1024),
+            variants: tile.variants.map(v => ({ label: v.label, thumb: imageUrl(v.cutout, 160), cutout: imageUrl(v.cutout, 1024) }))
+        }));
         const requested = String(req.query.product || '').trim();
         const initial = tiles.find(tile => tile.slug === requested) || tiles[0] || null;
         res.render('public/visualizer', {

@@ -3,6 +3,8 @@
         summary: t('atelier.vizSummary'),
         consultNote: t('atelier.vizConsultNote'),
         plain: t('atelier.vizScenePlain'),
+        plainBlock: t('atelier.vizScenePlainBlock'),
+        summaryBlock: t('atelier.vizSummaryBlock'),
         noWebgl: t('atelier.vizNoWebgl')
     };
     const shapeLabel = key => locale === 'en' ? (shapes[key] ? shapes[key].labelEn : key) : (shapes[key] ? shapes[key].label : key);
@@ -65,6 +67,14 @@
                             </button>
                         <% }); %>
                     </div>
+                    <div class="vz__colour-group" data-colour-group hidden>
+                        <div class="vz__colour-head">
+                            <span class="vz__label"><%= t('atelier.vizColour') %></span>
+                            <button type="button" class="vz__chip" data-mix aria-pressed="false"><%= t('atelier.vizMix') %></button>
+                        </div>
+                        <div class="vz__colours" data-colours></div>
+                        <p class="vz__mix-hint" data-mix-hint hidden><%= t('atelier.vizMixHint') %></p>
+                    </div>
                     <div class="vz__brush">
                         <button type="button" class="vz__chip vz__chip--brush" data-brush-toggle aria-pressed="false">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
@@ -83,6 +93,17 @@
                     </div>
                 </div>
 
+                <div class="vz__group" data-rotation-group hidden>
+                    <h2 class="vz__label"><%= t('atelier.vizRotation') %></h2>
+                    <div class="vz__chips">
+                        <button type="button" class="vz__chip" data-rotation="none" aria-pressed="true"><%= t('atelier.vizRotNone') %></button>
+                        <button type="button" class="vz__chip" data-rotation="alternate" aria-pressed="false"><%= t('atelier.vizRotAlternate') %></button>
+                        <button type="button" class="vz__chip" data-rotation="pinwheel" aria-pressed="false"><%= t('atelier.vizRotPinwheel') %></button>
+                        <button type="button" class="vz__chip" data-rotation="mirror" aria-pressed="false"><%= t('atelier.vizRotMirror') %></button>
+                        <button type="button" class="vz__chip" data-rotation="random" aria-pressed="false"><%= t('atelier.vizRotRandom') %></button>
+                    </div>
+                </div>
+
                 <div class="vz__group vz__group--row">
                     <label class="vz__range">
                         <span class="vz__label"><%= t('atelier.vizScale') %></span>
@@ -90,7 +111,7 @@
                     </label>
                     <label class="vz__range">
                         <span class="vz__label"><%= t('atelier.vizGroutWidth') %></span>
-                        <input type="range" min="0.1" max="1" step="0.05" value="0.3" data-grout-width>
+                        <input type="range" min="0.1" max="1.5" step="0.05" value="0.3" data-grout-width>
                     </label>
                 </div>
 
@@ -103,7 +124,7 @@
                     </div>
                 </div>
 
-                <div class="vz__group">
+                <div class="vz__group" data-glaze-group>
                     <h2 class="vz__label"><%= t('atelier.vizGlaze') %></h2>
                     <div class="vz__swatches">
                         <% glazes.forEach(([id, label, hex]) => { %>

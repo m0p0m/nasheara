@@ -2196,6 +2196,63 @@
     gap: 0.4rem;
     margin-top: 0.75rem;
   }
+  .vz__colour-group {
+    margin-top: 0.9rem;
+  }
+  .vz__colour-group[hidden],
+  .vz__mix-hint[hidden] {
+    display: none;
+  }
+  .vz__colour-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .vz__colours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .vz__colour {
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+    width: 3.6rem;
+    padding: 0.25rem;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-tight);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .vz__colour img {
+    width: 2.75rem;
+    height: 2.75rem;
+    object-fit: contain;
+  }
+  .vz__colour span {
+    max-width: 100%;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .vz__colour:hover {
+    border-color: var(--color-brass);
+  }
+  .vz__colour.is-on {
+    border-color: var(--color-jade);
+    box-shadow: 0 0 0 2px var(--color-jade);
+  }
+  .vz__mix-hint {
+    margin-top: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--color-stone-ink);
+  }
   .vz__range input[type="range"] {
     width: 100%;
     accent-color: var(--color-jade);
@@ -2415,5 +2472,213 @@
     text-anchor: middle;
     dominant-baseline: central;
     pointer-events: none;
+  }
+  .scene-editor__quad {
+    fill: none;
+    stroke: #B08D57;
+    stroke-width: 2;
+    stroke-dasharray: 8 6;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .scene-editor__trace {
+    fill: rgba(47, 90, 74, 0.15);
+    stroke: #E11D48;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+  }
+  .scene-editor__vertex {
+    fill: #2F5A4A;
+    stroke: #fff;
+    stroke-width: 2.5;
+    vector-effect: non-scaling-stroke;
+    cursor: grab;
+  }
+  .scene-editor__vertex.is-first {
+    fill: #E11D48;
+    cursor: pointer;
+  }
+  .scene-editor__mid {
+    fill: rgba(255, 255, 255, 0.9);
+    stroke: #2F5A4A;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    cursor: copy;
+  }
+  /* each mode shows only its own handles */
+  .scene-editor[data-mode="area"] .scene-editor__handle,
+  .scene-editor[data-mode="area"] .scene-editor__label,
+  .scene-editor[data-mode="perspective"] .scene-editor__vertex,
+  .scene-editor[data-mode="perspective"] .scene-editor__mid,
+  .scene-editor[data-mode="mask"] .scene-editor__vertex,
+  .scene-editor[data-mode="mask"] .scene-editor__mid {
+    display: none;
+  }
+  .scene-editor[data-mode="perspective"] .scene-editor__quad {
+    opacity: 1;
+  }
+  .scene-editor[data-mode="perspective"] .scene-editor__outline {
+    fill: rgba(47, 90, 74, 0.12);
+  }
+  .scene-editor.is-tracing svg {
+    cursor: crosshair;
+  }
+  .scene-editor__loupe {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.35);
+    background: #fff;
+    pointer-events: none;
+  }
+  .scene-editor__loupe.is-right {
+    left: auto;
+    right: 0.75rem;
+  }
+  .scene-editor__loupe[hidden] {
+    display: none;
+  }
+
+  /* Admin: tile cut-out list + maker (product form) */
+  .cutout-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 0.75rem;
+  }
+  .cutout-list__empty {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    border: 1px dashed #cbd5e1;
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+  .cutout-list__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.35rem;
+    align-items: center;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background: #fff;
+  }
+  .cutout-list__item.is-first {
+    border-color: #B08D57;
+    box-shadow: 0 0 0 1px #B08D57;
+  }
+  .cutout-list__item img {
+    grid-column: 1 / -1;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    background: repeating-conic-gradient(#e5e7eb 0 25%, #fff 0 50%) 0 0 / 14px 14px;
+  }
+  .cutout-list__btn {
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  .cutout-list__btn.is-on {
+    color: #B08D57;
+    border-color: #B08D57;
+  }
+  .cutout-list__btn--del:hover {
+    color: #dc2626;
+    border-color: #dc2626;
+  }
+  .cutout-maker {
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    background: #f8fafc;
+  }
+  .cutout-maker[hidden] {
+    display: none;
+  }
+  .cutout-maker__grid {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 1024px) {
+    .cutout-maker__grid {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    }
+  }
+  .cutout-maker__stage {
+    position: relative;
+    align-self: start;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    user-select: none;
+  }
+  .cutout-maker__stage img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cutout-maker__stage svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+  .cutout-maker__source {
+    width: 4rem;
+    height: 3rem;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: #fff;
+  }
+  .cutout-maker__source.is-on {
+    border-color: #2F5A4A;
+  }
+  .cutout-maker__source img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cutout-maker__preview-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .cutout-maker__preview,
+  .cutout-maker__repeat {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+  }
+  .cutout-maker__preview {
+    background: repeating-conic-gradient(#e5e7eb 0 25%, #fff 0 50%) 0 0 / 14px 14px;
+  }
+  .cutout-maker__preview.is-picking {
+    cursor: crosshair;
+    outline: 2px solid #E11D48;
+  }
+  .cutout-maker__swatch {
+    display: inline-block;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 0.35rem;
+    border: 1px solid #cbd5e1;
   }
 }

@@ -14,6 +14,7 @@
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <h2 class="text-xl font-semibold text-slate-900 mb-2">افزودن صحنهٔ جدید</h2>
         <div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-slate-700">
+            <strong>دو نوع صحنه:</strong> «دیوار» برای کاشی — ناحیهٔ کاشی‌کاری یک <em>دیوار</em> است. «پارتیشن / نما» برای بلوک‌های مشبک — ناحیه جایی است که <em>دیوار بلوکی ساخته می‌شود</em> (فضای بین دو اتاق، نرده/جان‌پناه تراس، نمای ساختمان…) و هرچه در عکس پشت آن ناحیه است از لای حفره‌های بلوک دیده می‌شود؛ پس عکسی بگیرید که آن فضا <em>خالی</em> باشد و پشتش دیده شود. کاشی فقط در صحنه‌های دیوار و بلوک فقط در صحنه‌های پارتیشن/نما نمایش داده می‌شود.<br>
             <strong>عکس مناسب:</strong> عکس واقعی و باکیفیت (حداقل ۱۶۰۰ پیکسل عرض) که ناحیهٔ کاشی‌کاری در آن <em>دیوار ساده و روشن</em> باشد؛ نور و سایهٔ همان دیوار روی کاشی‌ها حفظ می‌شود. اگر جلوی دیوار وسیله‌ای هست (شیر آب، گلدان…)، همان وسیله‌ها را جداگانه به‌صورت PNG شفاف به‌عنوان «لایهٔ جلو» آپلود کنید تا روی کاشی‌ها بیفتند.
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -31,6 +32,12 @@
             </div>
         </div>
         <div class="mt-4 flex flex-wrap items-center gap-6">
+            <label class="flex items-center gap-2 text-sm text-slate-700">نوع صحنه
+                <select name="kind" class="input-field">
+                    <option value="wall" selected>دیوار — برای کاشی (کاشی روی دیوار نصب می‌شود)</option>
+                    <option value="partition">پارتیشن / نما — برای بلوک (بلوک خودِ دیوار است)</option>
+                </select>
+            </label>
             <label class="flex items-center gap-2 text-sm text-slate-700">ترتیب نمایش <input type="number" name="sortOrder" value="0" class="input-field !w-24 !py-1.5"></label>
             <button type="submit" class="btn-primary mr-auto">افزودن و تنظیم گوشه‌ها</button>
         </div>
@@ -47,6 +54,7 @@
                         <div class="flex flex-wrap items-center gap-2 mb-1">
                             <span class="font-bold text-slate-900"><%= item.name %></span>
                             <% if (item.nameEn) { %><span class="text-sm text-slate-500">· <%= item.nameEn %></span><% } %>
+                            <span class="text-xs rounded-full px-2 py-0.5 <%= item.kind === 'partition' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800' %>"><%= item.kind === 'partition' ? 'پارتیشن / نما (بلوک)' : 'دیوار (کاشی)' %></span>
                             <% if (item.isActive) { %>
                                 <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">فعال</span>
                             <% } else { %>

@@ -4,7 +4,8 @@ const upload = require('../middleware/upload');
 const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const fs = require('fs').promises;
 const path = require('path');
-const { SHAPES, isShape } = require('../lib/tileShapes');
+const { Prisma } = require('@prisma/client');
+const { SHAPES, KINDS, isShape, isKind, parseVariants } = require('../lib/tileShapes');
 
 const normalizeStock = (value) => {
     if (value === undefined || value === null) return null;
@@ -39,14 +40,42 @@ const cutoutUpload = async files => {
     return null;
 };
 
-const visualizerFields = async (body, files) => {
+// Colour cut-outs posted by the admin cut-out tool as JSON [{ label, cutout }].
+// Only files the tool uploaded (tileCutout-…) or ones this product already
+// uses are accepted, so a variant can never point at (and later delete) an
+// unrelated upload.
+const variantsFromBody = (body, existing = null) => {
+    if (body.tileVariants === undefined) return undefined;
+    const owned = new Set(existing ? parseVariants(existing.tileVariants, existing.tileCutout).map(v => v.cutout) : []);
+    return parseVariants(body.tileVariants)
+        .filter(v => isSafeUploadPath(v.cutout) && (v.cutout.startsWith('/uploads/tileCutout-') || owned.has(v.cutout)))
+        .slice(0, 40);
+};
+
+const visualizerFields = async (body, files, existing = null) => {
     const cutout = await cutoutUpload(files);
-    return {
+    const fields = {
         tileShape: isShape(body.tileShape) ? body.tileShape : null,
+        tileKind: isKind(body.tileKind) ? body.tileKind : null,
         tileWidthCm: normalizeCm(body.tileWidthCm),
         tileHeightCm: normalizeCm(body.tileHeightCm),
         ...(cutout ? { tileCutout: cutout } : {})
     };
+    const variants = variantsFromBody(body, existing);
+    if (variants !== undefined) {
+        if (cutout && !variants.length) variants.push({ label: '', cutout });
+        fields.tileVariants = variants.length ? variants : Prisma.DbNull;
+        fields.tileCutout = variants.length ? variants[0].cutout : null;
+    }
+    return fields;
+};
+
+// POST /admin/products/cutout — the cut-out tool uploads each generated PNG here
+// and keeps the returned path in the form's tileVariants field until saving.
+const uploadCutout = async (req, res) => {
+    const cutout = await cutoutUpload(req.files);
+    if (!cutout) return res.status(400).json({ ok: false, error: 'PNG/WebP required' });
+    res.json({ ok: true, path: cutout });
 };
 const normalizeUsageArea = (usageArea) => normalizeStringArray(usageArea);
 
@@ -139,6 +168,7 @@ const showAddForm = async (req, res) => {
         res.render('admin/products/add', { 
             categories,
             tileShapes: SHAPES,
+            tileKinds: KINDS,
             title: 'افزودن محصول جدید',
             currentPage: 'dashboard',
             layout: 'admin/layout'
@@ -205,6 +235,7 @@ const showEditForm = async (req, res) => {
             product, 
             categories,
             tileShapes: SHAPES,
+            tileKinds: KINDS,
             title: 'ویرایش محصول',
             currentPage: 'dashboard',
             layout: 'admin/layout'
@@ -248,12 +279,17 @@ const editProduct = async (req, res) => {
             isBestSeller: Boolean(isBestSeller),
             specs: Object.keys(fa.specs).length ? fa.specs : normalizeSpecs(specs),
             translations: normalizedTranslations,
-            ...(await visualizerFields(req.body, req.files))
+            ...(await visualizerFields(req.body, req.files, existingProduct))
         };
-        if (updatedData.tileCutout && existingProduct.tileCutout && isSafeUploadPath(existingProduct.tileCutout)) {
+        const oldVariants = parseVariants(existingProduct.tileVariants, existingProduct.tileCutout);
+        if (updatedData.tileVariants !== undefined) {
+            // Delete cut-outs the admin removed from the colour list.
+            const kept = new Set(parseVariants(updatedData.tileVariants === Prisma.DbNull ? null : updatedData.tileVariants).map(v => v.cutout));
+            for (const v of oldVariants) if (!kept.has(v.cutout)) await deleteUploadFileSafe(v.cutout);
+        } else if (updatedData.tileCutout && existingProduct.tileCutout && isSafeUploadPath(existingProduct.tileCutout)) {
             await deleteUploadFileSafe(existingProduct.tileCutout);
         }
-        if (req.body.removeTileCutout === 'on' && !updatedData.tileCutout) {
+        if (req.body.removeTileCutout === 'on' && updatedData.tileVariants === undefined && !updatedData.tileCutout) {
             if (existingProduct.tileCutout && isSafeUploadPath(existingProduct.tileCutout)) await deleteUploadFileSafe(existingProduct.tileCutout);
             updatedData.tileCutout = null;
         }
@@ -266,10 +302,19 @@ const editProduct = async (req, res) => {
             updatedData.mainImage = '/uploads/' + req.files.mainImage[0].filename;
         }
 
-        // Add to gallery images if new ones are uploaded
+        // Drop gallery images the admin ticked for removal, then append new uploads
+        let gallery = existingProduct.galleryImages || [];
+        const removed = normalizeStringArray(req.body.removeGalleryImages).filter(p => gallery.includes(p));
+        if (removed.length) {
+            gallery = gallery.filter(p => !removed.includes(p));
+            for (const imagePath of removed) {
+                if (isSafeUploadPath(imagePath)) await deleteUploadFileSafe(imagePath);
+            }
+            updatedData.galleryImages = gallery;
+        }
         if (req.files.galleryImages) {
              const newImages = req.files.galleryImages.map(file => '/uploads/' + file.filename);
-             updatedData.galleryImages = (existingProduct.galleryImages || []).concat(newImages);
+             updatedData.galleryImages = gallery.concat(newImages);
         }
 
         await Product.update(req.params.id, updatedData);
@@ -300,6 +345,8 @@ const deleteProduct = async (req, res) => {
             }
         }
 
+        for (const v of parseVariants(product.tileVariants, product.tileCutout)) await deleteUploadFileSafe(v.cutout);
+
         await Product.remove(req.params.id);
         res.redirect('/admin/dashboard');
     } catch (error) {
@@ -315,4 +362,5 @@ module.exports = {
     showEditForm,
     editProduct,
     deleteProduct,
+    uploadCutout,
 };

@@ -57,7 +57,7 @@ exports.showEdit = async (req, res) => {
         if (!scene) return res.status(404).send('صحنه یافت نشد.');
         res.render('admin/scenes/edit', {
             title: 'ویرایش صحنه',
-            scene: { ...scene, quad: Scene.parseQuad(scene.quad) },
+            scene: { ...scene, quad: Scene.parseQuad(scene.quad), polygon: Scene.parsePolygon(scene.polygon) },
             error: req.query.error || null,
             saved: req.query.saved === '1',
             currentPage: 'scenes',

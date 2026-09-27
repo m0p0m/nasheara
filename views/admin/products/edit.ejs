@@ -132,7 +132,12 @@
                     <div class="flex flex-wrap gap-3">
                         <% if (product.galleryImages && product.galleryImages.length > 0) { %>
                             <% product.galleryImages.forEach(image => { %>
-                                <img src="<%= image %>" alt="Gallery Image" class="w-24 h-24 object-cover rounded-xl border border-gray-200">
+                                <label class="gallery-thumb relative block w-24 h-24 cursor-pointer" title="حذف این تصویر">
+                                    <input type="checkbox" name="removeGalleryImages" value="<%= image %>" class="peer sr-only">
+                                    <img src="<%= image %>" alt="Gallery Image" class="w-24 h-24 object-cover rounded-xl border border-gray-200 transition peer-checked:opacity-30 peer-checked:grayscale">
+                                    <span class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-red-600 text-white text-sm leading-6 text-center shadow peer-checked:bg-gray-500">&times;</span>
+                                    <span class="absolute inset-x-0 bottom-1 hidden text-center text-[10px] font-bold text-red-700 peer-checked:block">حذف می‌شود</span>
+                                </label>
                             <% }); %>
                         <% } else { %>
                             <p class="text-sm text-[#6B7280] bg-gray-50 px-4 py-3 rounded-xl"><%= t('auto.k_f059271f2a95') %></p>

@@ -15,22 +15,36 @@
 
     <div class="card-modern">
         <div class="flex flex-wrap items-center gap-2 mb-4">
-            <button type="button" class="scene-mode is-on" data-scene-mode="corners">۱. گوشه‌های ناحیهٔ کاشی‌کاری</button>
-            <button type="button" class="scene-mode" data-scene-mode="mask">۲. جدا کردن اجزای جلوی دیوار</button>
+            <button type="button" class="scene-mode is-on" data-scene-mode="area">۱. ناحیهٔ کاشی‌کاری (چند نقطه)</button>
+            <button type="button" class="scene-mode" data-scene-mode="perspective">۲. پرسپکتیو و اندازه (۴ گوشه)</button>
+            <button type="button" class="scene-mode" data-scene-mode="mask">۳. جدا کردن اجزای جلوی دیوار</button>
         </div>
-        <div data-scene-panel="corners">
-            <p class="text-sm text-slate-500 mb-4">چهار دایره را روی گوشه‌های ناحیه‌ای بگذارید که باید کاشی شود (بالا-چپ، بالا-راست، پایین-راست، پایین-چپ). شبکهٔ راهنما خانه‌های <strong>۲۰×۲۰ سانتی‌متر واقعی</strong> را نشان می‌دهد و نسبت ابعاد دیوار به‌طور خودکار از هندسهٔ همین چهار گوشه محاسبه می‌شود؛ فقط کافی است گوشه‌ها دقیق روی لبه‌های ناحیه باشند و عرض واقعی را وارد کنید.</p>
+        <div data-scene-panel="area">
+            <p class="text-sm text-slate-500 mb-4 leading-7">دور دقیق قسمتی از دیوار که باید کاشی شود را با <strong>هر تعداد نقطه</strong> مشخص کنید. سریع‌ترین راه: «رسم دوباره» را بزنید و دور دیوار کلیک کنید؛ برای بستن روی نقطهٔ اول کلیک کنید یا Enter بزنید. بعد از آن: نقطه‌ها را بکشید، دایرهٔ کوچک وسط هر ضلع را بکشید تا نقطهٔ جدید اضافه شود، و روی نقطه <strong>دوبار کلیک</strong> (یا راست‌کلیک) کنید تا حذف شود. <span class="whitespace-nowrap">Ctrl+Z = برگشت</span>.</p>
+        </div>
+        <div data-scene-panel="perspective" hidden>
+            <p class="text-sm text-slate-500 mb-4 leading-7">این چهار گوشه فقط <strong>زاویهٔ دید و مقیاس</strong> را تعیین می‌کنند، نه محدودهٔ کاشی. آن‌ها را روی چیزی بگذارید که در واقعیت مستطیل است (گوشه‌های دیوار، لبهٔ کابینت بالا و صفحهٔ کابینت…) به ترتیب بالا-چپ، بالا-راست، پایین-راست، پایین-چپ، و فاصلهٔ واقعی گوشهٔ ۱ تا ۲ را در «عرض واقعی» وارد کنید. شبکهٔ راهنما خانه‌های <strong>۲۰×۲۰ سانتی‌متر واقعی</strong> را روی ناحیه نشان می‌دهد؛ اگر خانه‌ها مربع به نظر نمی‌رسند گوشه‌ها را اصلاح کنید. گوشهٔ ۱ نقطهٔ شروع چیدمان کاشی‌هاست. برای عکس‌های روبه‌رو «مستطیل دور ناحیه» کافی است.</p>
         </div>
         <div data-scene-panel="mask" hidden>
             <p class="text-sm text-slate-500 mb-4">روی چیزهایی که <strong>جلوی دیوار</strong> هستند و باید روی کاشی‌ها بیفتند (شیر آب، گلدان، ظرف…) رنگ بزنید. هنگام ذخیره، همان قسمت‌های عکس به‌صورت PNG شفاف به‌عنوان «لایهٔ جلو» ذخیره می‌شود. برای دقت بیشتر قلم را کوچک کنید و روی لبه‌ها آرام بکشید.</p>
         </div>
-        <div class="scene-editor" data-scene-editor data-quad="<%= JSON.stringify(scene.quad) %>" data-overlay="<%= scene.overlay || '' %>">
+        <div class="scene-editor" data-scene-editor data-quad="<%= JSON.stringify(scene.quad) %>" data-polygon="<%= scene.polygon ? JSON.stringify(scene.polygon) : '' %>" data-overlay="<%= scene.overlay || '' %>">
             <img src="<%= scene.image %>" alt="" data-scene-photo>
             <canvas class="scene-editor__mask" data-scene-mask></canvas>
             <svg data-scene-svg aria-hidden="true"></svg>
+            <canvas class="scene-editor__loupe" width="160" height="160" data-scene-loupe hidden></canvas>
         </div>
         <input type="hidden" name="quad" data-scene-quad value="<%= JSON.stringify(scene.quad) %>">
-        <div class="mt-4 flex flex-wrap items-center gap-4" data-scene-panel="corners">
+        <input type="hidden" name="polygon" data-scene-polygon value="<%= scene.polygon ? JSON.stringify(scene.polygon) : '' %>">
+        <div class="mt-4 flex flex-wrap items-center gap-3" data-scene-panel="area">
+            <button type="button" class="btn-primary !py-2 !px-3 text-xs" data-scene-trace>رسم دوباره (کلیک دور دیوار)</button>
+            <button type="button" class="btn-primary !py-2 !px-3 text-xs" data-scene-close hidden>بستن ناحیه</button>
+            <button type="button" class="btn-secondary !py-2 !px-3 text-xs" data-scene-undo>برگشت</button>
+            <button type="button" class="btn-secondary !py-2 !px-3 text-xs" data-scene-poly-from-quad>ناحیه = چهار گوشهٔ پرسپکتیو</button>
+            <span class="text-xs text-slate-600" data-scene-point-count></span>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-3" data-scene-panel="perspective" hidden>
+            <button type="button" class="btn-secondary !py-2 !px-3 text-xs" data-scene-quad-from-poly>مستطیل دور ناحیه (عکس روبه‌رو)</button>
             <button type="button" class="btn-secondary !py-2 !px-3 text-xs" data-scene-reset>بازنشانی گوشه‌ها</button>
             <span class="text-xs text-slate-600" data-scene-auto-msg></span>
         </div>
@@ -42,6 +56,7 @@
             <span class="text-xs text-slate-500">قسمت‌های قرمز = لایهٔ جلو. با «ذخیره» اعمال می‌شود.</span>
         </div>
     </div>
+
 
     <div class="card-modern">
         <h2 class="text-xl font-semibold text-slate-900 mb-4">مشخصات</h2>
@@ -59,15 +74,22 @@
                 <input id="s-nameAr" name="nameAr" type="text" maxlength="191" class="input-field" value="<%= scene.nameAr || '' %>" dir="rtl">
             </div>
         </div>
+        <div class="mt-4">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">نوع صحنه</label>
+            <select name="kind" class="input-field">
+                <option value="wall" <%= scene.kind !== 'partition' ? 'selected' : '' %>>دیوار — برای کاشی (کاشی روی سطح دیوار نصب می‌شود)</option>
+                <option value="partition" <%= scene.kind === 'partition' ? 'selected' : '' %>>پارتیشن / نما — برای بلوک (بلوک خودِ دیوار است؛ پشت ناحیه از لای حفره‌ها دیده می‌شود)</option>
+            </select>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div>
-                <label for="s-w" class="block text-sm font-semibold text-slate-700 mb-2">عرض واقعی ناحیه (سانتی‌متر)</label>
+                <label for="s-w" class="block text-sm font-semibold text-slate-700 mb-2">عرض واقعی بین گوشهٔ ۱ و ۲ (سانتی‌متر)</label>
                 <input id="s-w" name="wallWidthCm" type="number" min="20" max="2000" step="1" class="input-field" value="<%= scene.wallWidthCm %>">
             </div>
             <div>
                 <label for="s-h" class="block text-sm font-semibold text-slate-700 mb-2">ارتفاع ناحیه (محاسبهٔ خودکار)</label>
                 <input id="s-h" name="wallHeightCm" type="number" readonly class="input-field bg-slate-50 text-slate-500" value="<%= scene.wallHeightCm %>">
-                <p class="text-xs text-slate-500 mt-1">از هندسهٔ چهار گوشه و عرض محاسبه می‌شود تا کاشی‌ها هیچ‌وقت کشیده نشوند.</p>
+                <p class="text-xs text-slate-500 mt-1">از هندسهٔ چهار گوشهٔ پرسپکتیو و عرض محاسبه می‌شود تا کاشی‌ها هیچ‌وقت کشیده نشوند.</p>
             </div>
             <div>
                 <label for="s-light" class="block text-sm font-semibold text-slate-700 mb-2">حفظ نور و سایهٔ عکس: <span data-scene-light-value><%= Math.round(scene.lighting * 100) %></span>٪</label>

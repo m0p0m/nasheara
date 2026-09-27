@@ -24,6 +24,9 @@ router.get('/edit/:id', ensureAuthenticated, productController.showEditForm);
 // POST /admin/products/edit/:id - Process the edit form
 router.post('/edit/:id', ensureAuthenticated, adminMutationLimiter, upload, authorizeCsrf, productController.editProduct);
 
+// POST /admin/products/cutout - Store one PNG made by the cut-out tool (JSON reply)
+router.post('/cutout', ensureAuthenticated, adminMutationLimiter, upload, authorizeCsrf, productController.uploadCutout);
+
 // POST /admin/products/delete/:id - Delete a product
 router.post('/delete/:id', ensureAuthenticated, adminMutationLimiter, authorizeCsrf, productController.deleteProduct);
 

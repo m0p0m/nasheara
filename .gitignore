@@ -6,3 +6,6 @@ categories.json
 products.json
 consultations.json
 cache/
+
+*.zip
+.freebuff/

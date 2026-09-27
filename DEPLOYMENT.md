@@ -2,6 +2,14 @@
 
 این برنامه برای اجرای Node.js در cPanel/Passenger است. در بخش **Setup Node.js App**، نسخهٔ پشتیبانی‌شدهٔ Node.js را انتخاب کنید، ریشهٔ برنامه را همین پوشه قرار دهید و Startup file را `server.js` بگذارید. سپس `npm ci --omit=dev` را اجرا و برنامه را Restart کنید.
 
+## محدودیت Process هاست (خطای 500 و `EAGAIN`)
+
+هاست اشتراکی تعداد Process **و Thread** هر حساب را محدود می‌کند (در cPanel: Entry Processes / Number of Processes). موتور Prisma و sharp به‌طور پیش‌فرض به تعداد هسته‌های CPU سرور Thread می‌سازند، برای همین:
+
+- موتور Prisma در `prisma/schema.prisma` روی `engineType = "library"` است (داخل همان Process نود؛ Process جداگانه spawn نمی‌شود). بعد از هر تغییر این فایل روی سرور `npx prisma generate` را اجرا کنید.
+- `lib/prisma.js` تعداد Thread موتور را ۲ (`TOKIO_WORKER_THREADS`) و اتصال‌های دیتابیس را ۵ (`connection_limit`) می‌گذارد. اگر لازم شد می‌توانید این دو را در Environment variables پنل تغییر دهید.
+- اگر موتور Prisma باز هم از کار بیفتد، Worker خودش خارج می‌شود تا Passenger یک Worker سالم بسازد؛ دیگر لازم نیست دستی Restart کنید.
+
 ## تصاویر بهینه (sharp)
 
 نسخه‌های کوچک و WebP تصاویر با مسیر `/img/w{width}/uploads/...` توسط `lib/images.js` ساخته و در پوشهٔ `cache/images` (خارج از Git) ذخیره می‌شوند؛ این پوشه باید قابل نوشتن باشد. بستهٔ `sharp` باینری آماده برای Linux x64 دارد و با `npm ci` نصب می‌شود؛ اگر روی هاست لود نشد (لاگ: `sharp unavailable`)، سایت با تصاویر اصلی کار می‌کند ولی سنگین می‌شود — در آن صورت `npm rebuild sharp` را در همان محیط Node اجرا کنید.

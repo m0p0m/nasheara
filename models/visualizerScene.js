@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { Prisma } = require('@prisma/client');
 const prisma = require('../lib/prisma');
 
 // Corners of the tiled area as fractions of the photo, clockwise from top-left.
@@ -17,6 +18,22 @@ const parseQuad = value => {
     return points.map(p => [clamp01(p[0]), clamp01(p[1])]);
 };
 
+// Outline of the tiled area (3–64 points, photo fractions). The quad above only
+// fixes the wall's perspective; this decides exactly where tiles appear.
+// Missing or invalid -> null, which means "the quad itself".
+const MAX_POLYGON_POINTS = 64;
+const parsePolygon = value => {
+    let poly = value;
+    if (typeof poly === 'string') {
+        if (!poly.trim()) return null;
+        try { poly = JSON.parse(poly); } catch (e) { return null; }
+    }
+    if (!Array.isArray(poly) || poly.length < 3 || poly.length > MAX_POLYGON_POINTS) return null;
+    const points = poly.map(p => Array.isArray(p) ? [parseFloat(p[0]), parseFloat(p[1])] : [NaN, NaN]);
+    if (points.some(p => !Number.isFinite(p[0]) || !Number.isFinite(p[1]))) return null;
+    return points.map(p => [clamp01(p[0]), clamp01(p[1])]);
+};
+
 const cm = (value, fallback) => {
     const n = parseFloat(String(value ?? '').replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(',', '.'));
     return Number.isFinite(n) && n >= 20 && n <= 2000 ? n : fallback;
@@ -27,6 +44,11 @@ const fraction = (value, fallback) => {
     return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : fallback;
 };
 
+// 'wall' scenes take tiles on a wall surface; 'partition' scenes take breeze
+// blocks that form the wall themselves (the photo shows what is behind).
+const KINDS = ['wall', 'partition'];
+const sceneKind = (value, fallback = 'wall') => KINDS.includes(value) ? value : fallback;
+
 const flag = value => value === true || value === 'on' || value === 'true';
 
 const normalize = (input, current = null) => ({
@@ -34,6 +56,8 @@ const normalize = (input, current = null) => ({
     nameEn: String(input.nameEn || '').trim() || null,
     nameAr: String(input.nameAr || '').trim() || null,
     quad: parseQuad(input.quad ?? (current && current.quad)),
+    polygon: parsePolygon(input.polygon !== undefined ? input.polygon : current && current.polygon) || Prisma.DbNull,
+    kind: sceneKind(input.kind, current ? current.kind : 'wall'),
     wallWidthCm: cm(input.wallWidthCm, current ? current.wallWidthCm : 240),
     wallHeightCm: cm(input.wallHeightCm, current ? current.wallHeightCm : 60),
     lighting: fraction(input.lighting, current ? current.lighting : 0.8),
@@ -71,9 +95,11 @@ const publicSpec = (scene, locale = 'fa') => ({
     image: scene.image,
     overlay: scene.overlay || null,
     quad: parseQuad(scene.quad),
+    polygon: parsePolygon(scene.polygon),
+    kind: sceneKind(scene.kind),
     wallWidthCm: scene.wallWidthCm,
     wallHeightCm: scene.wallHeightCm,
     lighting: scene.lighting
 });
 
-module.exports = { DEFAULT_QUAD, parseQuad, getActive, getAll, findById, create, update, setActive, remove, publicSpec };
+module.exports = { DEFAULT_QUAD, parseQuad, parsePolygon, getActive, getAll, findById, create, update, setActive, remove, publicSpec };

@@ -23,6 +23,9 @@ app.use(expressLayouts);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
+// Load-test baseline: no DB call, pure Node/Express overhead.
+app.get('/api/ping', (req, res) => res.status(200).json({ ok: true }));
+
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
