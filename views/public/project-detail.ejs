@@ -10,8 +10,12 @@ const projectStructuredData = {
     description: project.description || undefined,
     image: projectImages,
     contentLocation: project.location ? { '@type': 'Place', name: project.location } : undefined,
-    url: siteUrl + '/project/' + encodeURIComponent(project.slug)
+    url: siteUrl + '/' + locale + '/project/' + encodeURIComponent(project.slug),
+    creator: { '@type': 'Organization', name: t('atelier.brandName'), url: siteUrl },
+    about: relatedProducts.map(p => ({ '@type': 'Product', name: p.name, url: siteUrl + '/' + locale + '/product/' + encodeURIComponent(p.slug) }))
 };
+// Each photo gets its own alt text: title, place and photo number.
+const photoAlt = i => [project.title, project.location].filter(Boolean).join(' — ') + (i ? ' (' + (i + 1) + ')' : '');
 const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 %>
 <script type="application/ld+json"><%- JSON.stringify(projectStructuredData).replace(/</g, '\\u003c') %></script>
@@ -31,18 +35,18 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
                     <% const mainImg = project.coverImage || (project.galleryImages && project.galleryImages[0]) || '/placeholder.jpg'; %>
                     <img data-gallery-main
                         src="<%= img(mainImg, 1280) %>"<%- responsive(mainImg, [800, 1280, 1600], '(min-width: 1024px) 50vw, 100vw') %>
-                        alt="<%= project.title %>" width="1200" height="900" fetchpriority="high" decoding="async">
+                        alt="<%= photoAlt(0) %>" width="1200" height="900" fetchpriority="high" decoding="async">
                 </div>
                 <% if (project.galleryImages && project.galleryImages.length) { %>
                     <div class="pdetail__thumbs pdetail__thumbs--spread" data-reveal style="--reveal-delay:100ms">
                         <% if (project.coverImage) { %>
                             <button type="button" class="pdetail__thumb is-active" data-gallery-thumb="<%= img(project.coverImage, 1280) %>">
-                                <img src="<%= img(project.coverImage, 160) %>" alt="<%= project.title %>" width="96" height="96" loading="lazy" decoding="async">
+                                <img src="<%= img(project.coverImage, 160) %>" alt="<%= photoAlt(0) %>" width="96" height="96" loading="lazy" decoding="async">
                             </button>
                         <% } %>
-                        <% project.galleryImages.forEach(image => { %>
+                        <% project.galleryImages.forEach((image, i) => { %>
                             <button type="button" class="pdetail__thumb" data-gallery-thumb="<%= img(image, 1280) %>">
-                                <img src="<%= img(image, 160) %>" alt="<%= project.title %>" width="96" height="96" loading="lazy" decoding="async">
+                                <img src="<%= img(image, 160) %>" alt="<%= photoAlt(i + 1) %>" width="96" height="96" loading="lazy" decoding="async">
                             </button>
                         <% }); %>
                     </div>
@@ -59,7 +63,7 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
                 </div>
                 <% if (project.description) { %>
                     <div data-reveal style="--reveal-delay:100ms">
-                        <p class="pdetail__lead" style="padding-bottom:0;border:0"><%= project.description %></p>
+                        <p class="pdetail__lead" style="padding-bottom:0;border:0;white-space:pre-line"><%= project.description %></p>
                     </div>
                 <% } %>
                 <div class="mt-10 pt-8" data-reveal style="--reveal-delay:160ms">

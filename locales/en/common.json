@@ -584,7 +584,8 @@
     "vizScenePlainBlock": "Screen wall (open air)",
     "vizSummaryBlock": "About {area} m² · {count} blocks",
     "vizNoWebgl": "Your browser cannot render the perspective view; only the plain wall is shown.",
-    "allArticles": "All articles"
+    "allArticles": "All articles",
+    "usedInProjects": "Installed in these projects"
   },
   "seo": {
     "brand": "Naghsh Ara",
@@ -613,7 +614,8 @@
     "home": "Home",
     "categoryHeading": "Handmade {{category}}",
     "productTitleNoCategory": "{{name}} | Handmade Tile | Naghsh Ara",
-    "productsHeading": "Handmade Tiles & Glazed Ceramic Blocks"
+    "productsHeading": "Handmade Tiles & Glazed Ceramic Blocks",
+    "projectTitleWithLocation": "{{title}}, {{location}} | Naghsh Ara Project"
   },
   "guide": {
     "eyebrow": "Buying guide",

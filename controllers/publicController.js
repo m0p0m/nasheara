@@ -168,7 +168,9 @@ const getProductDetail = async (req, res) => {
                 currentPath: req.path
             });
         }
-        const allProducts = await Product.getAll(req.locale);
+        const [allProducts, allProjects] = await Promise.all([Product.getAll(req.locale), Project.getAll(req.locale)]);
+        // Projects this design was installed in: real-world proof and internal links.
+        const usedInProjects = allProjects.filter(p => (p.relatedProductIds || []).includes(product.id)).slice(0, 6);
         const relatedProducts = allProducts
             .filter(p => p.id !== product.id && p.category && product.category && p.category === product.category)
             .slice(0, 4);
@@ -210,6 +212,7 @@ const getProductDetail = async (req, res) => {
             ],
             product: product,
             relatedProducts,
+            usedInProjects,
             layout: 'public/layout',
             currentPath: req.path
         });
@@ -253,7 +256,9 @@ const getProjectDetail = async (req, res) => {
         const siteUrl = seo.siteUrlFrom(req);
         const t = res.locals.t;
         res.render('public/project-detail', {
-            title: t('seo.projectTitle', { title: project.title }),
+            title: project.location && !project.title.includes(project.location)
+                ? t('seo.projectTitleWithLocation', { title: project.title, location: project.location })
+                : t('seo.projectTitle', { title: project.title }),
             metaDescription: seo.clip(project.description || t('seo.projectDesc', { title: project.title, location: project.location ? ` — ${project.location}` : '' })),
             canonicalUrl: `${siteUrl}/${req.locale}/project/${encodeURIComponent(project.slug)}`,
             ...seo.localeIndexing(siteUrl, `/project/${encodeURIComponent(project.slug)}`, project, 'title', req.locale),

@@ -584,7 +584,8 @@
     "vizScenePlainBlock": "جدار مفرّغ (مساحة مفتوحة)",
     "vizSummaryBlock": "حوالي {area} م² · {count} بلوك",
     "vizNoWebgl": "متصفحك لا يدعم العرض المنظوري؛ يُعرض الجدار البسيط فقط.",
-    "allArticles": "كل المقالات"
+    "allArticles": "كل المقالات",
+    "usedInProjects": "نُفّذ في هذه المشاريع"
   },
   "seo": {
     "brand": "نقش آرا",
@@ -613,7 +614,8 @@
     "home": "الرئيسية",
     "categoryHeading": "{{category}} يدوي الصنع",
     "productTitleNoCategory": "{{name}} | بلاط يدوي | نقش آرا",
-    "productsHeading": "بلاط يدوي وبلوك سيراميك مزجج"
+    "productsHeading": "بلاط يدوي وبلوك سيراميك مزجج",
+    "projectTitleWithLocation": "{{title}}، {{location}} | مشروع نقش آرا"
   },
   "guide": {
     "eyebrow": "دليل الشراء",

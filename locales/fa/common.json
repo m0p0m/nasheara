@@ -584,7 +584,8 @@
     "vizScenePlainBlock": "دیوار مشبک (فضای باز)",
     "vizSummaryBlock": "حدود {area} مترمربع · {count} بلوک",
     "vizNoWebgl": "مرورگر شما از نمایش پرسپکتیو پشتیبانی نمی‌کند؛ فقط «دیوار ساده» نمایش داده می‌شود.",
-    "allArticles": "همهٔ مقالات"
+    "allArticles": "همهٔ مقالات",
+    "usedInProjects": "اجراشده در این پروژه‌ها"
   },
   "seo": {
     "brand": "نقش آرا",
@@ -613,7 +614,8 @@
     "home": "خانه",
     "categoryHeading": "{{category}} دست‌ساز",
     "productTitleNoCategory": "{{name}} | کاشی دست‌ساز | نقش آرا",
-    "productsHeading": "کاشی دست‌ساز و بلوک سرامیکی لعاب‌دار"
+    "productsHeading": "کاشی دست‌ساز و بلوک سرامیکی لعاب‌دار",
+    "projectTitleWithLocation": "{{title}}، {{location}} | نمونه‌کار نقش آرا"
   },
   "guide": {
     "eyebrow": "راهنمای خرید",
