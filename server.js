@@ -17,6 +17,20 @@ app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 app.locals.siteUrl = (process.env.SITE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
 
+// One address per page: http:// and www. copies were served as duplicates.
+// Send them to SITE_URL with a permanent redirect (production only; the
+// proxy's X-Forwarded-Proto tells us the original scheme).
+if (process.env.NODE_ENV === 'production' && process.env.SITE_URL) {
+    const canonical = new URL(app.locals.siteUrl);
+    const canonicalProto = canonical.protocol.replace(':', '');
+    app.use((req, res, next) => {
+        const host = (req.hostname || '').toLowerCase();
+        if (host === 'localhost' || host === '127.0.0.1') return next();
+        if (host === canonical.hostname && req.protocol === canonicalProto) return next();
+        res.redirect(301, `${canonical.origin}${req.originalUrl}`);
+    });
+}
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
