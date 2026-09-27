@@ -343,6 +343,50 @@
         return null;
     }
 
+    // CSS filter functions applied to pixels. `ctx.filter` would do this, but
+    // Safari (every iPhone browser) ignores it, so glazes never changed colour
+    // on phones. Matrices are the Filter Effects spec's, applied in order.
+    function filterSteps(str) {
+        var steps = [], re = /([a-z-]+)\(([-\d.]+)(deg)?\)/g, m;
+        while ((m = re.exec(str))) {
+            var v = parseFloat(m[2]), name = m[1], mat = null;
+            if (name === 'saturate') {
+                mat = [0.213 + 0.787 * v, 0.715 - 0.715 * v, 0.072 - 0.072 * v,
+                       0.213 - 0.213 * v, 0.715 + 0.285 * v, 0.072 - 0.072 * v,
+                       0.213 - 0.213 * v, 0.715 - 0.715 * v, 0.072 + 0.928 * v];
+            } else if (name === 'hue-rotate') {
+                var a = v * Math.PI / 180, co = Math.cos(a), si = Math.sin(a);
+                mat = [0.213 + co * 0.787 - si * 0.213, 0.715 - co * 0.715 - si * 0.715, 0.072 - co * 0.072 + si * 0.928,
+                       0.213 - co * 0.213 + si * 0.143, 0.715 + co * 0.285 + si * 0.140, 0.072 - co * 0.072 - si * 0.283,
+                       0.213 - co * 0.213 - si * 0.787, 0.715 - co * 0.715 + si * 0.715, 0.072 + co * 0.928 + si * 0.072];
+            } else if (name === 'brightness') {
+                mat = [v, 0, 0, 0, v, 0, 0, 0, v];
+            }
+            if (mat) steps.push({ m: mat, o: 0 });
+            else if (name === 'contrast') steps.push({ m: [v, 0, 0, 0, v, 0, 0, 0, v], o: 255 * (0.5 - 0.5 * v) });
+        }
+        return steps;
+    }
+    function applyFilter(c, w, h, str) {
+        var steps = filterSteps(str);
+        if (!steps.length || (steps.length === 1 && steps[0].m[0] === 1 && !steps[0].o)) return;
+        var image;
+        try { image = c.getImageData(0, 0, w, h); } catch (e) { return; }
+        var d = image.data, clamp = function (x) { return x < 0 ? 0 : x > 255 ? 255 : x; };
+        for (var i = 0; i < d.length; i += 4) {
+            if (!d[i + 3]) continue;
+            var r = d[i], g = d[i + 1], b = d[i + 2];
+            for (var s = 0; s < steps.length; s++) {
+                var m = steps[s].m, o = steps[s].o;
+                var nr = clamp(m[0] * r + m[1] * g + m[2] * b + o);
+                var ng = clamp(m[3] * r + m[4] * g + m[5] * b + o);
+                b = clamp(m[6] * r + m[7] * g + m[8] * b + o); r = nr; g = ng;
+            }
+            d[i] = r; d[i + 1] = g; d[i + 2] = b;
+        }
+        c.putImageData(image, 0, 0);
+    }
+
     // Three brightness variants per cut-out so neighbouring tiles differ a
     // little, as real glaze batches do. The glaze filter is baked in too.
     function prepareCutout(colourId, glazeId) {
@@ -362,11 +406,14 @@
                 if (detected) spec.shape = detected;
             }
             var glaze = GLAZES[glazeId] || 'none';
+            var base = document.createElement('canvas'); base.width = w; base.height = h;
+            base.getContext('2d').drawImage(img, 0, 0, w, h);
+            if (glaze !== 'none') applyFilter(base.getContext('2d'), w, h, glaze);
             var variants = [0.95, 1, 1.05].map(function (b) {
                 var out = document.createElement('canvas'); out.width = w; out.height = h;
                 var c = out.getContext('2d');
-                if ('filter' in c) c.filter = (glaze === 'none' ? '' : glaze + ' ') + 'brightness(' + b + ')';
-                c.drawImage(img, 0, 0, w, h);
+                c.drawImage(base, 0, 0);
+                applyFilter(c, w, h, 'brightness(' + b + ')');
                 return out;
             });
             cutouts[key] = variants;

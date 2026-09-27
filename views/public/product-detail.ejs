@@ -12,7 +12,11 @@
             <span>/</span>
             <a href="/<%= locale %>/products" class="hover:text-brass transition-colors inline-block py-2"><%= t('nav.products') %></a>
             <span>/</span>
-            <span class="text-ink"><%= product.patternName || product.name %></span>
+            <% if (product.categorySlug) { %>
+            <a href="/<%= locale %>/category/<%= encodeURIComponent(product.categorySlug) %>" class="hover:text-brass transition-colors inline-block py-2"><%= product.category %></a>
+            <span>/</span>
+            <% } %>
+            <span class="text-ink"><%= product.name %></span>
         </nav>
 
         <div class="pdetail">
@@ -39,7 +43,7 @@
             <div class="pdetail__info">
                 <div data-reveal>
                     <span class="eyebrow mb-6"><%= product.category || t('atelier.fromCollection') %></span>
-                    <h1 class="pdetail__title"><%= product.patternName || product.name %></h1>
+                    <h1 class="pdetail__title"><%= product.name %></h1>
                     <p class="pdetail__sub">
                         <% const sub = [product.color, product.material].filter(Boolean).join(' — '); %>
                         <%= sub || product.name %>
@@ -161,6 +165,8 @@
     </div>
 </section>
 <% } %>
+
+<%- include('_buy-guide', { compact: true }) %>
 
 <% } else { %>
 <section class="section section--tone-bone text-center" style="padding-top:12rem;padding-bottom:12rem">

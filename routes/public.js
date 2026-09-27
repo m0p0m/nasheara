@@ -12,6 +12,9 @@ router.get('/', publicController.getHomePage);
 // GET /products - Show all products page
 router.get('/products', publicController.getAllProducts);
 
+// GET /category/:slug - Category landing page
+router.get('/category/:slug', publicController.getCategoryPage);
+
 // GET /product/:slug - Show product detail page
 router.get('/product/:slug', publicController.getProductDetail);
 

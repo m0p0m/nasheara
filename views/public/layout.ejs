@@ -109,10 +109,11 @@
             "https://www.instagram.com/nashearatasfiyeh",
             "https://t.me/nashearatasfiyeh"
         ],
-        "areaServed": {
-            "@type": "Country",
-            "name": "Iran"
-        },
+        "areaServed": [
+            { "@type": "Country", "name": "Iran" },
+            <%- ['Qom', 'Tehran', 'Karaj', 'Isfahan', 'Kashan', 'Mashhad', 'Shiraz', 'Tabriz', 'Yazd', 'Ahvaz', 'Rasht', 'Kerman', 'Hamadan', 'Urmia', 'Qazvin', 'Sari', 'Arak', 'Kermanshah', 'Bandar Abbas', 'Zanjan']
+                .map(city => `{ "@type": "City", "name": "${city}" }`).join(',\n            ') %>
+        ],
         "knowsAbout": [
             "<%= t('auto.k_e793d09fd794') %>",
             "<%= t('auto.k_a2e513b6d526') %>",
@@ -121,9 +122,9 @@
             "<%= t('auto.k_f456fa7cb896') %>"
         ],
         "makesOffer": [
-            "<%= t('auto.k_7fae9146da8f') %>",
-            "<%= t('auto.k_819ba7cf5733') %>",
-            "<%= t('auto.k_4b4ff2dcc670') %>"
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "<%= t('auto.k_7fae9146da8f') %>" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "<%= t('auto.k_819ba7cf5733') %>" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "<%= t('auto.k_4b4ff2dcc670') %>" } }
         ]
     }
     </script>

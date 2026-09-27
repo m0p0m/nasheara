@@ -19,6 +19,10 @@ const findById = async (id, locale = 'fa') => localizeRecord(
     await prisma.category.findUnique({ where: { id } }), ['name', 'description'], locale
 );
 
+const findBySlug = async (slug, locale = 'fa') => localizeRecord(
+    await prisma.category.findUnique({ where: { slug: slugify(slug) } }), ['name', 'description'], locale
+);
+
 const create = async input => {
     const translations = buildTranslations(input, ['name', 'description']);
     const fa = translations.fa || {};
@@ -50,4 +54,4 @@ const remove = async id => {
     return result.count ? undefined : null;
 };
 
-module.exports = { getAll, findById, create, update, remove };
+module.exports = { getAll, findById, findBySlug, create, update, remove };

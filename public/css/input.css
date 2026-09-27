@@ -2682,3 +2682,58 @@
     border: 1px solid #cbd5e1;
   }
 }
+
+/* ---------- Buying guide + FAQ (products, categories, product pages) ---------- */
+@layer components {
+  .guide {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .guide:has(.guide__text) { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  }
+  .guide__text p {
+    color: var(--color-stone-ink);
+    line-height: 2;
+    margin-top: 1.1rem;
+    max-width: 62ch;
+  }
+  .guide__text .btn { margin-top: 1.75rem; }
+  .category-intro {
+    color: var(--color-stone-ink);
+    line-height: 2;
+    margin-top: 1rem;
+    max-width: 70ch;
+    white-space: pre-line;
+  }
+  .guide__faq-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .faq { border-bottom: 1px solid var(--hairline); }
+  .faq__q {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    font-weight: 600;
+  }
+  .faq__q::-webkit-details-marker { display: none; }
+  .faq__q::after {
+    content: "+";
+    color: var(--color-brass);
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+  .faq[open] .faq__q::after { transform: rotate(45deg); }
+  .faq__a {
+    color: var(--color-stone-ink);
+    line-height: 1.95;
+    padding-bottom: 1.2rem;
+  }
+}

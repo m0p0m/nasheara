@@ -4,9 +4,13 @@
     <div class="container">
         <!-- Header -->
         <div class="section__head" data-reveal>
-            <span class="eyebrow"><%= t('atelier.categories') %></span>
-            <h1 class="section__title"><%= t('atelier.allPatterns') %></h1>
-            <p class="section__lead"><%= t('auto.k_01282ccc08e4') %></p>
+            <span class="eyebrow"><%= category ? t('nav.products') : t('atelier.categories') %></span>
+            <h1 class="section__title"><%= category ? category.heading : t('seo.productsHeading') %></h1>
+            <% if (category && category.description) { %>
+                <p class="category-intro"><%= category.description %></p>
+            <% } else { %>
+                <p class="section__lead"><%= t('auto.k_01282ccc08e4') %></p>
+            <% } %>
         </div>
 
         <!-- Filter -->
@@ -34,7 +38,7 @@
                     <a href="/<%= locale %>/products"
                         class="pill <%= !selectedCategory ? 'is-on' : '' %>"><%= t('atelier.allPatterns') %></a>
                     <% categories.forEach(c => { %>
-                        <a href="/<%= locale %>/products?category=<%= encodeURIComponent(c.name) %>"
+                        <a href="/<%= locale %>/category/<%= encodeURIComponent(c.slug) %>"
                             class="pill <%= selectedCategory === c.name ? 'is-on' : '' %>">
                             <% if (c.mainImage) { %>
                                 <img class="pill__thumb" src="<%= img(c.mainImage, 160) %>" alt="<%= c.name %>" width="40" height="40" loading="lazy" decoding="async">
@@ -47,7 +51,7 @@
                 </div>
             <% } %>
 
-            <% if (q || selectedCategory) { %>
+            <% if (q || (selectedCategory && !category)) { %>
                 <div class="active-filters mb-8" data-reveal>
                     <span><%= t('atelier.filtersActive') %></span>
                     <% if (q) { %><span class="pill" style="cursor:default">«<%= q %>»</span><% } %>
@@ -94,3 +98,5 @@
         <% } %>
     </div>
 </section>
+
+<% if (!q) { %><%- include('_buy-guide') %><% } %>

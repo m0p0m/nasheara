@@ -8,6 +8,11 @@ const { visualizerSpec, SHAPES, hasCutout } = require('../lib/tileShapes');
 const Scene = require('../models/visualizerScene');
 const { imageUrl } = require('../lib/images');
 
+// Questions shown by views/public/_buy-guide.ejs, also sent as FAQPage JSON-LD.
+const faqItems = t => [1, 2, 3, 4, 5].map(i => ({ q: t(`guide.faq${i}q`), a: t(`guide.faq${i}a`) }));
+
+const categoryPath = category => `/category/${encodeURIComponent(category.slug)}`;
+
 // Display the home page with limited products (8-10)
 const getHomePage = async (req, res) => {
     try {
@@ -58,6 +63,12 @@ const getAllProducts = async (req, res) => {
         const selectedCategory = (req.query.category || '').trim();
         const allProducts = await Product.getAll(req.locale);
         const categories = await Category.getAll(req.locale);
+        // Old filter URLs (?category=name) now live at /category/:slug.
+        if (selectedCategory && !query) {
+            const match = categories.find(c => [c.name, c.translations && c.translations.fa && c.translations.fa.name, c.slug]
+                .filter(Boolean).some(n => n.toLowerCase() === selectedCategory.toLowerCase()));
+            if (match) return res.redirect(301, `/${req.locale}${categoryPath(match)}`);
+        }
 
         let products = allProducts;
         if (query) {
@@ -81,12 +92,59 @@ const getAllProducts = async (req, res) => {
                     { name: t('seo.home'), path: `/${req.locale}/` },
                     { name: t('nav.products'), path: `/${req.locale}/products` }
                 ]),
-                seo.productListItem(siteUrl, req.locale, products.slice(0, 50))
+                seo.productListItem(siteUrl, req.locale, products.slice(0, 50)),
+                seo.faqSchema(faqItems(t))
             ],
             products,
             categories,
             q: query,
             selectedCategory,
+            category: null,
+            layout: 'public/layout',
+            currentPath: req.path
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('خطایی در بارگذاری صفحه محصولات رخ داد.');
+    }
+};
+
+// Category landing page: /:locale/category/:slug
+const getCategoryPage = async (req, res, next) => {
+    try {
+        const category = await Category.findBySlug(req.params.slug, req.locale);
+        if (!category) return next();
+        const [allProducts, categories] = await Promise.all([Product.getAll(req.locale), Category.getAll(req.locale)]);
+        const products = allProducts.filter(p => p.categorySlug === category.slug);
+        const t = res.locals.t;
+        const siteUrl = seo.siteUrlFrom(req);
+        const path = categoryPath(category);
+        const heading = /دست‌ساز|دست ساز|handmade|يدوي/i.test(category.name)
+            ? category.name
+            : t('seo.categoryHeading', { category: category.name });
+        const indexing = seo.localeIndexing(siteUrl, path, category, 'name', req.locale);
+        res.render('public/products', {
+            title: t('seo.productsCategoryTitle', { category: category.name }),
+            metaDescription: seo.clip(category.description || t('seo.productsCategoryDesc', { category: category.name })),
+            canonicalUrl: `${siteUrl}/${req.locale}${path}`,
+            ...indexing,
+            // an empty category is a thin page; it is also left out of the sitemap
+            noindex: indexing.noindex || !products.length,
+            ogImage: seo.absolute(siteUrl, category.mainImage || (products[0] && products[0].mainImage)),
+            structuredData: [
+                seo.breadcrumbList(siteUrl, [
+                    { name: t('seo.home'), path: `/${req.locale}/` },
+                    { name: t('nav.products'), path: `/${req.locale}/products` },
+                    { name: category.name, path: `/${req.locale}${path}` }
+                ]),
+                seo.productListItem(siteUrl, req.locale, products.slice(0, 50)),
+                seo.faqSchema(faqItems(t))
+            ],
+            products,
+            categories,
+            q: '',
+            selectedCategory: category.name,
+            category: { ...category, heading },
             layout: 'public/layout',
             currentPath: req.path
         });
@@ -117,19 +175,26 @@ const getProductDetail = async (req, res) => {
         const siteUrl = seo.siteUrlFrom(req);
         const t = res.locals.t;
         const displayName = product.patternName || product.name;
+        const productPath = `/product/${encodeURIComponent(product.slug)}`;
+        const brand = t('atelier.brandName');
+        const withBrand = text => (text.includes(brand) || text.length + brand.length > 62 ? text : `${text} | ${brand}`);
         const usage = Array.isArray(product.usageArea) && product.usageArea.length ? product.usageArea.join('، ') : '';
         const generatedDescription = product.material && product.color && usage
             ? t('seo.productDesc', { name: displayName, material: product.material, color: product.color, usage })
             : t('seo.productDescShort', { name: displayName });
         res.render('public/product-detail', {
-            title: (req.locale === 'fa' && product.metaTitle) || t('seo.productTitle', { name: displayName, category: product.category || t('atelier.brandTag') }),
+            title: (req.locale === 'fa' && product.metaTitle && withBrand(product.metaTitle))
+                || (product.category && product.categoryTranslated
+                    ? t('seo.productTitle', { name: product.name, category: product.category })
+                    : t('seo.productTitleNoCategory', { name: product.name })),
             metaDescription: seo.clip(
                 req.locale === 'fa' && product.metaDescription
                     ? (product.metaDescription.length < 90 ? `${product.metaDescription.replace(/[.。]$/, '')}. ${t('seo.productDescShort', { name: displayName }).replace(`${displayName}؛ `, '')}` : product.metaDescription)
                     : generatedDescription
             ),
             metaKeywords: Array.isArray(product.keywords) ? product.keywords.join(', ') : product.keywords,
-            canonicalUrl: `${siteUrl}/${req.locale}/product/${encodeURIComponent(product.slug)}`,
+            canonicalUrl: `${siteUrl}/${req.locale}${productPath}`,
+            ...seo.localeIndexing(siteUrl, productPath, product, 'name', req.locale),
             ogImage: seo.absolute(siteUrl, product.mainImage),
             ogType: 'product',
             siteUrl,
@@ -138,9 +203,10 @@ const getProductDetail = async (req, res) => {
                 seo.breadcrumbList(siteUrl, [
                     { name: t('seo.home'), path: `/${req.locale}/` },
                     { name: t('nav.products'), path: `/${req.locale}/products` },
-                    ...(product.category ? [{ name: product.category, path: `/${req.locale}/products?category=${encodeURIComponent(product.category)}` }] : []),
-                    { name: displayName, path: `/${req.locale}/product/${encodeURIComponent(product.slug)}` }
-                ])
+                    ...(product.categorySlug ? [{ name: product.category, path: `/${req.locale}${categoryPath({ slug: product.categorySlug })}` }] : []),
+                    { name: product.name, path: `/${req.locale}${productPath}` }
+                ]),
+                seo.faqSchema(faqItems(t))
             ],
             product: product,
             relatedProducts,
@@ -190,6 +256,7 @@ const getProjectDetail = async (req, res) => {
             title: t('seo.projectTitle', { title: project.title }),
             metaDescription: seo.clip(project.description || t('seo.projectDesc', { title: project.title, location: project.location ? ` — ${project.location}` : '' })),
             canonicalUrl: `${siteUrl}/${req.locale}/project/${encodeURIComponent(project.slug)}`,
+            ...seo.localeIndexing(siteUrl, `/project/${encodeURIComponent(project.slug)}`, project, 'title', req.locale),
             ogImage: seo.absolute(siteUrl, project.coverImage || (project.galleryImages && project.galleryImages[0])),
             ogType: 'article',
             siteUrl,
@@ -219,8 +286,8 @@ const getSitemap = async (req, res) => {
     try {
         const baseUrl = seo.siteUrlFrom(req);
         const locales = ['fa', 'en', 'ar'];
-        const [products, projects, articles] = await Promise.all([
-            Product.getAll(), Project.getAll(), Article.getPublished()
+        const [products, projects, articles, categories] = await Promise.all([
+            Product.getAll(), Project.getAll(), Article.getPublished(), Category.getAll()
         ]);
         const isoDate = value => {
             const d = value ? new Date(value) : null;
@@ -239,37 +306,50 @@ const getSitemap = async (req, res) => {
             { path: '/visualizer', priority: '0.6', changefreq: 'monthly' },
             { path: '/contact', priority: '0.5', changefreq: 'yearly' },
             { path: '/consultation', priority: '0.6', changefreq: 'yearly' },
+            ...categories.map(category => {
+                const own = products.filter(p => p.categorySlug === category.slug);
+                return own.length ? {
+                    path: categoryPath(category), priority: '0.9', changefreq: 'weekly', lastmod: newest(own),
+                    locales: seo.translatedLocales(category, 'name'),
+                    images: [category.mainImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: category.name }))
+                } : null;
+            }).filter(Boolean),
             ...products.map(product => ({
                 path: `/product/${encodeURIComponent(product.slug)}`, priority: '0.8', changefreq: 'monthly',
                 lastmod: isoDate(product.updatedAt || product.createdAt),
+                locales: seo.translatedLocales(product, 'name'),
                 images: [product.mainImage, ...(product.galleryImages || [])].filter(Boolean)
-                    .map(i => ({ loc: seo.absolute(baseUrl, i), title: product.patternName || product.name }))
+                    .map(i => ({ loc: seo.absolute(baseUrl, i), title: product.name }))
             })),
             ...projects.map(project => ({
                 path: `/project/${encodeURIComponent(project.slug)}`, priority: '0.6', changefreq: 'monthly',
                 lastmod: isoDate(project.updatedAt || project.createdAt),
+                locales: seo.translatedLocales(project, 'title'),
                 images: [project.coverImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: project.title }))
             })),
             ...articles.map(article => ({
                 path: `/article/${encodeURIComponent(article.slug)}`, priority: '0.6', changefreq: 'monthly',
                 lastmod: isoDate(article.updatedAt || article.createdAt),
+                locales: seo.translatedLocales(article, 'title'),
                 images: [article.mainImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: article.title }))
             }))
         ];
+        // Only list a page in the languages it is actually written in.
+        const localesOf = entry => entry.locales || locales;
         const urlNode = (locale, entry) => [
             '  <url>',
             `    <loc>${xmlEscape(localePath(locale, entry.path))}</loc>`,
             entry.lastmod ? `    <lastmod>${entry.lastmod}</lastmod>` : null,
             `    <changefreq>${entry.changefreq}</changefreq>`,
             `    <priority>${entry.priority}</priority>`,
-            ...locales.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(localePath(l, entry.path))}"/>`),
+            ...localesOf(entry).map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(localePath(l, entry.path))}"/>`),
             `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localePath('fa', entry.path))}"/>`,
             ...(entry.images || []).map(img => `    <image:image><image:loc>${xmlEscape(img.loc)}</image:loc><image:title>${xmlEscape(img.title)}</image:title></image:image>`),
             '  </url>'
         ].filter(Boolean).join('\n');
         const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
-            locales.flatMap(locale => entries.map(entry => urlNode(locale, entry))).join('\n') +
+            locales.flatMap(locale => entries.filter(entry => localesOf(entry).includes(locale)).map(entry => urlNode(locale, entry))).join('\n') +
             '\n</urlset>';
         res.set('Cache-Control', 'public, max-age=3600');
         res.type('application/xml').send(xml);
@@ -336,6 +416,7 @@ module.exports = {
     getHomePage,
     getVisualizerPage,
     getAllProducts,
+    getCategoryPage,
     getProductDetail,
     getAllProjects,
     getProjectDetail,

@@ -15,7 +15,14 @@ const toProduct = (record, locale = 'fa') => {
     const localizedCategory = categoryRecord
         ? localizeRecord(categoryRecord, ['name', 'description'], locale)
         : null;
-    return { ...localized, category: localizedCategory ? localizedCategory.name : null };
+    return {
+        ...localized,
+        category: localizedCategory ? localizedCategory.name : null,
+        categorySlug: categoryRecord ? categoryRecord.slug : null,
+        // false when the category name above is the Persian fallback
+        categoryTranslated: Boolean(categoryRecord && (locale === 'fa'
+            || (categoryRecord.translations && categoryRecord.translations[locale] && categoryRecord.translations[locale].name)))
+    };
 };
 
 const uniqueSlug = async (value, excludedId = null) => {

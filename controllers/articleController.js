@@ -1,3 +1,4 @@
+const seo = require('../lib/seo');
 const Article = require('../models/article');
 const fs = require('fs').promises;
 const path = require('path');
@@ -223,6 +224,7 @@ const getArticleDetail = async (req, res) => {
             metaDescription: article.metaDescription,
             metaKeywords: article.metaKeywords,
             canonicalUrl: `${siteUrl}/${req.locale}/article/${encodeURIComponent(article.slug)}`,
+            ...seo.localeIndexing(siteUrl, `/article/${encodeURIComponent(article.slug)}`, article, 'title', req.locale),
             ogImage: article.mainImage ? `${siteUrl}${article.mainImage}` : undefined,
             article: article,
             articleHtml,

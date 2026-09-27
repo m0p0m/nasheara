@@ -1,0 +1,26 @@
+<%# Buying guide + FAQ shared by the product list, category and product pages.
+    Pass `compact: true` to show only the FAQ (product pages). The FAQPage
+    JSON-LD is added by the controller from the same strings. %>
+<section class="section section--tone-ivory hairline-y">
+    <div class="container guide">
+        <% if (typeof compact === 'undefined' || !compact) { %>
+        <div class="guide__text" data-reveal>
+            <span class="eyebrow"><%= t('guide.eyebrow') %></span>
+            <h2 class="section__title"><%= t('guide.title') %></h2>
+            <p><%= t('guide.p1') %></p>
+            <p><%= t('guide.p2') %></p>
+            <p><%= t('guide.p3') %></p>
+            <a href="/<%= locale %>/consultation" class="btn btn-brass"><%= t('guide.cta') %></a>
+        </div>
+        <% } %>
+        <div class="guide__faq" data-reveal>
+            <h2 class="guide__faq-title"><%= t('guide.faqTitle') %></h2>
+            <% [1, 2, 3, 4, 5].forEach(i => { %>
+            <details class="faq">
+                <summary class="faq__q"><%= t('guide.faq' + i + 'q') %></summary>
+                <p class="faq__a"><%= t('guide.faq' + i + 'a') %></p>
+            </details>
+            <% }); %>
+        </div>
+    </div>
+</section>

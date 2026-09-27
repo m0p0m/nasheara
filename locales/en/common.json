@@ -468,11 +468,11 @@
     "k_a519e2de391e": "[EN] هیچ عضوی یافت نشد."
   },
   "atelier": {
-    "brandName": "Nasheara",
+    "brandName": "Naghsh Ara",
     "brandTag": "Handmade Tiles",
     "heroEyebrow": "Handmade Tile Atelier",
-    "heroTitle": "Tiles,",
-    "heroTitleAccent": "shaped by hand and fire",
+    "heroTitle": "Handmade tiles,",
+    "heroTitleAccent": "glazed and fired by hand",
     "heroSub": "For three decades we have kept Persian patterns alive in glaze and clay — for walls, floors and spaces with character.",
     "heroCta": "View the Collection",
     "heroCta2": "Talk to the Atelier",
@@ -610,6 +610,28 @@
     "visualizerTitle": "Room Visualizer | See the Tile on Your Wall | Naghsh Ara",
     "visualizerDesc": "Naghsh Ara room visualizer: choose a tile pattern, change the glaze colour and see the result on your kitchen or living-room wall.",
     "notFoundTitle": "Page not found | Naghsh Ara",
-    "home": "Home"
+    "home": "Home",
+    "categoryHeading": "Handmade {{category}}",
+    "productTitleNoCategory": "{{name}} | Handmade Tile | Naghsh Ara",
+    "productsHeading": "Handmade Tiles & Glazed Ceramic Blocks"
+  },
+  "guide": {
+    "eyebrow": "Buying guide",
+    "title": "Buy handmade tiles directly from the Naghsh Ara workshop in Qom",
+    "p1": "Naghsh Ara is a handmade tile workshop in Qom, Iran. Every tile and every glazed ceramic block is shaped, hand-glazed and kiln-fired in our own workshop, which gives each piece a depth of colour and pattern that factory tile does not have. Our range covers decorative tiles, traditional haft-rang tiles, kitchen splashback tiles, feature-wall tiles and outdoor tiles.",
+    "p2": "For façades, partition walls, screens and courtyards, glazed ceramic breeze blocks are a longer-lasting and more colourful alternative to cement blocks: they let light and air through, and their glaze keeps its colour in sun and rain.",
+    "p3": "Orders ship from our Qom workshop to every city in Iran, including Tehran, Karaj, Isfahan, Kashan, Mashhad, Shiraz and Tabriz. Before you order, our team will help you choose the pattern, glaze colour, size and quantity free of charge.",
+    "cta": "Request a free consultation",
+    "faqTitle": "Frequently asked questions",
+    "faq1q": "Are Naghsh Ara tiles really handmade?",
+    "faq1a": "Yes. Every product is shaped, glazed and fired by hand in the Naghsh Ara workshop in Qom, so each piece has its own subtle, natural variations.",
+    "faq2q": "Which cities do you ship to?",
+    "faq2a": "Every city in Iran, including Tehran, Isfahan, Kashan, Mashhad, Shiraz, Tabriz and Karaj. Shipping cost and time are confirmed once your order is set.",
+    "faq3q": "Can I order a custom colour or size?",
+    "faq3a": "For many patterns, yes. Put the glaze colour, size and quantity you need in the consultation form and our team will confirm feasibility and lead time.",
+    "faq4q": "Where can handmade tiles be used?",
+    "faq4a": "Living-room feature walls, kitchen splashbacks, bathrooms, building façades, courtyards and commercial interiors such as cafés and restaurants. For façades and partition walls we recommend glazed ceramic blocks.",
+    "faq5q": "How do I get a price?",
+    "faq5a": "Price depends on the pattern, colour and quantity. Use the consultation form or call us to get a price and delivery time the same working day."
   }
 }
