@@ -2737,3 +2737,53 @@
     padding-bottom: 1.2rem;
   }
 }
+
+/* ---------- Video section (product and project pages) ---------- */
+@layer components {
+  .vids {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  }
+  .vid { margin: 0; display: grid; gap: 0.6rem; }
+  .vid__facade, .vid__frame, .vid__clip {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--r-sharp);
+    background: var(--color-jade-deep);
+  }
+  .vid__clip { object-fit: cover; }
+  .vid__facade { position: relative; padding: 0; cursor: pointer; overflow: hidden; }
+  .vid__facade img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease, filter 0.3s ease; }
+  .vid__facade:hover img, .vid__facade:focus-visible img { transform: scale(1.03); filter: brightness(0.85); }
+  .vid__facade:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 3px; }
+  .vid__play {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    border-radius: 999px;
+    background: var(--color-bone);
+    color: var(--color-jade);
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.25);
+  }
+  .vid__play svg { margin-inline-start: 3px; }
+  .vid__cap { font-size: 0.85rem; color: var(--color-stone-ink); }
+  .vid__cap a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .vid__cap a:hover { color: var(--color-brass); }
+  .gallery__badge--video {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  /* below the "new" badge when both are shown */
+  .gallery__badge:not(.gallery__badge--video) + .gallery__badge--video { top: 2.9rem; }
+  @media (prefers-reduced-motion: reduce) {
+    .vid__facade img { transition: none; }
+  }
+}

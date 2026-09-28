@@ -35,6 +35,7 @@
             </div>
         </div>
     </div>
+    <%- include('../_video-card', { record: project }) %>
     <div class="card-modern">
         <h2 class="text-xl font-semibold mb-5"><%= t('auto.k_7d8f8775cf18') %></h2>
         <% const selectedProducts = project.relatedProductIds || []; %>

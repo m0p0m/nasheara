@@ -69,6 +69,7 @@
                         class="gallery__item" data-reveal style="--reveal-delay:<%= (i % 4) * 90 %>ms"
                         aria-label="<%= p.patternName || p.name %>">
                         <% if (p.isNew) { %><span class="gallery__badge"><%= t('atelier.newBadge') %></span><% } %>
+                        <% if (hasVideo(p.video)) { %><span class="gallery__badge gallery__badge--video" aria-label="<%= t('atelier.videoBadge') %>"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg><%= t('atelier.videoBadge') %></span><% } %>
                         <% if (p.isBestSeller) { %><span class="gallery__badge" style="inset-inline-start:auto;inset-inline-end:0.9rem"><%= t('atelier.bestSeller') %></span><% } %>
                         <div class="gallery__media">
                             <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= p.patternName || p.name %> — <%= p.category || t('atelier.brandTag') %>" width="800" height="800" loading="lazy" decoding="async">

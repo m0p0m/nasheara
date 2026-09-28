@@ -4,6 +4,8 @@ const upload = require('../middleware/upload');
 const { deleteUploadFileSafe, isSafeUploadPath } = upload;
 const fs = require('fs').promises;
 const path = require('path');
+const { Prisma } = require('@prisma/client');
+const videoLib = require('../lib/video');
 
 const normalizeArray = value => {
     if (!value) return [];
@@ -51,7 +53,8 @@ const addProject = async (req, res) => {
             galleryImages: req.files.galleryImages
                 ? req.files.galleryImages.map(file => `/uploads/${file.filename}`)
                 : [],
-            relatedProductIds: normalizeArray(relatedProductIds)
+            relatedProductIds: normalizeArray(relatedProductIds),
+            video: videoLib.fromForm(req.body, req.files, null).video || undefined
         });
         res.redirect('/admin/projects');
     } catch (error) {
@@ -84,6 +87,9 @@ const editProject = async (req, res) => {
             description: fa.description || description, translations,
             relatedProductIds: normalizeArray(relatedProductIds)
         };
+        const { video, obsolete } = videoLib.fromForm(req.body, req.files, project.video);
+        updatedData.video = video || Prisma.DbNull;
+        await Promise.all(obsolete.map(removeImage));
         if (req.files.coverImage) {
             await removeImage(project.coverImage);
             updatedData.coverImage = `/uploads/${req.files.coverImage[0].filename}`;
@@ -106,6 +112,8 @@ const deleteProject = async (req, res) => {
         if (!project) return res.status(404).send('نمونه‌کار یافت نشد.');
         await removeImage(project.coverImage);
         await Promise.all((project.galleryImages || []).map(removeImage));
+        const oldVideo = videoLib.normalize(project.video);
+        await Promise.all([oldVideo.clip, oldVideo.poster].map(removeImage));
         await Project.remove(req.params.id);
         res.redirect('/admin/projects');
     } catch (error) {

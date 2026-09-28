@@ -1,0 +1,41 @@
+<%# Video section of a product or project page. Locals: `video` (the record's
+    video JSON), `videoName` (heading), `videoImage` (fallback poster).
+    Aparat players are click-to-load so the page stays light; the short
+    clip plays muted once it scrolls into view (public/js/video.js). %>
+<%
+    const vv = videoNormalize(video);
+    const poster = vv.poster || videoImage || '/icons/naghshe-ara-logo.png';
+%>
+<% if (vv.aparat.length || vv.clip) { %>
+<section class="section section--tone-bone">
+    <div class="container">
+        <div class="section__head" data-reveal>
+            <span class="eyebrow"><%= t('atelier.videoEyebrow') %></span>
+            <h2 class="section__title"><%= t('atelier.videoHeading', { name: videoName }) %></h2>
+        </div>
+        <div class="vids <%= vv.clip && vv.aparat.length ? 'vids--with-clip' : '' %>">
+            <% if (vv.clip) { %>
+            <figure class="vid vid--clip">
+                <video class="vid__clip" muted loop playsinline preload="none" data-clip
+                       poster="<%= img(poster, 1024) %>" aria-label="<%= videoName %>">
+                    <source src="<%= vv.clip %>" type="<%= /\.webm$/i.test(vv.clip) ? 'video/webm' : 'video/mp4' %>">
+                </video>
+            </figure>
+            <% } %>
+            <% vv.aparat.forEach((item, i) => { %>
+            <figure class="vid">
+                <button type="button" class="vid__facade" data-aparat="<%= videoEmbedUrl(item.hash) %>"
+                        aria-label="<%= t('atelier.videoPlay') %>: <%= videoName %><%= vv.aparat.length > 1 ? ' (' + (i + 1) + ')' : '' %>">
+                    <img src="<%= img(poster, 1024) %>" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    <span class="vid__play" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+                </button>
+                <figcaption class="vid__cap">
+                    <a href="<%= videoWatchUrl(item.hash) %>" target="_blank" rel="noopener"><%= t('atelier.videoOnAparat') %></a>
+                </figcaption>
+            </figure>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<script src="<%= asset('/js/video.js') %>" defer></script>
+<% } %>

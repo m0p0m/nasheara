@@ -74,6 +74,8 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
     </div>
 </section>
 
+<%- include('_video', { video: project.video, videoName: project.title, videoImage: project.coverImage || (project.galleryImages && project.galleryImages[0]) }) %>
+
 <% if (relatedProducts && relatedProducts.length) { %>
 <section class="section section--tone-ivory hairline-y">
     <div class="container">

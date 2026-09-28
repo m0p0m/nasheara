@@ -1,0 +1,42 @@
+<%# Video fields shared by the product and project forms. Pass `record`
+    (the product/project being edited, or nothing on the add form). %>
+<%
+    const rec = typeof record !== 'undefined' && record ? record : {};
+    let vid = rec.video;
+    if (typeof vid === 'string') { try { vid = JSON.parse(vid); } catch (e) { vid = null; } }
+    vid = vid || {};
+    const aparatLines = (Array.isArray(vid.aparat) ? vid.aparat : []).map(v => 'https://www.aparat.com/v/' + v.hash).join('\n');
+%>
+<div class="card-modern">
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold text-[#1E293B]">ویدیو</h2>
+        <p class="text-sm text-[#6B7280] mt-1 leading-7">ویدیوی کامل را در آپارات بارگذاری کنید و لینکش را اینجا بگذارید. در توضیحات همان ویدیو در آپارات، لینک این صفحه از سایت را بنویسید تا یک بک‌لینک واقعی ساخته شود. کلیپ کوتاه (اختیاری) بی‌صدا و تکرارشونده روی خود سایت پخش می‌شود؛ مثلاً برق لعاب زیر نور.</p>
+    </div>
+    <div class="space-y-6">
+        <div class="space-y-2">
+            <label for="videoAparat" class="block text-sm font-semibold text-[#1E293B]">لینک ویدیوهای آپارات</label>
+            <textarea id="videoAparat" name="videoAparat" rows="3" dir="ltr" class="input-field resize-y" placeholder="https://www.aparat.com/v/xxxxx"><%= aparatLines %></textarea>
+            <p class="text-xs text-[#6B7280]">هر لینک در یک خط. برای حذف یک ویدیو، خطش را پاک کنید.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <label for="videoClip" class="block text-sm font-semibold text-[#1E293B]">کلیپ کوتاه (MP4، کمتر از ۵ مگابایت)</label>
+                <% if (vid.clip) { %>
+                    <video src="<%= vid.clip %>" muted loop playsinline controls preload="metadata" class="w-full max-w-xs rounded-lg border"></video>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="removeVideoClip" value="1"> حذف کلیپ فعلی</label>
+                <% } %>
+                <input type="file" id="videoClip" name="videoClip" accept="video/mp4,video/webm" class="input-field border-dashed">
+                <p class="text-xs text-[#6B7280]">۶ تا ۱۰ ثانیه، بدون صدا. اسکریپت کم‌حجم‌سازی این فایل را آماده می‌کند.</p>
+            </div>
+            <div class="space-y-2">
+                <label for="videoPoster" class="block text-sm font-semibold text-[#1E293B]">عکس کاور ویدیو (اختیاری)</label>
+                <% if (vid.poster) { %>
+                    <img src="<%= vid.poster %>" alt="" class="w-40 h-24 object-cover rounded-lg border">
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="removeVideoPoster" value="1"> حذف کاور فعلی</label>
+                <% } %>
+                <input type="file" id="videoPoster" name="videoPoster" accept="image/*" class="input-field border-dashed">
+                <p class="text-xs text-[#6B7280]">اگر خالی بماند، تصویر اصلی همین صفحه کاور ویدیو می‌شود.</p>
+            </div>
+        </div>
+    </div>
+</div>

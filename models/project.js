@@ -49,6 +49,7 @@ const create = async input => {
             id: uuidv4(), title: fa.title || input.title, slug: await uniqueSlug(input.slug || fa.title || input.title),
             location: fa.location || input.location || null, description: fa.description || input.description || null,
             coverImage: input.coverImage || null,
+            video: input.video || undefined,
             galleryImages: Array.isArray(input.galleryImages) ? input.galleryImages : [],
             createdAt: input.createdAt ? new Date(input.createdAt) : new Date(),
             translations,
@@ -62,7 +63,7 @@ const update = async (id, input) => {
     const current = await prisma.project.findUnique({ where: { id } });
     if (!current) return null;
     const data = {};
-    for (const field of ['title', 'location', 'description', 'coverImage', 'galleryImages']) {
+    for (const field of ['title', 'location', 'description', 'coverImage', 'galleryImages', 'video']) {
         if (Object.prototype.hasOwnProperty.call(input, field)) data[field] = input[field];
     }
     if (Object.prototype.hasOwnProperty.call(input, 'slug')) {

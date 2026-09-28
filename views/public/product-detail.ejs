@@ -140,6 +140,8 @@
     </div>
 </section>
 
+<%- include('_video', { video: product.video, videoName: product.name, videoImage: product.mainImage }) %>
+
 <% if (usedInProjects && usedInProjects.length) { %>
 <section class="section section--tone-bone">
     <div class="container">

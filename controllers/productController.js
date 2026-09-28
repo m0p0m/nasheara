@@ -6,6 +6,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { Prisma } = require('@prisma/client');
 const { SHAPES, KINDS, isShape, isKind, parseVariants } = require('../lib/tileShapes');
+const videoLib = require('../lib/video');
 
 const normalizeStock = (value) => {
     if (value === undefined || value === null) return null;
@@ -214,6 +215,8 @@ const addProduct = async (req, res) => {
             translations: normalizedTranslations,
             ...(await visualizerFields(req.body, req.files))
         };
+        const { video } = videoLib.fromForm(req.body, req.files, null);
+        if (video) newProduct.video = video;
 
         await Product.create(newProduct);
         res.redirect('/admin/dashboard'); // Redirect to product list
@@ -317,6 +320,10 @@ const editProduct = async (req, res) => {
              updatedData.galleryImages = gallery.concat(newImages);
         }
 
+        const { video, obsolete } = videoLib.fromForm(req.body, req.files, existingProduct.video);
+        updatedData.video = video || Prisma.DbNull;
+        for (const file of obsolete) await deleteUploadFileSafe(file);
+
         await Product.update(req.params.id, updatedData);
         res.redirect('/admin/dashboard');
     } catch (error) {
@@ -346,6 +353,8 @@ const deleteProduct = async (req, res) => {
         }
 
         for (const v of parseVariants(product.tileVariants, product.tileCutout)) await deleteUploadFileSafe(v.cutout);
+        const oldVideo = videoLib.normalize(product.video);
+        for (const file of [oldVideo.clip, oldVideo.poster]) if (file) await deleteUploadFileSafe(file);
 
         await Product.remove(req.params.id);
         res.redirect('/admin/dashboard');

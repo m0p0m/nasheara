@@ -7,6 +7,7 @@ const Testimonial = require('../models/testimonial');
 const { visualizerSpec, SHAPES, hasCutout } = require('../lib/tileShapes');
 const Scene = require('../models/visualizerScene');
 const { imageUrl } = require('../lib/images');
+const videoLib = require('../lib/video');
 
 // Questions shown by views/public/_buy-guide.ejs, also sent as FAQPage JSON-LD.
 const faqItems = t => [1, 2, 3, 4, 5].map(i => ({ q: t(`guide.faq${i}q`), a: t(`guide.faq${i}a`) }));
@@ -208,7 +209,14 @@ const getProductDetail = async (req, res) => {
                     ...(product.categorySlug ? [{ name: product.category, path: `/${req.locale}${categoryPath({ slug: product.categorySlug })}` }] : []),
                     { name: product.name, path: `/${req.locale}${productPath}` }
                 ]),
-                seo.faqSchema(faqItems(t))
+                seo.faqSchema(faqItems(t)),
+                ...videoLib.schemas(siteUrl, product.video, {
+                    name: product.name,
+                    description: product.metaDescription || seo.clip(product.description || ''),
+                    image: product.mainImage,
+                    url: `${siteUrl}/${req.locale}${productPath}`,
+                    updatedAt: product.updatedAt
+                })
             ],
             product: product,
             relatedProducts,
@@ -270,7 +278,14 @@ const getProjectDetail = async (req, res) => {
                     { name: t('seo.home'), path: `/${req.locale}/` },
                     { name: t('nav.projects'), path: `/${req.locale}/projects` },
                     { name: project.title, path: `/${req.locale}/project/${encodeURIComponent(project.slug)}` }
-                ])
+                ]),
+                ...videoLib.schemas(siteUrl, project.video, {
+                    name: project.title,
+                    description: seo.clip(project.description || project.title),
+                    image: project.coverImage || (project.galleryImages && project.galleryImages[0]),
+                    url: `${siteUrl}/${req.locale}/project/${encodeURIComponent(project.slug)}`,
+                    updatedAt: project.createdAt
+                })
             ],
             project, relatedProducts, layout: 'public/layout', currentPath: req.path
         });
@@ -323,6 +338,10 @@ const getSitemap = async (req, res) => {
                 path: `/product/${encodeURIComponent(product.slug)}`, priority: '0.8', changefreq: 'monthly',
                 lastmod: isoDate(product.updatedAt || product.createdAt),
                 locales: seo.translatedLocales(product, 'name'),
+                videos: videoLib.sitemapVideos(baseUrl, product.video, {
+                    name: product.name, description: product.metaDescription || seo.clip(product.description || product.name),
+                    image: product.mainImage, updatedAt: product.updatedAt
+                }),
                 images: [product.mainImage, ...(product.galleryImages || [])].filter(Boolean)
                     .map(i => ({ loc: seo.absolute(baseUrl, i), title: product.name }))
             })),
@@ -330,6 +349,10 @@ const getSitemap = async (req, res) => {
                 path: `/project/${encodeURIComponent(project.slug)}`, priority: '0.6', changefreq: 'monthly',
                 lastmod: isoDate(project.updatedAt || project.createdAt),
                 locales: seo.translatedLocales(project, 'title'),
+                videos: videoLib.sitemapVideos(baseUrl, project.video, {
+                    name: project.title, description: seo.clip(project.description || project.title),
+                    image: project.coverImage, updatedAt: project.createdAt
+                }),
                 images: [project.coverImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: project.title }))
             })),
             ...articles.map(article => ({
@@ -350,10 +373,20 @@ const getSitemap = async (req, res) => {
             ...localesOf(entry).map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(localePath(l, entry.path))}"/>`),
             `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localePath('fa', entry.path))}"/>`,
             ...(entry.images || []).map(img => `    <image:image><image:loc>${xmlEscape(img.loc)}</image:loc><image:title>${xmlEscape(img.title)}</image:title></image:image>`),
+            ...(entry.videos || []).map(v => [
+                '    <video:video>',
+                `      <video:thumbnail_loc>${xmlEscape(v.thumbnail)}</video:thumbnail_loc>`,
+                `      <video:title>${xmlEscape(v.title)}</video:title>`,
+                `      <video:description>${xmlEscape(String(v.description).slice(0, 2000))}</video:description>`,
+                v.content ? `      <video:content_loc>${xmlEscape(v.content)}</video:content_loc>` : null,
+                v.player ? `      <video:player_loc>${xmlEscape(v.player)}</video:player_loc>` : null,
+                v.date ? `      <video:publication_date>${xmlEscape(v.date)}</video:publication_date>` : null,
+                '    </video:video>'
+            ].filter(Boolean).join('\n')),
             '  </url>'
         ].filter(Boolean).join('\n');
         const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n' +
             locales.flatMap(locale => entries.filter(entry => localesOf(entry).includes(locale)).map(entry => urlNode(locale, entry))).join('\n') +
             '\n</urlset>';
         res.set('Cache-Control', 'public, max-age=3600');

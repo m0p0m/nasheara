@@ -55,7 +55,7 @@ const productData = async (input, current = null) => {
     const scalarFields = [
         'name', 'stock', 'description', 'mainImage', 'metaTitle', 'metaDescription',
         'isNew', 'isBestSeller', 'patternName', 'color', 'material', 'dimensions',
-        'tileShape', 'tileCutout', 'tileWidthCm', 'tileHeightCm', 'tileVariants', 'tileKind'
+        'tileShape', 'tileCutout', 'tileWidthCm', 'tileHeightCm', 'tileVariants', 'tileKind', 'video'
     ];
     for (const field of scalarFields) if (Object.prototype.hasOwnProperty.call(input, field)) data[field] = input[field];
     for (const field of ['galleryImages', 'keywords', 'usageArea']) {

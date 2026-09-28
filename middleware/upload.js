@@ -50,6 +50,11 @@ const storage = multer.diskStorage({
 });
 
 function checkFileType(file, cb){
+    // Short muted loops for the video section (see lib/video.js).
+    if (file.fieldname === 'videoClip') {
+        const ok = /\.(mp4|webm)$/i.test(file.originalname || '') && /^video\/(mp4|webm)$/.test(file.mimetype || '');
+        return ok ? cb(null, true) : cb(new Error('Error: MP4 or WebM video only!'));
+    }
     const allowed = /jpeg|jpg|png|gif|webp/;
     const extname = allowed.test(path.extname(file.originalname || '').toLowerCase());
     const mimetype = /image\/(jpeg|jpg|png|gif|webp)/.test(file.mimetype || '');
@@ -61,7 +66,7 @@ const upload = multer({
     storage,
     limits: {
         fileSize: 5 * 1024 * 1024,
-        files: 10,
+        files: 12,
         // The product form alone posts ~35 fields (three languages, specs, SEO)
         // plus dynamic spec rows; keep a ceiling but leave real headroom.
         parts: 250,
@@ -77,7 +82,9 @@ const upload = multer({
     { name: 'tileCutout', maxCount: 1 },
     { name: 'sceneImage', maxCount: 1 },
     { name: 'sceneOverlay', maxCount: 1 },
-    { name: 'galleryImages', maxCount: 5 }
+    { name: 'galleryImages', maxCount: 5 },
+    { name: 'videoClip', maxCount: 1 },
+    { name: 'videoPoster', maxCount: 1 }
 ]);
 
 module.exports = upload;

@@ -585,7 +585,12 @@
     "vizSummaryBlock": "حوالي {area} م² · {count} بلوك",
     "vizNoWebgl": "متصفحك لا يدعم العرض المنظوري؛ يُعرض الجدار البسيط فقط.",
     "allArticles": "كل المقالات",
-    "usedInProjects": "نُفّذ في هذه المشاريع"
+    "usedInProjects": "نُفّذ في هذه المشاريع",
+    "videoEyebrow": "فيديو",
+    "videoHeading": "{{name}} بالفيديو",
+    "videoPlay": "تشغيل الفيديو",
+    "videoOnAparat": "شاهد على آبارات",
+    "videoBadge": "فيديو"
   },
   "seo": {
     "brand": "نقش آرا",

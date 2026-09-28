@@ -49,7 +49,8 @@ app.use(helmet({
             imgSrc: ["'self'", 'data:', 'blob:'],
             fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
             connectSrc: ["'self'"],
-            frameSrc: ['https://www.openstreetmap.org'],
+            // Aparat players load only after a click (views/public/_video.ejs).
+            frameSrc: ['https://www.openstreetmap.org', 'https://www.aparat.com'],
             frameAncestors: ["'none'"]
         }
     },
@@ -80,6 +81,11 @@ app.locals.img = images.imageUrl;
 app.locals.srcset = images.srcset;
 app.locals.responsive = images.responsive;
 app.locals.asset = images.asset;
+const videoLib = require('./lib/video');
+app.locals.videoNormalize = videoLib.normalize;
+app.locals.videoEmbedUrl = videoLib.embedUrl;
+app.locals.videoWatchUrl = videoLib.watchUrl;
+app.locals.hasVideo = videoLib.hasVideo;
 app.use(express.static(path.join(__dirname, 'public'), {
     // CSS/JS are linked with ?v=<mtime> (app.locals.asset), so they can be cached long too.
     maxAge: '30d',
