@@ -212,6 +212,7 @@ const consultationController = require('./controllers/consultationController'); 
 app.get('/', (req, res) => res.redirect(301, '/fa/'));
 app.get('/sitemap.xml', publicController.getSitemap);
 app.get('/robots.txt', publicController.getRobots);
+app.use(require('./lib/redirects')(supportedLocales));
 app.use((req, res, next) => {
     const isLegacyPublicPath = /^\/(products|projects|articles|contact|consultation)(\/|$)/.test(req.path)
         || /^\/(product|project|article)\//.test(req.path);
