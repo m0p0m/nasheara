@@ -48,7 +48,7 @@
             <h3 class="text-sm font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors"><%= article.title %></h3>
             <p class="text-xs text-slate-500 mb-3 line-clamp-2"><%= article.excerpt ? article.excerpt : (article.content ? article.content.substring(0, 80) + '...' : '') %></p>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-500"><%= new Date(article.createdAt).toLocaleDateString('fa-IR') %></span>
+              <span class="text-slate-500"><%= new Date(article.createdAt).toLocaleDateString(locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-u-ca-gregory' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
               <span class="text-primary font-semibold"><%= t('auto.k_46dd186fe2eb') %> ←</span>
             </div>
           </div>
@@ -90,7 +90,7 @@
           </p>
           <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
             <span class="text-xs text-slate-500">
-              <%= new Date(article.createdAt).toLocaleDateString('fa-IR') %>
+              <%= new Date(article.createdAt).toLocaleDateString(locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-u-ca-gregory' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' }) %>
             </span>
             <span class="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all">
               <%= t('auto.k_7029abbaa616') %>

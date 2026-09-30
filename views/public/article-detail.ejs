@@ -1,5 +1,5 @@
 <% if (article) { %>
-<% const localeCode = locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-SA' : 'en-US'; %>
+<% const localeCode = locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-u-ca-gregory' : 'en-GB'; %>
 <% const readingMinutes = Math.max(1, Math.ceil((article.content || '').replace(/[#*_`>\[\]()]/g, '').trim().split(/\s+/).filter(Boolean).length / 180)); %>
 <% const labels = locale === 'fa' ? { article: 'مقاله', minutes: 'دقیقه مطالعه', back: 'بازگشت به مقالات' } : locale === 'ar' ? { article: 'مقال', minutes: 'دقائق للقراءة', back: 'العودة إلى المقالات' } : { article: 'Article', minutes: 'min read', back: 'Back to articles' }; %>
 <script type="application/ld+json"><%- JSON.stringify(articleStructuredData).replace(/</g, '\\u003c') %></script>
@@ -10,7 +10,7 @@
       <h1 class="section__title" style="font-size:clamp(2rem,5vw,4.25rem)"><%= article.title %></h1>
       <% if (article.excerpt) { %><p class="section__lead mt-6"><%= article.excerpt %></p><% } %>
       <div class="article-meta mt-7 flex flex-wrap justify-center gap-x-5 gap-y-2">
-        <time datetime="<%= new Date(article.createdAt).toISOString() %>"><%= new Date(article.createdAt).toLocaleDateString(localeCode) %></time>
+        <time datetime="<%= new Date(article.createdAt).toISOString() %>"><%= new Date(article.createdAt).toLocaleDateString(localeCode, { year: 'numeric', month: 'long', day: 'numeric' }) %></time>
         <span><%= readingMinutes %> <%= labels.minutes %></span>
       </div>
     </header>

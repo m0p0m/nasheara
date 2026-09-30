@@ -952,7 +952,7 @@
         setActive('[data-layout]', 'data-layout', state.layout);
         setActive('[data-rotation]', 'data-rotation', state.rotation);
         var shapeLabel = root.querySelector('[data-shape-label]');
-        if (shapeLabel && state.tile) shapeLabel.textContent = (SHAPES[shape] && (LOCALE === 'en' ? SHAPES[shape].labelEn : SHAPES[shape].label)) || shape;
+        if (shapeLabel && state.tile) shapeLabel.textContent = (SHAPES[shape] && (LOCALE === 'en' ? SHAPES[shape].labelEn : LOCALE === 'ar' ? SHAPES[shape].labelAr : SHAPES[shape].label)) || shape;
     }
 
     function updateSummary() {
@@ -977,7 +977,7 @@
         if (consult) {
             var url = new URL(consult.getAttribute('data-base'), window.location.origin);
             url.searchParams.set('product', state.tile.name);
-            var shapeName = SHAPES[state.tile.shape] ? (LOCALE === 'en' ? SHAPES[state.tile.shape].labelEn : SHAPES[state.tile.shape].label) : state.tile.shape;
+            var shapeName = SHAPES[state.tile.shape] ? (LOCALE === 'en' ? SHAPES[state.tile.shape].labelEn : LOCALE === 'ar' ? SHAPES[state.tile.shape].labelAr : SHAPES[state.tile.shape].label) : state.tile.shape;
             url.searchParams.set('note', I18N.consultNote.replace('{shape}', shapeName).replace('{area}', areaM2.toFixed(1)) + ' · ' + scene.name + ' · ' + parts.join(' · '));
             consult.href = url.pathname + url.search;
         }

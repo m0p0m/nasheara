@@ -4,7 +4,7 @@ const Article = require('../models/article');
 const Project = require('../models/project');
 const seo = require('../lib/seo');
 const Testimonial = require('../models/testimonial');
-const { visualizerSpec, SHAPES, hasCutout } = require('../lib/tileShapes');
+const { visualizerSpec, SHAPES, hasCutout, colourName } = require('../lib/tileShapes');
 const Scene = require('../models/visualizerScene');
 const { imageUrl } = require('../lib/images');
 const videoLib = require('../lib/video');
@@ -427,7 +427,7 @@ const getVisualizerPage = async (req, res) => {
             ...tile,
             thumb: imageUrl(tile.variants[0].cutout, 160),
             cutout: imageUrl(tile.variants[0].cutout, 1024),
-            variants: tile.variants.map(v => ({ label: v.label, thumb: imageUrl(v.cutout, 160), cutout: imageUrl(v.cutout, 1024) }))
+            variants: tile.variants.map(v => ({ label: colourName(v.label, req.locale), thumb: imageUrl(v.cutout, 160), cutout: imageUrl(v.cutout, 1024) }))
         }));
         const requested = String(req.query.product || '').trim();
         const initial = tiles.find(tile => tile.slug === requested) || tiles[0] || null;

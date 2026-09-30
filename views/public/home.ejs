@@ -1,5 +1,4 @@
 <%
-  const heroImage = '/icons/hero1.jpg';
   const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 %>
 
@@ -7,7 +6,6 @@
 <section class="hero">
     <div class="hero__media">
         <img src="<%= img('/icons/1.png', 1600) %>"<%- responsive('/icons/1.png', [800, 1280, 1600, 2048], '100vw') %> alt="<%= t('atelier.brandName') %> — <%= t('atelier.brandTag') %>" width="1672" height="941" fetchpriority="high" decoding="async">
-        <!-- <img src="<%= heroImage %>" alt="<%= t('atelier.brandTag') %>"> -->
     </div>
     <div class="hero__scrim"></div>
     <div class="container hero__inner">
