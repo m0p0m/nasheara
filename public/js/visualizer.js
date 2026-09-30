@@ -38,16 +38,10 @@
     var GROUTS = { light: '#D9D2C6', sand: '#C9B99F', grey: '#9A9690', dark: '#3C3934', white: '#F3EFE8' };
     var PLAIN_BEHIND = '#7d766c'; // what openings show on the plain wall
     var HOLE_SHADE = 0.45;       // a tile's openings show the wall it is fixed to, in shadow
-    var GLAZES = {
-        original: 'none',
-        ruby: 'hue-rotate(-10deg) saturate(1.25) brightness(0.92)',
-        amber: 'hue-rotate(28deg) saturate(1.15) brightness(1.05)',
-        olive: 'hue-rotate(70deg) saturate(0.85) brightness(0.95)',
-        jade: 'hue-rotate(130deg) saturate(0.9) brightness(0.9)',
-        cobalt: 'hue-rotate(200deg) saturate(1.1) brightness(0.9)',
-        plum: 'hue-rotate(280deg) saturate(0.95) brightness(0.9)',
-        ink: 'saturate(0.35) brightness(0.55) contrast(1.15)',
-        bone: 'saturate(0.35) brightness(1.45) contrast(0.9)'
+    // Glaze swatches (same colours as the page's swatch buttons).
+    var GLAZE_COLOURS = {
+        ruby: '#9B2C1F', amber: '#C98A2E', olive: '#7C8A3C', jade: '#2F5A4A',
+        cobalt: '#2B4C8C', plum: '#6E3A5C', ink: '#2B2724', bone: '#EFE6D6'
     };
 
     // Every colour of every product is addressable as "slug~index".
@@ -388,6 +382,43 @@
         c.putImageData(image, 0, 0);
     }
 
+    // Bounding box of the opaque pixels (alpha > 16).
+    function alphaBox(cv) {
+        var d;
+        try { d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; } catch (e) { return { x: 0, y: 0, w: cv.width, h: cv.height }; }
+        var x0 = cv.width, y0 = cv.height, x1 = -1, y1 = -1;
+        for (var y = 0; y < cv.height; y++) for (var x = 0; x < cv.width; x++) {
+            if (d[(y * cv.width + x) * 4 + 3] > 16) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+        }
+        return x1 < 0 ? { x: 0, y: 0, w: cv.width, h: cv.height } : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+    }
+
+    // Re-glaze a tile: every pixel takes the glaze colour, scaled by how light
+    // or dark it is relative to the tile's average (so relief, crackle and edges
+    // keep their shading), and the brightest reflections stay as they are, the
+    // way a glossy glaze catches light whatever its colour.
+    function recolour(ctx, w, h, hex) {
+        var t = [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+        var image;
+        try { image = ctx.getImageData(0, 0, w, h); } catch (e) { return; }
+        var d = image.data, sum = 0, n = 0, i;
+        for (i = 0; i < d.length; i += 4) if (d[i + 3] > 128) { sum += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; n++; }
+        var mean = n ? sum / n : 128;
+        var lo = mean * 1.18, hi = mean * 1.6;
+        for (i = 0; i < d.length; i += 4) {
+            if (!d[i + 3]) continue;
+            var L = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            var shade = Math.min(1.35, L / mean);
+            var k = Math.max(0, Math.min(1, (L - lo) / (hi - lo)));
+            // a reflection is bright AND nearly white; light patches of a coloured glaze are re-glazed too
+            var mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
+            var white = Math.max(0, Math.min(1, 1 - (mx ? (mx - mn) / mx : 0) * 3));
+            var spec = k * k * (3 - 2 * k) * white;
+            for (var c = 0; c < 3; c++) d[i + c] = Math.max(0, Math.min(255, t[c] * shade * (1 - spec) + d[i + c] * spec));
+        }
+        ctx.putImageData(image, 0, 0);
+    }
+
     // Three brightness variants per cut-out so neighbouring tiles differ a
     // little, as real glaze batches do. The glaze filter is baked in too.
     function prepareCutout(colourId, glazeId) {
@@ -396,20 +427,24 @@
         if (cutouts[key]) return Promise.resolve(cutouts[key]);
         return loadImage(colour.cutout).then(function (img) {
             var s = Math.min(1, 512 / Math.max(img.naturalWidth, img.naturalHeight));
-            var w = Math.max(1, Math.round(img.naturalWidth * s)), h = Math.max(1, Math.round(img.naturalHeight * s));
+            var fw = Math.max(1, Math.round(img.naturalWidth * s)), fh = Math.max(1, Math.round(img.naturalHeight * s));
+            var full = document.createElement('canvas'); full.width = fw; full.height = fh;
+            full.getContext('2d').drawImage(img, 0, 0, fw, fh);
+            // Empty margins around the tile would read as extra grout: crop to the tile itself.
+            var box = alphaBox(full);
+            var w = box.w, h = box.h;
             // The PNG *is* the tile outline, so its proportions define the height;
             // only the physical width comes from the admin. All colours of one
             // design share the first one's proportions.
-            if (!spec.aspectFrom) { spec.aspectFrom = colourId; spec.height = spec.width * img.naturalHeight / img.naturalWidth; }
+            if (!spec.aspectFrom) { spec.aspectFrom = colourId; spec.height = spec.width * h / w; }
             if (!spec.shapeExplicit && !spec.shapeChecked) {
                 spec.shapeChecked = true;
                 var detected = detectShape(img);
                 if (detected) spec.shape = detected;
             }
-            var glaze = GLAZES[glazeId] || 'none';
             var base = document.createElement('canvas'); base.width = w; base.height = h;
-            base.getContext('2d').drawImage(img, 0, 0, w, h);
-            if (glaze !== 'none') applyFilter(base.getContext('2d'), w, h, glaze);
+            base.getContext('2d').drawImage(full, box.x, box.y, w, h, 0, 0, w, h);
+            if (GLAZE_COLOURS[glazeId]) recolour(base.getContext('2d'), w, h, GLAZE_COLOURS[glazeId]);
             var variants = [0.95, 1, 1.05].map(function (b) {
                 var out = document.createElement('canvas'); out.width = w; out.height = h;
                 var c = out.getContext('2d');
@@ -441,12 +476,19 @@
         c.moveTo(x, y - h / 2); c.lineTo(x + w / 2, y - h / 4); c.lineTo(x + w / 2, y + h / 4);
         c.lineTo(x, y + h / 2); c.lineTo(x - w / 2, y + h / 4); c.lineTo(x - w / 2, y - h / 4); c.closePath();
     }
+    // Fish scale as it is made and laid: point on top, concave upper sides, round
+    // bottom. The concave sides are exactly the round bottoms of the two tiles
+    // above, so the scales interlock edge to edge instead of overlapping.
+    // Drawn in a unit box (x, y in -1..1) and stretched to w × h.
     function scalePath(c, x, y, w, h) {
-        var r = w / 2, top = y - h / 2 + r;
-        c.moveTo(x - r, top);
-        c.arc(x, top, r, Math.PI, 0, false);
-        c.lineTo(x, y + h / 2);
+        c.save();
+        c.translate(x, y); c.scale(w / 2, h / 2);
+        c.moveTo(0, -1);
+        c.arc(-1, -1, 1, 0, Math.PI / 2, false);     // left side, concave
+        c.arc(0, 0, 1, Math.PI, 0, true);            // round bottom
+        c.arc(1, -1, 1, Math.PI / 2, Math.PI, false); // right side, concave
         c.closePath();
+        c.restore();
     }
     function arabesquePath(c, x, y, w, h) {
         var hw = w / 2, hh = h / 2;
@@ -459,7 +501,7 @@
         c.closePath();
     }
     var PATHS = { square: rectPath, rectangle: rectPath, lozenge: lozengePath, hexagon: hexPath, scale: scalePath, arabesque: arabesquePath };
-    var OVERLAPPING = { scale: true, arabesque: true };
+    var OVERLAPPING = { arabesque: true };
 
     // B = { x0, y0, x1, y1 } in cm. The lattice is anchored at the wall's
     // origin (perspective corner 1), so it does not shift when the area changes.
@@ -502,11 +544,11 @@
                 push(c, r, c * hx + (r & 1 ? hx / 2 : 0) + hx / 2, r * hy + h / 2, hexPath, w, h);
             }
         } else if (shape === 'scale') {
-            // scales overlap: rows ~0.9 radius apart, offset by half a tile; lower rows drawn on top
-            var r0 = w / 2, sxS = w + g, syS = r0 * 0.92 + g;
+            // interlocking rows: half a tile high apart, every other row shifted half a tile
+            var sxS = w + g, syS = (h + g) / 2;
             cs = span(B.x0, B.x1, sxS); rs = span(B.y0, B.y1, syS);
             for (r = rs[0]; r <= rs[1]; r++) for (c = cs[0]; c <= cs[1]; c++) {
-                push(c, r, c * sxS + (r & 1 ? sxS / 2 : 0) + sxS / 2, r * syS - r0 + h / 2, scalePath, w, h, r);
+                push(c, r, c * sxS + (r & 1 ? sxS / 2 : 0) + sxS / 2, r * syS + h / 2, scalePath, w, h);
             }
         } else if (shape === 'arabesque') {
             var ax = w + g, ay = (h + g) * 0.5;
