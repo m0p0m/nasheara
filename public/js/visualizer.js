@@ -23,7 +23,8 @@
     var SHAPES = JSON.parse(root.getAttribute('data-shapes') || '{}');
     var I18N = JSON.parse(root.getAttribute('data-i18n') || '{}');
     var LOCALE = document.documentElement.lang || 'fa';
-    var localDigits = function (v) { var d = LOCALE === 'ar' ? '٠١٢٣٤٥٦٧٨٩' : '۰۱۲۳۴۵۶۷۸۹'; return LOCALE === 'en' ? String(v) : String(v).replace(/\d/g, function (c) { return d[c]; }); };
+    // Persian/Arabic digits, with the momayyez (٫) as the decimal separator.
+    var localDigits = function (v) { var d = LOCALE === 'ar' ? '٠١٢٣٤٥٦٧٨٩' : '۰۱۲۳۴۵۶۷۸۹'; return LOCALE === 'en' ? String(v) : String(v).replace(/(\d)\.(\d)/g, '$1٫$2').replace(/\d/g, function (c) { return d[c]; }); };
     var stage = root.querySelector('.viz-stage');
     var canvas = root.querySelector('canvas');
     var ctx = canvas.getContext('2d');
@@ -639,6 +640,9 @@
                 paintBehind(scene, cssW, cssH);
                 ctx.drawImage(wall, 0, 0, cssW, cssH);
             }
+            if (compareBtn) compareBtn.hidden = !(ready && GL);
+            // On phones the picture stays pinned above the options, unless it is too tall to leave room for them.
+            root.classList.toggle('is-tall', window.innerWidth < 1024 && cssH > window.innerHeight * 0.45);
             stage.classList.remove('is-loading');
             updateSummary();
         }).catch(function (err) {
@@ -836,9 +840,49 @@
     var clearBtn = root.querySelector('[data-clear-paint]');
     if (clearBtn) clearBtn.addEventListener('click', function () { state.paint = {}; invalidate(); });
 
+    // Hold to see the room as photographed, release to see the tiles again.
+    var compareBtn = root.querySelector('[data-compare]');
+    function showOriginal(on) {
+        var ready = scenesReady[state.scene.id];
+        if (!compareBtn || !ready || !state.scene.image) return;
+        compareBtn.classList.toggle('is-on', on);
+        compareBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on) ctx.drawImage(ready.photo, 0, 0, canvas.width / dpr, canvas.height / dpr);
+        else render();
+    }
+    if (compareBtn) {
+        compareBtn.addEventListener('pointerdown', function (e) { e.preventDefault(); compareBtn.setPointerCapture(e.pointerId); showOriginal(true); });
+        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) {
+            compareBtn.addEventListener(ev, function () { if (compareBtn.classList.contains('is-on')) showOriginal(false); });
+        });
+        compareBtn.addEventListener('keydown', function (e) { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); showOriginal(true); } });
+        compareBtn.addEventListener('keyup', function (e) { if (e.key === ' ' || e.key === 'Enter') showOriginal(false); });
+        compareBtn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    }
+
+    // The saved picture carries the design's name and the site address, so it
+    // still says where it came from when it is forwarded.
+    function captioned() {
+        var W = canvas.width, H = canvas.height, bar = Math.max(44, Math.round(W * 0.055));
+        var out = document.createElement('canvas'); out.width = W; out.height = H + bar;
+        var o = out.getContext('2d');
+        o.drawImage(canvas, 0, 0);
+        o.fillStyle = '#16382E'; o.fillRect(0, H, W, bar);
+        var rtl = LOCALE !== 'en', pad = Math.round(bar * 0.45), mid = H + bar / 2;
+        var family = rtl ? 'Vazirmatn, Tahoma, sans-serif' : 'Inter, Arial, sans-serif';
+        o.textBaseline = 'middle';
+        o.fillStyle = '#F6F2E9'; o.font = '700 ' + Math.round(bar * 0.34) + 'px ' + family;
+        o.direction = rtl ? 'rtl' : 'ltr'; o.textAlign = rtl ? 'right' : 'left';
+        o.fillText((I18N.brand || '') + (state.tile ? ' — ' + state.tile.name : ''), rtl ? W - pad : pad, mid);
+        o.fillStyle = '#C4A26B'; o.font = '600 ' + Math.round(bar * 0.3) + 'px ' + family;
+        o.direction = 'ltr'; o.textAlign = rtl ? 'left' : 'right';
+        o.fillText(window.location.host, rtl ? pad : W - pad, mid);
+        return out;
+    }
+
     var dl = root.querySelector('[data-download]');
     if (dl) dl.addEventListener('click', function () {
-        canvas.toBlob(function (blob) {
+        captioned().toBlob(function (blob) {
             if (!blob) return;
             var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -882,6 +926,11 @@
         });
         var parts = Object.keys(counts).map(function (id) { return colourName(id) + ': ' + counts[id]; });
         el.textContent = localDigits((state.tile.kind === 'block' && I18N.summaryBlock ? I18N.summaryBlock : I18N.summary).replace('{area}', areaM2.toFixed(1)).replace('{count}', String(total)) + ' — ' + parts.join(' · '));
+        var productLink = root.querySelector('[data-product-link]');
+        if (productLink) {
+            productLink.href = productLink.getAttribute('data-base') + encodeURIComponent(state.tile.slug);
+            productLink.hidden = false;
+        }
         var consult = root.querySelector('[data-consult]');
         if (consult) {
             var url = new URL(consult.getAttribute('data-base'), window.location.origin);
@@ -891,6 +940,10 @@
             consult.href = url.pathname + url.search;
         }
     }
+
+    // Finer options start folded on phones, where the picture needs the room.
+    var more = root.querySelector('[data-more]');
+    if (more && window.matchMedia('(min-width: 1024px)').matches) more.open = true;
 
     // initial state
     var initialSlug = root.getAttribute('data-initial');

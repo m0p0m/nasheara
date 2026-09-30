@@ -48,14 +48,15 @@
 
     <!-- Fonts: fa/ar use self-hosted Vazirmatn; en uses Fraunces (display) + Inter (body) -->
     <% if (locale !== 'en') { %><link rel="preload" href="/fonts/vazirmatn/Vazirmatn-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/vazirmatn/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin><% } %>
+    <link rel="preload" href="/fonts/vazirmatn/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/naskh/NotoNaskhArabic-wght.woff2" as="font" type="font/woff2" crossorigin><% } %>
     <% if (currentPath === '/') { %><link rel="preload" href="<%= img('/icons/1.png', 1600) %>" as="image" imagesrcset="<%= srcset('/icons/1.png', [800, 1280, 1600, 2048]) %>" imagesizes="100vw" fetchpriority="high"><% } %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <% if (locale === 'en') { %><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Loaded without blocking first paint: applied by site.js once parsed (font-display: swap covers the gap). -->
     <link
         href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" media="print" data-defer-style>
+        rel="stylesheet" media="print" data-defer-style><% } %>
 
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -234,11 +235,6 @@
                         <img class="site-brand__logo" src="<%= img('/icons/naghshe-ara-logo.png', 160) %>"<%- responsive('/icons/naghshe-ara-logo.png', [160, 320], '80px') %> alt="<%= t('atelier.brandName') %>" width="1252" height="1151" decoding="async">
                     </a>
                     <p class="site-footer__text"><%= t('atelier.footerAbout') %></p>
-                    <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="newsletter">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="email" name="email" required placeholder="<%= t('atelier.newsletterPlaceholder') %>" aria-label="<%= t('atelier.newsletterPlaceholder') %>">
-                        <button type="submit"><%= t('atelier.subscribe') %></button>
-                    </form>
                 </div>
                 <div>
                     <h3 class="site-footer__title"><%= t('atelier.explore') %></h3>
@@ -253,7 +249,7 @@
                     <h3 class="site-footer__title"><%= t('atelier.atelierContact') %></h3>
                     <div class="site-footer__contact">
                         <a href="tel:+989124519443" class="ltr-text">+98 912 451 9443</a>
-                        <a href="mailto:info@nashearatasfiyeh.com">info@nashearatasfiyeh.com</a>
+                        <a href="mailto:info@nashearatasfiyeh.com" class="ltr-text">info@nashearatasfiyeh.com</a>
                         <span><%= t('auto.k_f572ddf64198') %></span>
                         <span><%= t('auto.k_f9208a21604c') %></span>
                     </div>
@@ -261,9 +257,11 @@
                 <div>
                     <h3 class="site-footer__title"><%= t('atelier.newsletterTitle') %></h3>
                     <p class="site-footer__text" style="margin-top:0.4rem"><%= t('atelier.newsletterSub') %></p>
-                    <div class="mt-5" style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
-                        <span class="text-sm" style="color:color-mix(in srgb, var(--color-bone) 60%, transparent)"><%= t('auto.k_193a33bef234') %></span>
-                    </div>
+                    <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="newsletter">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="email" name="email" required placeholder="<%= t('atelier.newsletterPlaceholder') %>" aria-label="<%= t('atelier.newsletterPlaceholder') %>">
+                        <button type="submit"><%= t('atelier.subscribe') %></button>
+                    </form>
                 </div>
             </div>
             <div class="site-footer__bottom">
@@ -285,6 +283,14 @@
             </div>
         </div>
     </footer>
+
+    <% if (!(currentPath && currentPath.startsWith('/visualizer'))) { %>
+    <!-- A person is one tap away: WhatsApp chat with the workshop -->
+    <a href="https://wa.me/989124519443" class="chat-fab" target="_blank" rel="noopener" aria-label="<%= t('atelier.whatsappCta') %>">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2Zm0 17.8a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20Zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.7-1.2.1-.1 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.6.3 2.7 2.7 0 0 0-.8 2c0 1.2.9 2.3 1 2.5.1.2 1.7 2.6 4.1 3.6 1.5.7 2.1.7 2.9.6.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.5-.3Z"/></svg>
+        <span><%= t('atelier.whatsappCta') %></span>
+    </a>
+    <% } %>
 
     <script src="<%= asset('/js/reveal.js') %>" defer></script>
     <script src="<%= asset('/js/swatches.js') %>" defer></script>

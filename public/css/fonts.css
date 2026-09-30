@@ -43,3 +43,11 @@
   src: url('/fonts/vazirmatn/Vazirmatn-Black.woff2') format('woff2');
   font-weight: 900; font-style: normal; font-display: swap;
 }
+/* Headings (fa/ar): Noto Naskh Arabic, the naskh hand of tile inscriptions.
+   Variable weight 400–700, Arabic-script subset only (Latin falls back). SIL OFL. */
+@font-face {
+  font-family: 'Naskh';
+  src: url('/fonts/naskh/NotoNaskhArabic-wght.woff2') format('woff2');
+  font-weight: 400 700; font-style: normal; font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+2010-2011, U+FB50-FDFF, U+FE70-FEFC;
+}

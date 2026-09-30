@@ -8,12 +8,16 @@ const showConsultationForm = async (req, res) => {
     try {
         // We might want to pre-select a product if the user clicks from a product page
         const products = await Product.getAll(req.locale);
-        const selectedProduct = req.query.product || '';
+        // Context carried from a product page (?product=) or the visualizer (?note=),
+        // submitted with the form so the team knows what the visitor was looking at.
+        const selectedProduct = String(req.query.product || '').trim().slice(0, 200);
+        const note = String(req.query.note || '').trim().slice(0, 600);
         res.render('public/consultation-form', {
             title: res.locals.t('seo.consultationTitle'),
             metaDescription: res.locals.t('seo.consultationDesc'),
             products,
             selectedProduct,
+            note,
             layout: 'public/layout',
             currentPath: req.path
         });
@@ -33,10 +37,10 @@ const submitConsultation = async (req, res) => {
         }
 
         // Create consultation with all fields
-        await Consultation.create({ 
-            name, 
-            phone, 
-            interestedInProduct: interestedInProduct || '', 
+        await Consultation.create({
+            name,
+            phone,
+            interestedInProduct: String(interestedInProduct || '').slice(0, 255),
             contactTime,
             email: email || '',
             projectType: projectType || '',

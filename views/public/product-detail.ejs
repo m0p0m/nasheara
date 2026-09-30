@@ -3,11 +3,11 @@
     const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
 %>
 
-<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+<section class="section section--tone-bone" style="padding-top:clamp(2rem,5vw,3.5rem)">
     <div class="container">
 
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-3 text-sm mb-10" style="color:var(--color-stone-ink)" data-reveal>
+        <nav class="flex flex-wrap items-center gap-x-3 text-sm mb-10" style="color:var(--color-stone-ink)" data-reveal>
             <a href="/<%= locale %>/" class="hover:text-brass transition-colors inline-block py-2"><%= t('atelier.home') %></a>
             <span>/</span>
             <a href="/<%= locale %>/products" class="hover:text-brass transition-colors inline-block py-2"><%= t('nav.products') %></a>
@@ -21,17 +21,18 @@
 
         <div class="pdetail">
             <!-- Gallery -->
-            <div class="pdetail__media" data-gallery>
+            <% const mainPhoto = product.mainImage || '/icons/naghshe-ara-logo.png'; const photoWidths = [640, 1024, 1280]; %>
+            <div class="pdetail__media" data-gallery data-label-title="<%= product.name %>" data-label-close="<%= t('atelier.galleryClose') %>" data-label-prev="<%= t('atelier.galleryPrev') %>" data-label-next="<%= t('atelier.galleryNext') %>">
                 <div class="pdetail__main" data-reveal>
-                    <img src="<%= img(product.mainImage || '/icons/naghshe-ara-logo.png', 1024) %>"<%- responsive(product.mainImage || '/icons/naghshe-ara-logo.png', [640, 1024, 1280], '(min-width: 1024px) 50vw, 100vw') %> alt="<%= product.patternName || product.name %> — <%= [product.color, product.material].filter(Boolean).join('، ') || t('atelier.brandTag') %>" width="1000" height="1000" data-gallery-main fetchpriority="high" decoding="async">
+                    <img src="<%= img(mainPhoto, 1024) %>"<%- responsive(mainPhoto, photoWidths, '(min-width: 1024px) 50vw, 100vw') %> alt="<%= product.patternName || product.name %> — <%= [product.color, product.material].filter(Boolean).join('، ') || t('atelier.brandTag') %>" width="1000" height="1000" data-gallery-main data-gallery-full="<%= img(mainPhoto, 2048) %>" fetchpriority="high" decoding="async">
+                    <button type="button" class="pdetail__zoom" data-gallery-open aria-label="<%= t('atelier.galleryZoom') %>">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/></svg>
+                    </button>
                 </div>
                 <% if (product.galleryImages && product.galleryImages.length > 0) { %>
                     <div class="pdetail__thumbs" data-reveal style="--reveal-delay:100ms">
-                        <button type="button" class="pdetail__thumb is-active" data-gallery-thumb="<%= img(product.mainImage, 1024) %>">
-                        <img src="<%= img(product.mainImage, 160) %>" alt="<%= product.patternName || product.name %>" width="96" height="96" loading="lazy" decoding="async">
-                        </button>
-                        <% product.galleryImages.forEach(image => { %>
-                            <button type="button" class="pdetail__thumb" data-gallery-thumb="<%= img(image, 1024) %>">
+                        <% [product.mainImage, ...product.galleryImages].filter(Boolean).forEach((image, i) => { %>
+                            <button type="button" class="pdetail__thumb<%= i === 0 ? ' is-active' : '' %>" data-gallery-thumb="<%= img(image, 1024) %>" data-gallery-srcset="<%= srcset(image, photoWidths) %>" data-gallery-full="<%= img(image, 2048) %>" aria-label="<%= t('atelier.galleryPhoto', { n: i + 1 }) %>">
                             <img src="<%= img(image, 160) %>" alt="<%= product.patternName || product.name %>" width="96" height="96" loading="lazy" decoding="async">
                             </button>
                         <% }); %>
@@ -150,11 +151,11 @@
             <h2 class="section__title"><%= t('atelier.usedInProjects') %></h2>
         </div>
         <div class="editorial-grid">
-            <% usedInProjects.forEach((pj, i) => { const cover = pj.coverImage || (pj.galleryImages && pj.galleryImages[0]) || '/icons/naghshe-ara-logo.png'; %>
+            <% usedInProjects.forEach((pj, i) => { const cls = edCardClass(i, usedInProjects.length); const cover = pj.coverImage || (pj.galleryImages && pj.galleryImages[0]) || '/icons/naghshe-ara-logo.png'; %>
                 <a href="/<%= locale %>/project/<%= encodeURIComponent(pj.slug) %>"
-                    class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
+                    class="ed-card <%= cls %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
                     <div class="ed-card__media">
-                        <img src="<%= img(cover, 480) %>"<%- responsive(cover, [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= [pj.title, pj.location].filter(Boolean).join(' — ') %>" width="800" height="800" loading="lazy" decoding="async">
+                        <img src="<%= img(cover, 480) %>"<%- responsive(cover, [320, 480, 640, 800, 1024], edCardSizes(cls)) %> alt="<%= [pj.title, pj.location].filter(Boolean).join(' — ') %>" width="800" height="800" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (pj.location) { %><div class="ed-card__cat"><%= pj.location %></div><% } %>
@@ -171,15 +172,15 @@
 <section class="section section--tone-ivory hairline-y">
     <div class="container">
         <div class="section__head" data-reveal>
-            <span class="eyebrow"><%= t('atelier.related') %></span>
+            <span class="eyebrow"><%= t('atelier.fromCollection') %></span>
             <h2 class="section__title"><%= t('atelier.related') %></h2>
         </div>
         <div class="editorial-grid">
-            <% relatedProducts.forEach((rp, i) => { %>
+            <% relatedProducts.forEach((rp, i) => { const cls = edCardClass(i, relatedProducts.length); %>
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(rp.slug) %>"
-                    class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
+                    class="ed-card <%= cls %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
                     <div class="ed-card__media">
-                        <img src="<%= img(rp.mainImage || '/icons/naghshe-ara-logo.png', 480) %>"<%- responsive(rp.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= rp.patternName || rp.name %>" width="800" height="800" loading="lazy" decoding="async">
+                        <img src="<%= img(rp.mainImage || '/icons/naghshe-ara-logo.png', 480) %>"<%- responsive(rp.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800, 1024], edCardSizes(cls)) %> alt="<%= rp.patternName || rp.name %>" width="800" height="800" loading="lazy" decoding="async">
                     </div>
                     <div class="ed-card__body">
                         <% if (rp.category) { %><div class="ed-card__cat"><%= rp.category %></div><% } %>

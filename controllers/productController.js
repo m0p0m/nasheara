@@ -110,19 +110,27 @@ const normalizeSpecs = (specs) => {
         }
     }
 
-    // Accept simple line-based key:value entries (e.g. "ولتاژ:20\nتوان:100W")
+    // Accept simple line-based key:value entries (e.g. "ولتاژ:20\nتوان:100W").
+    // Entries are separated by newlines or semicolons. A comma only starts a new
+    // entry when the text after it has its own "key:", so lists such as
+    // "رنگ: سفید، سبز، مشکی" keep every item.
     const result = {};
-    // Split by newlines and common separators (newline, comma, Persian comma, semicolon)
-    const parts = s.split(/\r?\n|,|،|;|؛/).map(p => p.trim()).filter(Boolean);
-    for (const part of parts) {
-        // split on first colon (either ASCII or fullwidth)
-        const idx = part.indexOf(':') >= 0 ? part.indexOf(':') : part.indexOf('：');
-        if (idx > 0) {
-            const key = part.slice(0, idx).trim();
-            const value = part.slice(idx + 1).trim();
-            if (key) result[key] = value;
+    let lastKey = null;
+    for (const line of s.split(/\r?\n|;|؛/)) {
+        lastKey = null;
+        for (const piece of line.split(/(?<=[,،])/)) {
+            // split on first colon (either ASCII or fullwidth)
+            const idx = piece.indexOf(':') >= 0 ? piece.indexOf(':') : piece.indexOf('：');
+            const key = idx > 0 ? piece.slice(0, idx).trim() : '';
+            if (key && !/[,،]/.test(key)) {
+                lastKey = key;
+                result[key] = piece.slice(idx + 1);
+            } else if (lastKey) {
+                result[lastKey] += piece;
+            }
         }
     }
+    for (const key of Object.keys(result)) result[key] = result[key].trim().replace(/[,،]$/, '').trim();
     return result;
 };
 
@@ -372,4 +380,5 @@ module.exports = {
     editProduct,
     deleteProduct,
     uploadCutout,
+    normalizeSpecs,
 };

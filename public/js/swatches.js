@@ -9,6 +9,11 @@
         var noteEl = container.querySelector('[data-swatch-note]');
         var catEl = container.querySelector('[data-swatch-cat]');
 
+        container.querySelectorAll('.swatch').forEach(function (s) {
+            s.classList.toggle('is-active', s === swatch);
+            s.setAttribute('aria-pressed', s === swatch ? 'true' : 'false');
+        });
+
         var src = swatch.getAttribute('data-img') || '';
         var name = swatch.getAttribute('data-name') || '';
         var note = swatch.getAttribute('data-note') || '';

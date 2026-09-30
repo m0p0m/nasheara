@@ -81,6 +81,16 @@ app.locals.img = images.imageUrl;
 app.locals.srcset = images.srcset;
 app.locals.responsive = images.responsive;
 app.locals.asset = images.asset;
+// Editorial card grids (4 columns on desktop, 2 on phones): the first card is
+// large (2×2) and the last one wide (2×1) only for counts where that leaves no
+// empty cells; any other count gets an even grid.
+app.locals.edCardClass = (index, count) => {
+    const featured = count >= 4 && count % 4 <= 1;
+    if (featured && index === 0) return 'ed-card--big';
+    if (featured && count % 4 === 0 && index === count - 1) return 'ed-card--wide';
+    return 'ed-card--small';
+};
+app.locals.edCardSizes = cls => (cls === 'ed-card--small' ? '(min-width: 900px) 25vw, 50vw' : '(min-width: 900px) 50vw, 100vw');
 const videoLib = require('./lib/video');
 app.locals.videoNormalize = videoLib.normalize;
 app.locals.videoEmbedUrl = videoLib.embedUrl;

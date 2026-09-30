@@ -1,10 +1,10 @@
 <% const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · '); %>
 
-<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+<section class="section section--tone-bone" style="padding-top:clamp(2rem,5vw,3.5rem)">
     <div class="container">
         <!-- Header -->
         <div class="section__head" data-reveal>
-            <span class="eyebrow"><%= category ? t('nav.products') : t('atelier.categories') %></span>
+            <span class="eyebrow"><%= t('nav.products') %></span>
             <h1 class="section__title"><%= category ? category.heading : t('seo.productsHeading') %></h1>
             <% if (category && category.description) { %>
                 <p class="category-intro"><%= category.description %></p>

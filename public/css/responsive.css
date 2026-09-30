@@ -60,10 +60,6 @@
     grid-template-columns: repeat(2, 1fr);
     gap: var(--gap);
   }
-  .editorial-grid > :first-child {
-    grid-column: span 2;
-    grid-row: span 1;
-  }
 }
 
 /* ===================== Case / Projects (mobile) ===================== */
@@ -146,10 +142,6 @@
   }
   .editorial-grid {
     grid-template-columns: repeat(4, 1fr);
-  }
-  .editorial-grid > :first-child {
-    grid-column: span 2;
-    grid-row: span 2;
   }
 }
 
@@ -241,15 +233,13 @@
 .pdetail__thumb img { object-fit: contain; background: #fffaf0; }
 .site-lang--mobile { gap: 0; padding: 0.1rem; }
 .site-lang--mobile a { min-width: 2rem; padding-inline: 0.35rem; text-align: center; }
+/* Product photos are staged shots with their own backdrop, so they fill the
+   card; letterboxing them left wide empty bands, worst on the large card. */
 .ed-card__media {
-  display: grid;
-  place-items: center;
   background: linear-gradient(145deg, #fffaf0, #f1e7d5);
 }
 .ed-card__media img {
-  object-fit: contain;
-  mix-blend-mode: multiply;
-  padding: 0.65rem;
+  object-fit: cover;
 }
 
 @media (min-width: 640px) {

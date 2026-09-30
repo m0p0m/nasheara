@@ -88,6 +88,9 @@
                                                 <% if (request.projectType) { %>
                                                     <span class="px-2 py-1 bg-gray-100 rounded text-xs text-[#6B7280]"><%= request.projectType %></span>
                                                 <% } %>
+                                                <% if (request.message) { %>
+                                                    <p class="text-xs text-[#6B7280] leading-6 max-w-md" style="white-space:pre-line"><%= request.message %></p>
+                                                <% } %>
                                             </div>
                                         </td>
                                         <td class="px-4 py-3 text-sm text-[#6B7280]">

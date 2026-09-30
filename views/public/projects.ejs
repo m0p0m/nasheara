@@ -1,4 +1,4 @@
-<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+<section class="section section--tone-bone" style="padding-top:clamp(2rem,5vw,3.5rem)">
     <div class="container">
         <div class="section__head" data-reveal>
             <span class="eyebrow"><%= t('atelier.casesEyebrow') %></span>
@@ -17,7 +17,6 @@
                                 alt="<%= project.title %>">
                         </div>
                         <div class="case__body">
-                            <div class="case__num">0<%= i + 1 %></div>
                             <% if (project.location) { %><div class="case__location"><%= project.location %></div><% } %>
                             <h2 class="case__title"><%= project.title %></h2>
                             <% if (project.description) { %><p class="case__desc"><%= project.description %></p><% } %>

@@ -5,20 +5,20 @@
         plain: t('atelier.vizScenePlain'),
         plainBlock: t('atelier.vizScenePlainBlock'),
         summaryBlock: t('atelier.vizSummaryBlock'),
-        noWebgl: t('atelier.vizNoWebgl')
+        noWebgl: t('atelier.vizNoWebgl'),
+        brand: t('atelier.brandName')
     };
     const shapeLabel = key => locale === 'en' ? (shapes[key] ? shapes[key].labelEn : key) : (shapes[key] ? shapes[key].label : key);
     const glazes = [
-        ['original', t('atelier.vizGlazeOriginal'), null],
-        ['ruby', 'Ruby', '#9B2C1F'], ['amber', 'Amber', '#C98A2E'], ['olive', 'Olive', '#7C8A3C'],
-        ['jade', 'Jade', '#2F5A4A'], ['cobalt', 'Cobalt', '#2B4C8C'], ['plum', 'Plum', '#6E3A5C'],
-        ['ink', 'Ink', '#2B2724'], ['bone', 'Bone', '#EFE6D6']
+        ['original', null], ['ruby', '#9B2C1F'], ['amber', '#C98A2E'], ['olive', '#7C8A3C'], ['jade', '#2F5A4A'],
+        ['cobalt', '#2B4C8C'], ['plum', '#6E3A5C'], ['ink', '#2B2724'], ['bone', '#EFE6D6']
     ];
+    const glazeName = id => t('atelier.vizGlaze_' + id);
     const grouts = [['light', '#D9D2C6'], ['sand', '#C9B99F'], ['grey', '#9A9690'], ['dark', '#3C3934'], ['white', '#F3EFE8']];
 %>
-<section class="section section--tone-bone" style="padding-top:clamp(5.5rem,9vw,7rem)">
+<section class="section section--tone-bone vz-page" style="padding-top:clamp(2rem,5vw,3.5rem)">
     <div class="container">
-        <div class="section__head" style="margin-bottom:2rem">
+        <div class="section__head vz-head">
             <span class="eyebrow"><%= t('nav.visualizer') %></span>
             <h1 class="section__title"><%= t('atelier.vizTitle') %></h1>
             <p class="section__lead"><%= t('atelier.vizLead') %></p>
@@ -35,29 +35,26 @@
              data-initial="<%= initialSlug || '' %>"
              data-initial-scene="<%= initialScene || '' %>">
 
-            <div class="vz__stage-col">
+            <!-- The picture: stays in view on phones while the options below are changed -->
+            <div class="vz__stage">
                 <div class="viz-stage">
                     <canvas aria-label="<%= t('atelier.vizTitle') %>" role="img"></canvas>
+                    <button type="button" class="vz__compare" data-compare hidden aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M8 7H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3"/><path d="M16 7h3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-3"/></svg>
+                        <span><%= t('atelier.vizCompare') %></span>
+                    </button>
                     <p class="vz__brush-hint" data-brush-hint hidden><%= t('atelier.vizBrushHint') %></p>
-                </div>
-                <p class="vz__notice" data-notice hidden></p>
-                <div class="vz__stage-bar">
-                    <p class="vz__summary" data-summary aria-live="polite"></p>
-                    <div class="vz__stage-actions">
-                        <button type="button" class="btn btn-outline btn--sm" data-download><%= t('atelier.vizDownload') %></button>
-                        <a class="btn btn-brass btn--sm" data-consult data-base="/<%= locale %>/consultation" href="/<%= locale %>/consultation"><%= t('atelier.vizConsult') %></a>
-                    </div>
                 </div>
             </div>
 
             <aside class="vz__panel">
                 <div class="vz__group">
-                    <h2 class="vz__label"><%= t('atelier.vizScene') %></h2>
+                    <h2 class="vz__step"><span class="vz__step-num" aria-hidden="true"><%= locale === 'en' ? '1' : (locale === 'ar' ? '١' : '۱') %></span><%= t('atelier.vizStepScene') %></h2>
                     <div class="vz__scenes" data-scenes></div>
                 </div>
 
                 <div class="vz__group">
-                    <h2 class="vz__label"><%= t('atelier.vizTile') %> <span class="vz__shape"><%= t('atelier.vizShape') %>: <strong data-shape-label></strong></span></h2>
+                    <h2 class="vz__step"><span class="vz__step-num" aria-hidden="true"><%= locale === 'en' ? '2' : (locale === 'ar' ? '٢' : '۲') %></span><%= t('atelier.vizStepTile') %></h2>
                     <div class="vz__tiles">
                         <% tiles.forEach(tile => { %>
                             <button type="button" class="vz__tile" data-tile="<%= tile.slug %>" aria-pressed="false" title="<%= tile.name %>">
@@ -75,64 +72,84 @@
                         <div class="vz__colours" data-colours></div>
                         <p class="vz__mix-hint" data-mix-hint hidden><%= t('atelier.vizMixHint') %></p>
                     </div>
-                    <div class="vz__brush">
-                        <button type="button" class="vz__chip vz__chip--brush" data-brush-toggle aria-pressed="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-                            <%= t('atelier.vizBrush') %>
-                        </button>
-                        <button type="button" class="vz__chip" data-clear-paint><%= t('atelier.vizClear') %></button>
-                    </div>
                 </div>
 
-                <div class="vz__group" data-layout-group>
-                    <h2 class="vz__label"><%= t('atelier.vizLayout') %></h2>
-                    <div class="vz__chips">
-                        <button type="button" class="vz__chip" data-layout="straight" aria-pressed="true"><%= t('atelier.vizLayoutStraight') %></button>
-                        <button type="button" class="vz__chip" data-layout="offset" aria-pressed="false"><%= t('atelier.vizLayoutOffset') %></button>
-                        <button type="button" class="vz__chip" data-layout="diagonal" aria-pressed="false"><%= t('atelier.vizLayoutDiagonal') %></button>
-                    </div>
-                </div>
+                <details class="vz__more" data-more>
+                    <summary class="vz__step vz__more-summary"><span class="vz__step-num" aria-hidden="true"><%= locale === 'en' ? '3' : (locale === 'ar' ? '٣' : '۳') %></span><%= t('atelier.vizStepMore') %></summary>
+                    <div class="vz__more-body">
+                        <div class="vz__group" data-layout-group>
+                            <h3 class="vz__label"><%= t('atelier.vizLayout') %></h3>
+                            <div class="vz__chips">
+                                <button type="button" class="vz__chip" data-layout="straight" aria-pressed="true"><%= t('atelier.vizLayoutStraight') %></button>
+                                <button type="button" class="vz__chip" data-layout="offset" aria-pressed="false"><%= t('atelier.vizLayoutOffset') %></button>
+                                <button type="button" class="vz__chip" data-layout="diagonal" aria-pressed="false"><%= t('atelier.vizLayoutDiagonal') %></button>
+                            </div>
+                        </div>
 
-                <div class="vz__group" data-rotation-group hidden>
-                    <h2 class="vz__label"><%= t('atelier.vizRotation') %></h2>
-                    <div class="vz__chips">
-                        <button type="button" class="vz__chip" data-rotation="none" aria-pressed="true"><%= t('atelier.vizRotNone') %></button>
-                        <button type="button" class="vz__chip" data-rotation="alternate" aria-pressed="false"><%= t('atelier.vizRotAlternate') %></button>
-                        <button type="button" class="vz__chip" data-rotation="pinwheel" aria-pressed="false"><%= t('atelier.vizRotPinwheel') %></button>
-                        <button type="button" class="vz__chip" data-rotation="mirror" aria-pressed="false"><%= t('atelier.vizRotMirror') %></button>
-                        <button type="button" class="vz__chip" data-rotation="random" aria-pressed="false"><%= t('atelier.vizRotRandom') %></button>
-                    </div>
-                </div>
+                        <div class="vz__group" data-rotation-group hidden>
+                            <h3 class="vz__label"><%= t('atelier.vizRotation') %></h3>
+                            <div class="vz__chips">
+                                <button type="button" class="vz__chip" data-rotation="none" aria-pressed="true"><%= t('atelier.vizRotNone') %></button>
+                                <button type="button" class="vz__chip" data-rotation="alternate" aria-pressed="false"><%= t('atelier.vizRotAlternate') %></button>
+                                <button type="button" class="vz__chip" data-rotation="pinwheel" aria-pressed="false"><%= t('atelier.vizRotPinwheel') %></button>
+                                <button type="button" class="vz__chip" data-rotation="mirror" aria-pressed="false"><%= t('atelier.vizRotMirror') %></button>
+                                <button type="button" class="vz__chip" data-rotation="random" aria-pressed="false"><%= t('atelier.vizRotRandom') %></button>
+                            </div>
+                        </div>
 
-                <div class="vz__group vz__group--row">
-                    <label class="vz__range">
-                        <span class="vz__label"><%= t('atelier.vizScale') %></span>
-                        <input type="range" min="0.6" max="1.6" step="0.05" value="1" data-scale>
-                    </label>
-                    <label class="vz__range">
-                        <span class="vz__label"><%= t('atelier.vizGroutWidth') %></span>
-                        <input type="range" min="0.1" max="1.5" step="0.05" value="0.3" data-grout-width>
-                    </label>
-                </div>
+                        <div class="vz__group vz__group--row">
+                            <label class="vz__range">
+                                <span class="vz__label"><%= t('atelier.vizScale') %></span>
+                                <input type="range" min="0.6" max="1.6" step="0.05" value="1" data-scale>
+                            </label>
+                            <label class="vz__range">
+                                <span class="vz__label"><%= t('atelier.vizGroutWidth') %></span>
+                                <input type="range" min="0.1" max="1.5" step="0.05" value="0.3" data-grout-width>
+                            </label>
+                        </div>
 
-                <div class="vz__group">
-                    <h2 class="vz__label"><%= t('atelier.vizGrout') %></h2>
-                    <div class="vz__swatches">
-                        <% grouts.forEach(([id, hex]) => { %>
-                            <button type="button" class="vz__swatch" data-grout="<%= id %>" aria-pressed="false" aria-label="<%= id %>" style="--sw:<%= hex %>"></button>
-                        <% }); %>
-                    </div>
-                </div>
+                        <div class="vz__group">
+                            <h3 class="vz__label"><%= t('atelier.vizGrout') %></h3>
+                            <div class="vz__swatches">
+                                <% grouts.forEach(([id, hex]) => { %>
+                                    <button type="button" class="vz__swatch" data-grout="<%= id %>" aria-pressed="false" aria-label="<%= t('atelier.vizGrout_' + id) %>" title="<%= t('atelier.vizGrout_' + id) %>" style="--sw:<%= hex %>"></button>
+                                <% }); %>
+                            </div>
+                        </div>
 
-                <div class="vz__group" data-glaze-group>
-                    <h2 class="vz__label"><%= t('atelier.vizGlaze') %></h2>
-                    <div class="vz__swatches">
-                        <% glazes.forEach(([id, label, hex]) => { %>
-                            <button type="button" class="vz__swatch <%= hex ? '' : 'vz__swatch--text' %>" data-glaze="<%= id %>" aria-pressed="false" aria-label="<%= label %>" title="<%= label %>" style="--sw:<%= hex || 'transparent' %>"><%= hex ? '' : label %></button>
-                        <% }); %>
+                        <div class="vz__group" data-glaze-group>
+                            <h3 class="vz__label"><%= t('atelier.vizGlaze') %></h3>
+                            <div class="vz__swatches">
+                                <% glazes.forEach(([id, hex]) => { %>
+                                    <button type="button" class="vz__swatch <%= hex ? '' : 'vz__swatch--text' %>" data-glaze="<%= id %>" aria-pressed="false" aria-label="<%= glazeName(id) %>" title="<%= glazeName(id) %>" style="--sw:<%= hex || 'transparent' %>"><%= hex ? '' : glazeName(id) %></button>
+                                <% }); %>
+                            </div>
+                            <p class="vz__hint"><%= t('atelier.vizGlazeHint') %></p>
+                        </div>
+
+                        <div class="vz__group">
+                            <h3 class="vz__label"><%= t('atelier.vizBrushTitle') %></h3>
+                            <div class="vz__brush">
+                                <button type="button" class="vz__chip vz__chip--brush" data-brush-toggle aria-pressed="false">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                                    <%= t('atelier.vizBrush') %>
+                                </button>
+                                <button type="button" class="vz__chip" data-clear-paint><%= t('atelier.vizClear') %></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </details>
             </aside>
+
+            <div class="vz__bar">
+                <p class="vz__notice" data-notice hidden></p>
+                <p class="vz__summary" data-summary aria-live="polite"></p>
+                <div class="vz__stage-actions">
+                    <a class="btn btn-brass" data-consult data-base="/<%= locale %>/consultation" href="/<%= locale %>/consultation"><%= t('atelier.vizConsult') %></a>
+                    <button type="button" class="btn btn-outline" data-download><%= t('atelier.vizDownload') %></button>
+                    <a class="vz__product-link" data-product-link data-base="/<%= locale %>/product/" href="/<%= locale %>/products" hidden><%= t('atelier.vizProductLink') %></a>
+                </div>
+            </div>
         </div>
         <% } %>
     </div>

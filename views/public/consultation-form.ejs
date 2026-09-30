@@ -132,6 +132,14 @@
             </div>
             <form action="/<%= locale %>/consultation" method="POST" class="space-y-6" id="contactForm">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <% if (selectedProduct || (typeof note !== 'undefined' && note)) { %>
+              <input type="hidden" name="interestedInProduct" value="<%= selectedProduct %>">
+              <input type="hidden" name="message" value="<%= typeof note !== 'undefined' ? note : '' %>">
+              <div class="consult-context">
+                <% if (selectedProduct) { %><p><span><%= t('atelier.consultAbout') %></span> <strong><%= selectedProduct %></strong></p><% } %>
+                <% if (typeof note !== 'undefined' && note) { %><p><span><%= t('atelier.consultLayout') %></span> <%= note %></p><% } %>
+              </div>
+              <% } %>
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
                   <label for="consultName" class="block mb-2 text-slate-900 font-semibold"><%= t('auto.k_2bae41dee0af') %> *</label>
