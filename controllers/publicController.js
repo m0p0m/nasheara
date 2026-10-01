@@ -313,7 +313,9 @@ const buildSitemapSections = async baseUrl => {
     ]);
     const isoDate = value => {
         const d = value ? new Date(value) : null;
-        return d && !Number.isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : undefined;
+        // Full W3C datetime: Google trusts <lastmod> only while it matches real
+        // edits, and a date alone hides a second change on the same day.
+        return d && !Number.isNaN(d.getTime()) ? d.toISOString().replace(/\.\d{3}Z$/, '+00:00') : undefined;
     };
     const newest = list => {
         const stamp = list.reduce((max, item) => Math.max(max, new Date(item.updatedAt || item.createdAt || 0).getTime()), 0);
@@ -366,8 +368,10 @@ const buildSitemapSections = async baseUrl => {
         })),
         // city pages are Persian only
         cities: [
-            { path: '/cities', locales: ['fa'] },
-            ...require('../lib/cities').CITIES.map(city => ({ path: `/city/${encodeURIComponent(city.slug)}`, locales: ['fa'] }))
+            { path: '/cities', locales: ['fa'], lastmod: require('../lib/cities').UPDATED },
+            ...require('../lib/cities').CITIES.map(city => ({
+                path: `/city/${encodeURIComponent(city.slug)}`, locales: ['fa'], lastmod: city.updated || require('../lib/cities').UPDATED
+            }))
         ]
     };
 };
