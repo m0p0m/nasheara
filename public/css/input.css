@@ -1531,6 +1531,8 @@
     color: var(--color-stone-ink);
     font-size: 0.98rem;
     line-height: 1.9;
+    /* descriptions are written in paragraphs (one per line in the admin form) */
+    white-space: pre-line;
     padding-bottom: 1.6rem;
     margin-bottom: 0.4rem;
   }
