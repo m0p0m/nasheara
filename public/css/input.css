@@ -3049,26 +3049,6 @@
   .city-card__name { font-family: var(--font-naskh); font-size: 1.35rem; color: var(--color-jade); }
   .city-card__text { font-size: 0.85rem; color: var(--color-stone-ink); line-height: 1.8; }
   @media (prefers-reduced-motion: reduce) { .city-card { transition: none; } .city-card:hover { transform: none; } }
-
-  /* HTML site map (/:locale/sitemap) */
-  .sitemap-groups {
-    display: grid;
-    gap: 2rem 3rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-    margin-top: 2rem;
-  }
-  .sitemap-group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
-  .sitemap-group a { color: var(--color-jade); line-height: 1.8; }
-  .sitemap-group a:hover { color: var(--color-turquoise-ink); text-decoration: underline; text-underline-offset: 3px; }
-  .sitemap-group__count {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--color-turquoise-ink);
-    background: var(--color-glaze);
-    border-radius: 999px;
-    padding: 0.05rem 0.6rem;
-    vertical-align: middle;
-  }
 }
 
 /* ==========================================================================

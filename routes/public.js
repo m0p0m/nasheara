@@ -23,9 +23,6 @@ const cityController = require('../controllers/cityController');
 router.get('/cities', cityController.getCities);
 router.get('/city/:slug', cityController.getCity);
 
-// GET /sitemap - HTML site map for people (/sitemap.xml is for search engines)
-router.get('/sitemap', require('../controllers/sitemapPageController').getSitemapPage);
-
 router.get('/projects', publicController.getAllProjects);
 router.get('/project/:slug', publicController.getProjectDetail);
 
