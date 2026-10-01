@@ -326,6 +326,11 @@ const getSitemap = async (req, res) => {
             { path: '/visualizer', priority: '0.6', changefreq: 'monthly' },
             { path: '/contact', priority: '0.5', changefreq: 'yearly' },
             { path: '/consultation', priority: '0.6', changefreq: 'yearly' },
+            // city pages are Persian only
+            { path: '/cities', priority: '0.6', changefreq: 'monthly', locales: ['fa'] },
+            ...require('../lib/cities').CITIES.map(city => ({
+                path: `/city/${encodeURIComponent(city.slug)}`, priority: '0.7', changefreq: 'monthly', locales: ['fa']
+            })),
             ...categories.map(category => {
                 const own = products.filter(p => p.categorySlug === category.slug);
                 return own.length ? {
@@ -364,15 +369,16 @@ const getSitemap = async (req, res) => {
         ];
         // Only list a page in the languages it is actually written in.
         const localesOf = entry => entry.locales || locales;
+        // Google ignores <changefreq>, <priority> and <image:title>, so they are
+        // not written; each image is listed once per page.
+        const uniqueImages = list => [...new Map((list || []).map(img => [img.loc, img])).values()];
         const urlNode = (locale, entry) => [
             '  <url>',
             `    <loc>${xmlEscape(localePath(locale, entry.path))}</loc>`,
             entry.lastmod ? `    <lastmod>${entry.lastmod}</lastmod>` : null,
-            `    <changefreq>${entry.changefreq}</changefreq>`,
-            `    <priority>${entry.priority}</priority>`,
             ...localesOf(entry).map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(localePath(l, entry.path))}"/>`),
             `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localePath('fa', entry.path))}"/>`,
-            ...(entry.images || []).map(img => `    <image:image><image:loc>${xmlEscape(img.loc)}</image:loc><image:title>${xmlEscape(img.title)}</image:title></image:image>`),
+            ...uniqueImages(entry.images).map(img => `    <image:image><image:loc>${xmlEscape(img.loc)}</image:loc></image:image>`),
             ...(entry.videos || []).map(v => [
                 '    <video:video>',
                 `      <video:thumbnail_loc>${xmlEscape(v.thumbnail)}</video:thumbnail_loc>`,
@@ -385,6 +391,7 @@ const getSitemap = async (req, res) => {
             ].filter(Boolean).join('\n')),
             '  </url>'
         ].filter(Boolean).join('\n');
+        // For people, the same pages are listed at /:locale/sitemap (HTML).
         const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n' +
             locales.flatMap(locale => entries.filter(entry => localesOf(entry).includes(locale)).map(entry => urlNode(locale, entry))).join('\n') +

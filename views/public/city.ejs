@@ -1,0 +1,97 @@
+<% const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · '); %>
+<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+    <div class="container">
+        <nav class="flex items-center gap-3 text-sm mb-10" style="color:var(--color-stone-ink)">
+            <a href="/fa/" class="hover:text-brass transition-colors inline-block py-2">خانه</a>
+            <span>/</span>
+            <a href="/fa/cities" class="hover:text-brass transition-colors inline-block py-2">شهرها</a>
+            <span>/</span>
+            <span class="text-ink"><%= city.name %></span>
+        </nav>
+        <div class="section__head">
+            <span class="eyebrow">ارسال از کارگاه قم به <%= city.name %></span>
+            <h1 class="section__title">کاشی دست‌ساز و بلوک سرامیکی لعاب‌دار در <%= city.name %></h1>
+            <p class="category-intro"><%= city.intro %></p>
+        </div>
+        <div class="city-uses">
+            <h2 class="guide__faq-title">کاربردهای پرطرفدار در <%= city.name %></h2>
+            <ul>
+                <% city.tips.forEach(tip => { %><li><%= tip %></li><% }); %>
+            </ul>
+            <div class="flex flex-wrap gap-3 mt-6">
+                <a href="/fa/consultation" class="btn btn-brass">مشاورهٔ رایگان برای پروژه در <%= city.name %></a>
+                <a href="/fa/visualizer" class="btn btn-outline">طرح‌ها را روی دیوار ببینید</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<% if (cityProjects.length) { %>
+<section class="section section--tone-ivory hairline-y">
+    <div class="container">
+        <div class="section__head">
+            <span class="eyebrow"><%= t('atelier.casesEyebrow') %></span>
+            <h2 class="section__title">نمونه‌کارهای نقش آرا در <%= city.name %></h2>
+        </div>
+        <div class="editorial-grid">
+            <% cityProjects.forEach((pj, i) => { const cover = pj.coverImage || (pj.galleryImages && pj.galleryImages[0]) || '/icons/naghshe-ara-logo.png'; %>
+                <a href="/fa/project/<%= encodeURIComponent(pj.slug) %>" class="ed-card <%= i === 0 ? 'ed-card--big' : 'ed-card--small' %> group">
+                    <div class="ed-card__media">
+                        <img src="<%= img(cover, 480) %>"<%- responsive(cover, [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= [pj.title, pj.location].filter(Boolean).join(' — ') %>" width="800" height="800" loading="lazy" decoding="async">
+                    </div>
+                    <div class="ed-card__body">
+                        <% if (pj.location) { %><div class="ed-card__cat"><%= pj.location %></div><% } %>
+                        <h3 class="ed-card__name"><%= pj.title %></h3>
+                    </div>
+                </a>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<section class="section section--tone-bone">
+    <div class="container">
+        <div class="section__head">
+            <span class="eyebrow"><%= t('nav.products') %></span>
+            <h2 class="section__title">طرح‌های کاشی و بلوک برای <%= city.name %></h2>
+        </div>
+        <div class="gallery">
+            <% products.forEach(p => { %>
+                <a href="/fa/product/<%= encodeURIComponent(p.slug) %>" class="gallery__item" aria-label="<%= p.name %>">
+                    <div class="gallery__media">
+                        <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= p.name %> — <%= p.category || 'نقش آرا' %>" width="800" height="800" loading="lazy" decoding="async">
+                    </div>
+                    <div class="gallery__scrim"></div>
+                    <div class="gallery__caption">
+                        <% if (p.category) { %><div class="gallery__cat"><%= p.category %></div><% } %>
+                        <h3 class="gallery__name"><%= p.patternName || p.name %></h3>
+                        <p class="gallery__note"><%= noteOf(p) %></p>
+                    </div>
+                </a>
+            <% }); %>
+        </div>
+        <div class="mt-8"><a href="/fa/products" class="btn btn-outline"><%= t('atelier.allPatterns') %></a></div>
+    </div>
+</section>
+
+<section class="section section--tone-ivory hairline-y">
+    <div class="container guide">
+        <div class="guide__faq">
+            <h2 class="guide__faq-title">پرسش‌های پرتکرار مشتریان <%= city.name %></h2>
+            <% faq.forEach(item => { %>
+            <details class="faq">
+                <summary class="faq__q"><%= item.q %></summary>
+                <p class="faq__a"><%= item.a %></p>
+            </details>
+            <% }); %>
+        </div>
+        <div class="guide__text">
+            <h2 class="guide__faq-title">ارسال به شهرهای دیگر</h2>
+            <p>سفارش‌های نقش آرا به همهٔ شهرهای ایران ارسال می‌شود.</p>
+            <div class="city-links">
+                <% otherCities.forEach(c => { %><a href="/fa/city/<%= encodeURIComponent(c.slug) %>">کاشی دست‌ساز در <%= c.name %></a><% }); %>
+            </div>
+        </div>
+    </div>
+</section>

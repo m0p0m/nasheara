@@ -1,0 +1,21 @@
+<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+    <div class="container">
+        <div class="section__head">
+            <span class="eyebrow"><%= t('atelier.brandName') %></span>
+            <h1 class="section__title"><%= heading %></h1>
+            <p class="section__lead"><%= metaDescription %></p>
+        </div>
+        <div class="sitemap-groups">
+            <% groups.forEach(g => { %>
+            <div class="sitemap-group">
+                <h2 class="guide__faq-title"><%= g.title %> <span class="sitemap-group__count"><%= g.links.length %></span></h2>
+                <ul>
+                    <% g.links.forEach(([label, path]) => { %>
+                    <li><a href="/<%= locale %><%= path === '/' ? '/' : path %>"><%= label %></a></li>
+                    <% }); %>
+                </ul>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</section>

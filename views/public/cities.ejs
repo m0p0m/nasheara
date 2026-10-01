@@ -1,0 +1,22 @@
+<section class="section section--tone-bone" style="padding-top:clamp(6rem,12vw,9rem)">
+    <div class="container">
+        <div class="section__head">
+            <span class="eyebrow">ارسال به سراسر ایران</span>
+            <h1 class="section__title">کاشی دست‌ساز و بلوک سرامیکی نقش آرا در شهرهای ایران</h1>
+            <p class="category-intro">کاشی‌ها و بلوک‌های سرامیکی لعاب‌دار نقش آرا در کارگاه ما در قم ساخته می‌شوند و به همهٔ شهرهای ایران ارسال می‌شوند. هر شهر معماری، اقلیم و سلیقهٔ خودش را دارد؛ در صفحهٔ هر شهر نوشته‌ایم کدام طرح‌ها آنجا بیشتر به کار می‌آیند و نمونه‌کارهای ما در آن شهر را آورده‌ایم.
+اگر شهر شما در این فهرست نیست، باز هم سفارش‌تان ارسال می‌شود؛ برای مشاورهٔ رایگان با ما تماس بگیرید.</p>
+        </div>
+        <div class="city-grid">
+            <% cities.forEach(c => { %>
+                <a class="city-card" href="/fa/city/<%= encodeURIComponent(c.slug) %>">
+                    <span class="city-card__name"><%= c.name %></span>
+                    <span class="city-card__text"><%= c.tips[0] %></span>
+                </a>
+            <% }); %>
+        </div>
+        <div class="flex flex-wrap gap-3 mt-10">
+            <a href="/fa/consultation" class="btn btn-brass">درخواست مشاورهٔ رایگان</a>
+            <a href="/fa/products" class="btn btn-outline">مشاهدهٔ همهٔ طرح‌ها</a>
+        </div>
+    </div>
+</section>

@@ -243,6 +243,8 @@
                         <a href="/<%= locale %>/projects"><%= t('nav.projects') %></a>
                         <a href="/<%= locale %>/articles"><%= t('nav.articles') %></a>
                         <a href="/<%= locale %>/contact"><%= t('nav.contact') %></a>
+                        <% if (locale === 'fa') { %><a href="/fa/cities">ارسال به شهرها</a><% } %>
+                        <a href="/<%= locale %>/sitemap"><%= { fa: 'نقشهٔ سایت', en: 'Site map', ar: 'خريطة الموقع' }[locale] %></a>
                     </div>
                 </div>
                 <div>
