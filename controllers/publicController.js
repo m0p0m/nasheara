@@ -302,104 +302,140 @@ const xmlEscape = value => String(value)
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
+// Sitemaps for search engines: /sitemap.xml is an index pointing to one
+// sitemap per section (/sitemaps/products.xml, …). Google reads each section
+// separately and Search Console reports indexing per section.
+const SITEMAP_SECTIONS = ['pages', 'categories', 'products', 'projects', 'articles', 'cities'];
+
+const buildSitemapSections = async baseUrl => {
+    const [products, projects, articles, categories] = await Promise.all([
+        Product.getAll(), Project.getAll(), Article.getPublished(), Category.getAll()
+    ]);
+    const isoDate = value => {
+        const d = value ? new Date(value) : null;
+        return d && !Number.isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : undefined;
+    };
+    const newest = list => {
+        const stamp = list.reduce((max, item) => Math.max(max, new Date(item.updatedAt || item.createdAt || 0).getTime()), 0);
+        return stamp ? isoDate(stamp) : undefined;
+    };
+    const images = list => list.filter(Boolean).map(i => seo.absolute(baseUrl, i));
+    return {
+        pages: [
+            { path: '/', lastmod: newest([...products, ...projects, ...articles]) },
+            { path: '/products', lastmod: newest(products) },
+            { path: '/projects', lastmod: newest(projects) },
+            { path: '/articles', lastmod: newest(articles) },
+            { path: '/visualizer' },
+            { path: '/contact' },
+            { path: '/consultation' }
+        ],
+        categories: categories.map(category => {
+            const own = products.filter(p => p.categorySlug === category.slug);
+            return own.length ? {
+                path: categoryPath(category), lastmod: newest(own),
+                locales: seo.translatedLocales(category, 'name'),
+                images: images([category.mainImage])
+            } : null;
+        }).filter(Boolean),
+        products: products.map(product => ({
+            path: `/product/${encodeURIComponent(product.slug)}`,
+            lastmod: isoDate(product.updatedAt || product.createdAt),
+            locales: seo.translatedLocales(product, 'name'),
+            images: images([product.mainImage, ...(product.galleryImages || [])]),
+            videos: videoLib.sitemapVideos(baseUrl, product.video, {
+                name: product.name, description: product.metaDescription || seo.clip(product.description || product.name),
+                image: product.mainImage, updatedAt: product.updatedAt
+            })
+        })),
+        projects: projects.map(project => ({
+            path: `/project/${encodeURIComponent(project.slug)}`,
+            lastmod: isoDate(project.updatedAt || project.createdAt),
+            locales: seo.translatedLocales(project, 'title'),
+            images: images([project.coverImage, ...(project.galleryImages || [])]),
+            videos: videoLib.sitemapVideos(baseUrl, project.video, {
+                name: project.title, description: seo.clip(project.description || project.title),
+                image: project.coverImage, updatedAt: project.createdAt
+            })
+        })),
+        articles: articles.map(article => ({
+            path: `/article/${encodeURIComponent(article.slug)}`,
+            lastmod: isoDate(article.updatedAt || article.createdAt),
+            locales: seo.translatedLocales(article, 'title'),
+            images: images([article.mainImage])
+        })),
+        // city pages are Persian only
+        cities: [
+            { path: '/cities', locales: ['fa'] },
+            ...require('../lib/cities').CITIES.map(city => ({ path: `/city/${encodeURIComponent(city.slug)}`, locales: ['fa'] }))
+        ]
+    };
+};
+
+const sitemapLastmod = entries => entries.map(e => e.lastmod).filter(Boolean).sort().pop();
+
+const renderUrlset = (baseUrl, entries) => {
+    const locales = ['fa', 'en', 'ar'];
+    const localePath = (locale, path) => `${baseUrl}/${locale}${path === '/' ? '/' : path}`;
+    // Only list a page in the languages it is actually written in.
+    const localesOf = entry => entry.locales || locales;
+    const urlNode = (locale, entry) => [
+        '  <url>',
+        `    <loc>${xmlEscape(localePath(locale, entry.path))}</loc>`,
+        entry.lastmod ? `    <lastmod>${entry.lastmod}</lastmod>` : null,
+        ...localesOf(entry).map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(localePath(l, entry.path))}"/>`),
+        `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localePath('fa', entry.path))}"/>`,
+        ...[...new Set(entry.images || [])].map(loc => `    <image:image><image:loc>${xmlEscape(loc)}</image:loc></image:image>`),
+        ...(entry.videos || []).map(v => [
+            '    <video:video>',
+            `      <video:thumbnail_loc>${xmlEscape(v.thumbnail)}</video:thumbnail_loc>`,
+            `      <video:title>${xmlEscape(v.title)}</video:title>`,
+            `      <video:description>${xmlEscape(String(v.description).slice(0, 2000))}</video:description>`,
+            v.content ? `      <video:content_loc>${xmlEscape(v.content)}</video:content_loc>` : null,
+            v.player ? `      <video:player_loc>${xmlEscape(v.player)}</video:player_loc>` : null,
+            v.date ? `      <video:publication_date>${xmlEscape(v.date)}</video:publication_date>` : null,
+            '    </video:video>'
+        ].filter(Boolean).join('\n')),
+        '  </url>'
+    ].filter(Boolean).join('\n');
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n' +
+        locales.flatMap(locale => entries.filter(entry => localesOf(entry).includes(locale)).map(entry => urlNode(locale, entry))).join('\n') +
+        '\n</urlset>';
+};
+
+// GET /sitemap.xml — sitemap index
 const getSitemap = async (req, res) => {
     try {
         const baseUrl = seo.siteUrlFrom(req);
-        const locales = ['fa', 'en', 'ar'];
-        const [products, projects, articles, categories] = await Promise.all([
-            Product.getAll(), Project.getAll(), Article.getPublished(), Category.getAll()
-        ]);
-        const isoDate = value => {
-            const d = value ? new Date(value) : null;
-            return d && !Number.isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : undefined;
-        };
-        const newest = list => {
-            const stamp = list.reduce((max, item) => Math.max(max, new Date(item.updatedAt || item.createdAt || 0).getTime()), 0);
-            return stamp ? isoDate(stamp) : undefined;
-        };
-        const localePath = (locale, path) => `${baseUrl}/${locale}${path === '/' ? '/' : path}`;
-        const entries = [
-            { path: '/', priority: '1.0', changefreq: 'weekly', lastmod: newest([...products, ...projects, ...articles]) },
-            { path: '/products', priority: '0.9', changefreq: 'weekly', lastmod: newest(products) },
-            { path: '/projects', priority: '0.7', changefreq: 'monthly', lastmod: newest(projects) },
-            { path: '/articles', priority: '0.7', changefreq: 'weekly', lastmod: newest(articles) },
-            { path: '/visualizer', priority: '0.6', changefreq: 'monthly' },
-            { path: '/contact', priority: '0.5', changefreq: 'yearly' },
-            { path: '/consultation', priority: '0.6', changefreq: 'yearly' },
-            // city pages are Persian only
-            { path: '/cities', priority: '0.6', changefreq: 'monthly', locales: ['fa'] },
-            ...require('../lib/cities').CITIES.map(city => ({
-                path: `/city/${encodeURIComponent(city.slug)}`, priority: '0.7', changefreq: 'monthly', locales: ['fa']
-            })),
-            ...categories.map(category => {
-                const own = products.filter(p => p.categorySlug === category.slug);
-                return own.length ? {
-                    path: categoryPath(category), priority: '0.9', changefreq: 'weekly', lastmod: newest(own),
-                    locales: seo.translatedLocales(category, 'name'),
-                    images: [category.mainImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: category.name }))
-                } : null;
-            }).filter(Boolean),
-            ...products.map(product => ({
-                path: `/product/${encodeURIComponent(product.slug)}`, priority: '0.8', changefreq: 'monthly',
-                lastmod: isoDate(product.updatedAt || product.createdAt),
-                locales: seo.translatedLocales(product, 'name'),
-                videos: videoLib.sitemapVideos(baseUrl, product.video, {
-                    name: product.name, description: product.metaDescription || seo.clip(product.description || product.name),
-                    image: product.mainImage, updatedAt: product.updatedAt
-                }),
-                images: [product.mainImage, ...(product.galleryImages || [])].filter(Boolean)
-                    .map(i => ({ loc: seo.absolute(baseUrl, i), title: product.name }))
-            })),
-            ...projects.map(project => ({
-                path: `/project/${encodeURIComponent(project.slug)}`, priority: '0.6', changefreq: 'monthly',
-                lastmod: isoDate(project.updatedAt || project.createdAt),
-                locales: seo.translatedLocales(project, 'title'),
-                videos: videoLib.sitemapVideos(baseUrl, project.video, {
-                    name: project.title, description: seo.clip(project.description || project.title),
-                    image: project.coverImage, updatedAt: project.createdAt
-                }),
-                images: [project.coverImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: project.title }))
-            })),
-            ...articles.map(article => ({
-                path: `/article/${encodeURIComponent(article.slug)}`, priority: '0.6', changefreq: 'monthly',
-                lastmod: isoDate(article.updatedAt || article.createdAt),
-                locales: seo.translatedLocales(article, 'title'),
-                images: [article.mainImage].filter(Boolean).map(i => ({ loc: seo.absolute(baseUrl, i), title: article.title }))
-            }))
-        ];
-        // Only list a page in the languages it is actually written in.
-        const localesOf = entry => entry.locales || locales;
-        // Google ignores <changefreq>, <priority> and <image:title>, so they are
-        // not written; each image is listed once per page.
-        const uniqueImages = list => [...new Map((list || []).map(img => [img.loc, img])).values()];
-        const urlNode = (locale, entry) => [
-            '  <url>',
-            `    <loc>${xmlEscape(localePath(locale, entry.path))}</loc>`,
-            entry.lastmod ? `    <lastmod>${entry.lastmod}</lastmod>` : null,
-            ...localesOf(entry).map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(localePath(l, entry.path))}"/>`),
-            `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localePath('fa', entry.path))}"/>`,
-            ...uniqueImages(entry.images).map(img => `    <image:image><image:loc>${xmlEscape(img.loc)}</image:loc></image:image>`),
-            ...(entry.videos || []).map(v => [
-                '    <video:video>',
-                `      <video:thumbnail_loc>${xmlEscape(v.thumbnail)}</video:thumbnail_loc>`,
-                `      <video:title>${xmlEscape(v.title)}</video:title>`,
-                `      <video:description>${xmlEscape(String(v.description).slice(0, 2000))}</video:description>`,
-                v.content ? `      <video:content_loc>${xmlEscape(v.content)}</video:content_loc>` : null,
-                v.player ? `      <video:player_loc>${xmlEscape(v.player)}</video:player_loc>` : null,
-                v.date ? `      <video:publication_date>${xmlEscape(v.date)}</video:publication_date>` : null,
-                '    </video:video>'
-            ].filter(Boolean).join('\n')),
-            '  </url>'
-        ].filter(Boolean).join('\n');
-        // For people, the same pages are listed at /:locale/sitemap (HTML).
+        const sections = await buildSitemapSections(baseUrl);
         const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n' +
-            locales.flatMap(locale => entries.filter(entry => localesOf(entry).includes(locale)).map(entry => urlNode(locale, entry))).join('\n') +
-            '\n</urlset>';
+            '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+            SITEMAP_SECTIONS.filter(name => sections[name].length).map(name => {
+                const lastmod = sitemapLastmod(sections[name]);
+                return `  <sitemap>\n    <loc>${xmlEscape(`${baseUrl}/sitemaps/${name}.xml`)}</loc>\n` +
+                    (lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : '') + '  </sitemap>';
+            }).join('\n') +
+            '\n</sitemapindex>';
         res.set('Cache-Control', 'public, max-age=3600');
         res.type('application/xml').send(xml);
     } catch (error) {
         console.error('Failed to generate sitemap:', error);
+        res.status(500).send('Cannot generate sitemap');
+    }
+};
+
+// GET /sitemaps/:file — one section, e.g. /sitemaps/products.xml
+const getSitemapSection = async (req, res, next) => {
+    const name = String(req.params.file || '').replace(/\.xml$/, '');
+    if (!SITEMAP_SECTIONS.includes(name) || !/\.xml$/.test(req.params.file)) return next();
+    try {
+        const baseUrl = seo.siteUrlFrom(req);
+        const sections = await buildSitemapSections(baseUrl);
+        res.set('Cache-Control', 'public, max-age=3600');
+        res.type('application/xml').send(renderUrlset(baseUrl, sections[name]));
+    } catch (error) {
+        console.error('Failed to generate sitemap section:', error);
         res.status(500).send('Cannot generate sitemap');
     }
 };
@@ -466,6 +502,7 @@ module.exports = {
     getAllProjects,
     getProjectDetail,
     getSitemap,
+    getSitemapSection,
     getRobots,
     getContactPage
 };

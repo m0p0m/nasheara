@@ -221,6 +221,7 @@ const consultationController = require('./controllers/consultationController'); 
 // Public localized routes and SEO endpoints
 app.get('/', (req, res) => res.redirect(301, '/fa/'));
 app.get('/sitemap.xml', publicController.getSitemap);
+app.get('/sitemaps/:file', publicController.getSitemapSection);
 app.get('/robots.txt', publicController.getRobots);
 app.use(require('./lib/redirects')(supportedLocales));
 app.use((req, res, next) => {
