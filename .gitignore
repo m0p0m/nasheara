@@ -9,3 +9,5 @@ cache/
 
 *.zip
 .freebuff/
+
+.claude/
