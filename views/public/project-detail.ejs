@@ -34,7 +34,7 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
             <!-- Gallery -->
             <% const photos = [project.coverImage, ...(project.galleryImages || [])].filter(Boolean); const photoWidths = [800, 1280, 1600]; %>
             <div class="pdetail__media" data-gallery data-label-title="<%= project.title %>" data-label-close="<%= t('atelier.galleryClose') %>" data-label-prev="<%= t('atelier.galleryPrev') %>" data-label-next="<%= t('atelier.galleryNext') %>">
-                <div class="pdetail__main" data-reveal>
+                <div class="pdetail__main pdetail__main--fit" data-reveal>
                     <% const mainImg = photos[0] || '/placeholder.jpg'; %>
                     <img data-gallery-main data-gallery-full="<%= img(mainImg, 2048) %>"
                         src="<%= img(mainImg, 1280) %>"<%- responsive(mainImg, photoWidths, '(min-width: 1024px) 50vw, 100vw') %>

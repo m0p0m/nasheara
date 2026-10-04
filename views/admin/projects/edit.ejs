@@ -30,7 +30,16 @@
                 <label for="coverImage" class="block text-sm font-semibold"><%= t('auto.k_9a3a77aa08e3') %></label><input type="file" id="coverImage" name="coverImage" accept="image/*" class="input-field border-dashed">
             </div>
             <div class="space-y-3">
-                <div class="flex flex-wrap gap-2"><% (project.galleryImages || []).forEach(image => { %><img src="<%= image %>" alt="<%= t('auto.k_c6f038461aee') %>" class="w-20 h-20 object-cover rounded-lg"><% }); %></div>
+                <div class="flex flex-wrap gap-3">
+                    <% (project.galleryImages || []).forEach(image => { %>
+                        <label class="gallery-thumb relative block w-20 h-20 cursor-pointer" title="حذف این تصویر">
+                            <input type="checkbox" name="removeGalleryImages" value="<%= image %>" class="peer sr-only">
+                            <img src="<%= image %>" alt="<%= t('auto.k_c6f038461aee') %>" class="w-20 h-20 object-cover rounded-lg border border-gray-200 transition peer-checked:opacity-30 peer-checked:grayscale">
+                            <span class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-red-600 text-white text-sm leading-6 text-center shadow peer-checked:bg-gray-500">&times;</span>
+                            <span class="absolute inset-x-0 bottom-1 hidden text-center text-[10px] font-bold text-red-700 peer-checked:block">حذف می‌شود</span>
+                        </label>
+                    <% }); %>
+                </div>
                 <label for="galleryImages" class="block text-sm font-semibold"><%= t('auto.k_b2ffb7068670') %></label><input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="input-field border-dashed">
             </div>
         </div>

@@ -94,9 +94,17 @@ const editProject = async (req, res) => {
             await removeImage(project.coverImage);
             updatedData.coverImage = `/uploads/${req.files.coverImage[0].filename}`;
         }
+        // Drop gallery images the admin ticked for removal, then append new uploads
+        let gallery = project.galleryImages || [];
+        const removed = normalizeArray(req.body.removeGalleryImages).filter(p => gallery.includes(p));
+        if (removed.length) {
+            gallery = gallery.filter(p => !removed.includes(p));
+            await Promise.all(removed.map(removeImage));
+            updatedData.galleryImages = gallery;
+        }
         if (req.files.galleryImages) {
             const additions = req.files.galleryImages.map(file => `/uploads/${file.filename}`);
-            updatedData.galleryImages = (project.galleryImages || []).concat(additions);
+            updatedData.galleryImages = gallery.concat(additions);
         }
         await Project.update(req.params.id, updatedData);
         res.redirect('/admin/projects');
