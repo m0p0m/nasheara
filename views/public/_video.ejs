@@ -7,12 +7,8 @@
     const poster = vv.poster || videoImage || '/icons/naghshe-ara-logo.png';
 %>
 <% if (vv.aparat.length || vv.clip) { %>
-<section class="section section--tone-bone">
+<section class="section section--tone-bone" style="padding-top:clamp(1rem,3vw,2rem)" aria-label="<%= videoName %>">
     <div class="container">
-        <div class="section__head" data-reveal>
-            <span class="eyebrow"><%= t('atelier.videoEyebrow') %></span>
-            <h2 class="section__title"><%= t('atelier.videoHeading', { name: videoName }) %></h2>
-        </div>
         <div class="vids <%= vv.clip && vv.aparat.length ? 'vids--with-clip' : '' %>">
             <% if (vv.clip) { %>
             <figure class="vid vid--clip">
