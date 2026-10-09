@@ -6,6 +6,13 @@
 <section class="hero">
     <div class="hero__media">
         <img src="<%= img('/icons/1.png', 1600) %>"<%- responsive('/icons/1.png', [800, 1280, 1600, 2048], '100vw') %> alt="<%= t('atelier.brandName') %> — <%= t('atelier.brandTag') %>" width="1672" height="941" fetchpriority="high" decoding="async">
+        <% if (heroVideo) { %>
+        <!-- Workshop film: drop public/media/hero.mp4 (+ optional hero.webm) on the server -->
+        <video autoplay muted loop playsinline preload="metadata" poster="<%= img('/icons/1.png', 1600) %>" aria-hidden="true" tabindex="-1">
+            <% if (heroVideo.webm) { %><source src="<%= heroVideo.webm %>" type="video/webm"><% } %>
+            <source src="<%= heroVideo.mp4 %>" type="video/mp4">
+        </video>
+        <% } %>
     </div>
     <div class="hero__scrim"></div>
     <div class="container hero__inner">
@@ -22,10 +29,11 @@
             </div>
         </div>
     </div>
+    <a href="#collection" class="hero__scroll" aria-label="<%= t('atelier.heroCta') %>"><i></i></a>
 </section>
 
 <!-- ===== Promise strip: what every order gets ===== -->
-<section class="promise" aria-label="<%= t('atelier.promiseLabel') %>">
+<section class="promise" id="collection" aria-label="<%= t('atelier.promiseLabel') %>">
     <div class="container">
         <ul class="promise__list">
             <li class="promise__item">
@@ -102,10 +110,10 @@
             </div>
             <a href="/<%= locale %>/products" class="btn btn-outline btn--sm"><%= t('atelier.viewAll') %></a>
         </div>
-        <div class="editorial-grid" data-reveal>
+        <div class="editorial-grid<%= Math.min(products.length, 8) % 4 > 1 && Math.min(products.length, 8) % 3 === 0 ? ' editorial-grid--3' : '' %>">
             <% const featured = products.slice(0, 8); featured.forEach((p, i) => { const cls = edCardClass(i, featured.length); %>
                 <a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>"
-                    class="ed-card <%= cls %> group">
+                    class="ed-card <%= cls %> group" data-reveal style="--reveal-delay:<%= (i % 4) * 110 %>ms">
                     <div class="ed-card__media">
                         <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800, 1024], edCardSizes(cls)) %> alt="<%= p.patternName || p.name %>" width="800" height="800" loading="lazy" decoding="async">
                     </div>
@@ -129,11 +137,11 @@
             <span class="eyebrow"><%= t('atelier.collectionsEyebrow') %></span>
             <h2 class="section__title"><%= t('atelier.collectionsTitle') %></h2>
         </div>
-        <div class="cat-grid<%= categories.length < 4 ? ' cat-grid--few' : '' %>" style="--cat-cols:<%= Math.min(Math.max(categories.length, 2), 4) %>" data-reveal>
+        <div class="cat-grid<%= categories.length < 4 ? ' cat-grid--few' : '' %>" style="--cat-cols:<%= Math.min(Math.max(categories.length, 2), 4) %>">
             <% categories.forEach((cat, ci) => { %>
                 <% const rep = (typeof products !== 'undefined' && products) ? products.find(p => p.category === cat.name && p.mainImage) : null; const catImg = cat.mainImage || (rep && rep.mainImage); %>
                 <a href="/<%= locale %>/products?category=<%= encodeURIComponent(cat.name) %>"
-                    class="group block">
+                    class="group block" data-reveal style="--reveal-delay:<%= ci * 110 %>ms">
                     <div class="mb-4 cat-cover">
                         <% if (catImg) { %>
                         <img src="<%= img(catImg, 480) %>"<%- responsive(catImg, [320, 480, 640], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= cat.name %>" width="600" height="750"
@@ -201,7 +209,7 @@
         </div>
         <ol class="process__steps">
             <% [1, 2, 3, 4].forEach(n => { %>
-            <li class="process__step">
+            <li class="process__step" data-reveal style="--reveal-delay:<%= (n - 1) * 120 %>ms">
                 <span class="process__num" aria-hidden="true"><%= n.toLocaleString(locale === 'en' ? 'en' : (locale === 'ar' ? 'ar-EG' : 'fa-IR')) %></span>
                 <h3 class="process__title"><%= t('atelier.step' + n + 't') %></h3>
                 <p class="process__text"><%= t('atelier.step' + n + 'd') %></p>
@@ -256,7 +264,7 @@
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <% articles.slice(0, 3).forEach(a => { %>
-                <a href="/<%= locale %>/article/<%= a.slug %>" class="group block" data-reveal>
+                <a href="/<%= locale %>/article/<%= a.slug %>" class="group block" data-reveal style="--reveal-delay:<%= articles.indexOf(a) * 110 %>ms">
                     <div class="overflow-hidden mb-5" style="border:1px solid var(--hairline);border-radius:var(--r-tight)">
                         <img src="<%= img(a.mainImage || '/placeholder.jpg', 640) %>"<%- responsive(a.mainImage || '/placeholder.jpg', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= a.title %>" width="1200" height="825" decoding="async"
                             class="w-full aspect-[16/11] object-cover transition-transform duration-[900ms] group-hover:scale-105" loading="lazy">

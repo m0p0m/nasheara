@@ -149,7 +149,7 @@
 
 <body class="min-h-screen <%= locale === 'en' ? 'font-en' : 'font-fa-ar' %>" dir="<%= dir %>">
     <!-- Header -->
-    <header class="site-header" id="siteHeader">
+    <header class="site-header<%= currentPath === '/' ? ' site-header--overlay' : '' %>" id="siteHeader">
         <div class="container">
             <div class="site-header__inner">
                 <a href="/<%= locale %>/" class="site-brand" aria-label="<%= t('atelier.brandName') %>">

@@ -96,6 +96,9 @@ app.locals.videoNormalize = videoLib.normalize;
 app.locals.videoEmbedUrl = videoLib.embedUrl;
 app.locals.videoWatchUrl = videoLib.watchUrl;
 app.locals.hasVideo = videoLib.hasVideo;
+// Optional home-page film: put public/media/hero.mp4 (and optionally hero.webm) on the server and restart.
+const heroFile = name => require('fs').existsSync(path.join(__dirname, 'public', 'media', name));
+app.locals.heroVideo = heroFile('hero.mp4') ? { mp4: '/media/hero.mp4', webm: heroFile('hero.webm') ? '/media/hero.webm' : null } : null;
 app.use(express.static(path.join(__dirname, 'public'), {
     // CSS/JS are linked with ?v=<mtime> (app.locals.asset), so they can be cached long too.
     maxAge: '30d',
