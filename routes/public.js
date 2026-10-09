@@ -3,7 +3,7 @@ const router = express.Router();
 const consultationController = require('../controllers/consultationController');
 const publicController = require('../controllers/publicController');
 const newsletterController = require('../controllers/newsletterController');
-const { authorizeCsrf } = require('../middleware/csrf');
+const { authorizeCsrf, sameOrigin } = require('../middleware/csrf');
 const { consultationLimiter, newsletterLimiter } = require('../middleware/rateLimit');
 
 // GET / - Show the home page
@@ -48,6 +48,6 @@ router.get('/consultation', consultationController.showConsultationForm);
 router.post('/consultation', consultationLimiter, authorizeCsrf, consultationController.submitConsultation);
 
 // POST /newsletter/subscribe - Handle newsletter subscription
-router.post('/newsletter/subscribe', newsletterLimiter, authorizeCsrf, newsletterController.subscribe);
+router.post('/newsletter/subscribe', newsletterLimiter, sameOrigin, newsletterController.subscribe);
 
 module.exports = router;

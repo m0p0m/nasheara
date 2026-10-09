@@ -43,7 +43,22 @@ const authorizeCsrf = (req, res, next) => {
   return next();
 };
 
+// For the footer newsletter form, which is on every page: a token there would
+// open a session (and a database row) for every visitor, bots included. A
+// cross-site POST is refused by checking the browser's Origin/Referer instead.
+const sameOrigin = (req, res, next) => {
+  const site = req.get('sec-fetch-site');
+  if (site) return site === 'same-origin' ? next() : res.status(403).json({ error: 'Cross-site request refused.' });
+  const source = req.get('origin') || req.get('referer') || '';
+  let host = '';
+  try { host = new URL(source).host; } catch { host = ''; }
+  // Old browsers send neither header; subscribing an address is low-risk, so let them through.
+  if (!host || host === req.get('host')) return next();
+  return res.status(403).json({ error: 'Cross-site request refused.' });
+};
+
 module.exports = {
   readCsrfToken,
   authorizeCsrf,
+  sameOrigin,
 };

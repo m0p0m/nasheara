@@ -181,18 +181,25 @@ const getProductDetail = async (req, res) => {
         const productPath = `/product/${encodeURIComponent(product.slug)}`;
         const brand = t('atelier.brandName');
         const withBrand = text => (text.includes(brand) || text.length + brand.length > 62 ? text : `${text} | ${brand}`);
-        const usage = Array.isArray(product.usageArea) && product.usageArea.length ? product.usageArea.join('، ') : '';
-        const generatedDescription = product.material && product.color && usage
-            ? t('seo.productDesc', { name: displayName, material: product.material, color: product.color, usage })
+        // English reads values mid-sentence, so they lose their Title Case; fa/ar list with the Arabic comma.
+        const inText = value => (req.locale === 'en' ? String(value).toLowerCase() : value);
+        const usage = Array.isArray(product.usageArea) && product.usageArea.length
+            ? product.usageArea.map(inText).join(req.locale === 'en' ? ', ' : '، ')
+            : '';
+        const translated = seo.translatedLocales(product, 'name').includes(req.locale);
+        const generatedDescription = translated && product.material && product.color && usage
+            ? t('seo.productDesc', { name: displayName, material: inText(product.material), color: inText(product.color), usage })
             : t('seo.productDescShort', { name: displayName });
+        // A hand-written description in this language beats the generated one.
+        const ownDescription = product.translations && product.translations[req.locale] && product.translations[req.locale].metaDescription;
         res.render('public/product-detail', {
             title: (req.locale === 'fa' && product.metaTitle && withBrand(product.metaTitle))
                 || (product.category && product.categoryTranslated
                     ? t('seo.productTitle', { name: product.name, category: product.category })
                     : t('seo.productTitleNoCategory', { name: product.name })),
             metaDescription: seo.clip(
-                req.locale === 'fa' && product.metaDescription
-                    ? (product.metaDescription.length < 90 ? `${product.metaDescription.replace(/[.。]$/, '')}. ${t('seo.productDescShort', { name: displayName }).replace(`${displayName}؛ `, '')}` : product.metaDescription)
+                ownDescription
+                    ? (ownDescription.length < 90 ? `${ownDescription.replace(/[.。]$/, '')}. ${t('seo.productDescShort', { name: displayName }).replace(`${displayName}؛ `, '')}` : ownDescription)
                     : generatedDescription
             ),
             metaKeywords: Array.isArray(product.keywords) ? product.keywords.join(', ') : product.keywords,

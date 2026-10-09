@@ -258,7 +258,6 @@
                     <h3 class="site-footer__title"><%= t('atelier.newsletterTitle') %></h3>
                     <p class="site-footer__text" style="margin-top:0.4rem"><%= t('atelier.newsletterSub') %></p>
                     <form action="/<%= locale %>/newsletter/subscribe" method="POST" class="newsletter">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <input type="email" name="email" required placeholder="<%= t('atelier.newsletterPlaceholder') %>" aria-label="<%= t('atelier.newsletterPlaceholder') %>">
                         <button type="submit"><%= t('atelier.subscribe') %></button>
                     </form>
@@ -292,6 +291,7 @@
     </a>
     <% } %>
 
+    <% if (analytics.ga || analytics.clarity) { %><script src="<%= asset('/js/analytics.js') %>" data-ga="<%= analytics.ga %>" data-clarity="<%= analytics.clarity %>" defer></script><% } %>
     <script src="<%= asset('/js/reveal.js') %>" defer></script>
     <script src="<%= asset('/js/swatches.js') %>" defer></script>
     <script src="<%= asset('/js/site.js') %>" defer></script>

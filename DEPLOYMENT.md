@@ -80,3 +80,18 @@ DELETE FROM sessions WHERE expires < UNIX_TIMESTAMP();
 - `.env`
 
 پس از انتشار، `https://YOUR-DOMAIN/sitemap.xml` و `https://YOUR-DOMAIN/robots.txt` را باز کنید و همان sitemap را در Google Search Console ثبت یا دوباره ارسال کنید.
+
+## آمار بازدید (Google Analytics 4 و Microsoft Clarity)
+
+با ثبت این دو متغیر در Environment variables و Restart برنامه، کد آمار روی همهٔ صفحه‌ها فعال می‌شود (بدون آن‌ها هیچ اسکریپت بیرونی بارگذاری نمی‌شود):
+
+```env
+GA_MEASUREMENT_ID=G-XXXXXXXXXX   # از analytics.google.com ← Admin ← Data streams
+CLARITY_PROJECT_ID=xxxxxxxxxx    # از clarity.microsoft.com ← Settings ← Overview
+```
+
+رویدادهای ثبت‌شده در GA4: `whatsapp_click`، `phone_click`، `email_click`، `consultation_cta`، `visualizer_open`، `generate_lead` (ارسال فرم مشاوره/تماس) و `sign_up` (خبرنامه). در GA4 رویداد `generate_lead` و `whatsapp_click` را به‌عنوان Key event علامت بزنید.
+
+## ویدیوی صفحهٔ اول
+
+اگر فایل `public/media/hero.mp4` (و در صورت تمایل `hero.webm`) روی سرور باشد، پس از Restart در پس‌زمینهٔ بخش اول صفحهٔ اصلی پخش می‌شود (بی‌صدا، تکرارشونده). مشخصات پیشنهادی: افقی ۱۹۲۰×۱۰۸۰، ۸ تا ۱۵ ثانیه، بدون صدا، H.264، حجم کمتر از ۴ مگابایت. مجوز فایل 644 باشد.

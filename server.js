@@ -40,15 +40,37 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // Load-test baseline: no DB call, pure Node/Express overhead.
 app.get('/api/ping', (req, res) => res.status(200).json({ ok: true }));
 
+// Visitor analytics, switched on by setting the IDs in the host's environment:
+// GA_MEASUREMENT_ID (Google Analytics 4, "G-XXXX") and CLARITY_PROJECT_ID (Microsoft Clarity).
+const analytics = {
+    ga: /^G-[A-Z0-9]+$/i.test(process.env.GA_MEASUREMENT_ID || '') ? process.env.GA_MEASUREMENT_ID : '',
+    clarity: /^[a-z0-9]+$/i.test(process.env.CLARITY_PROJECT_ID || '') ? process.env.CLARITY_PROJECT_ID : ''
+};
+app.locals.analytics = analytics;
+const analyticsSrc = {
+    script: [
+        ...(analytics.ga ? ['https://www.googletagmanager.com'] : []),
+        ...(analytics.clarity ? ['https://www.clarity.ms', 'https://scripts.clarity.ms'] : [])
+    ],
+    connect: [
+        ...(analytics.ga ? ['https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://www.googletagmanager.com'] : []),
+        ...(analytics.clarity ? ['https://*.clarity.ms', 'https://c.bing.com'] : [])
+    ],
+    img: [
+        ...(analytics.ga ? ['https://*.google-analytics.com', 'https://www.googletagmanager.com'] : []),
+        ...(analytics.clarity ? ['https://*.clarity.ms', 'https://c.bing.com'] : [])
+    ]
+};
+
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'"],
+            scriptSrc: ["'self'", ...analyticsSrc.script],
             styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-            imgSrc: ["'self'", 'data:', 'blob:'],
+            imgSrc: ["'self'", 'data:', 'blob:', ...analyticsSrc.img],
             fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
-            connectSrc: ["'self'"],
+            connectSrc: ["'self'", ...analyticsSrc.connect],
             // Aparat players load only after a click (views/public/_video.ejs).
             frameSrc: ['https://www.openstreetmap.org', 'https://www.aparat.com'],
             frameAncestors: ["'none'"]
@@ -61,14 +83,14 @@ app.use(helmet({
     hidePoweredBy: true,
     hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
     noSniff: true,
-    referrerPolicy: { policy: 'no-referrer' },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     xPermittedCrossDomainPolicies: true
 }));
 
 app.use((req, res, next) => {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), autoplay=(), clipboard-write=(), fullscreen=(self)');
@@ -178,11 +200,10 @@ app.use((req, res, next) => {
     // Minting a token marks the session dirty, which persists a row for every
     // visitor. Defer it so only responses that actually embed the token
     // (i.e. pages with a form) create a session.
-    Object.defineProperty(res.locals, 'csrfToken', {
-        get: () => (req.session ? readCsrfToken(req) : ''),
-        configurable: true,
-        enumerable: true
-    });
+    // The view engine copies every local into the render options, which would
+    // run a getter on every page; this object only mints the token when a
+    // template actually prints it (`<%= csrfToken %>` calls toString).
+    res.locals.csrfToken = { toString: () => (req.session ? readCsrfToken(req) : '') };
     next();
 });
 
@@ -268,7 +289,7 @@ app.post('/admin/consultations/mark-id/:id', ensureAuthenticated, adminMutationL
 app.use((req, res) => {
     if (req.accepts('html')) {
         return res.status(404).render('public/not-found', {
-            title: '404 - صفحه مورد نظر یافت نشد',
+            title: res.locals.t ? res.locals.t('seo.notFoundTitle') : '404',
             noindex: true,
             layout: 'public/layout',
             currentPath: req.path,
