@@ -4053,12 +4053,12 @@
     background: var(--gold-line);
   }
 
-  /* ---------- Staggered entrance on scroll (reveal.js adds .reveal-on) ---------- */
-  .reveal-on [data-reveal] {
+  /* ---------- Staggered entrance on scroll (reveal.js marks below-fold items .reveal-pending) ---------- */
+  [data-reveal].reveal-pending {
     transition: opacity 0.5s var(--ease-luxe), transform 0.5s var(--ease-luxe);
     transition-delay: min(var(--reveal-delay, 0ms), 240ms);
   }
-  .reveal-on [data-reveal]:not(.is-visible) {
+  [data-reveal].reveal-pending:not(.is-visible) {
     opacity: 0;
     transform: translateY(16px);
   }
@@ -4066,7 +4066,7 @@
   @media (prefers-reduced-motion: reduce) {
     .hero__media img,
     .hero__scroll i { animation: none; }
-    .reveal-on [data-reveal]:not(.is-visible) { opacity: 1; transform: none; }
+    [data-reveal].reveal-pending:not(.is-visible) { opacity: 1; transform: none; }
   }
 }
 
@@ -4801,6 +4801,16 @@
     line-height: 1.45;
   }
   html[lang="fa"] .empty-state__code { font-family: var(--font-fa-ar); font-weight: 800; }
+
+  /* Sections after the first are laid out only as they near the screen. The
+     first layout of the long home page (and the one after the font swap)
+     covered every section and was the biggest main-thread cost on phones.
+     `auto` remembers each section's real height once it has been shown. */
+  main > section ~ section,
+  .site-footer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+  }
 
   /* Phones: room under the footer so the floating WhatsApp button never covers its last line */
   @media (max-width: 767px) {

@@ -9,12 +9,19 @@
     var gaId = me && me.getAttribute('data-ga');
     var clarityId = me && me.getAttribute('data-clarity');
 
-    // The trackers are fetched only once the page has loaded and the browser is
-    // idle, so they never compete with the hero photo and fonts. Calls made
-    // before then wait in the gtag/clarity queues.
+    // gtag.js and clarity.js cost phones about 1.5 s of main-thread work, the
+    // largest part of the page's blocking time. They are fetched on the
+    // visitor's first scroll, tap or key press, or 8 s after load, whichever
+    // comes first. Calls made before then (the page view included) wait in the
+    // gtag/clarity queues and are sent once the scripts arrive.
     var pending = [];
+    var started = false;
+    var triggers = ['scroll', 'pointerdown', 'keydown', 'touchstart'];
     function load(src) { pending.push(src); }
     function flush() {
+        if (started) return;
+        started = true;
+        triggers.forEach(function (name) { window.removeEventListener(name, flush, { passive: true }); });
         pending.forEach(function (src) {
             var s = document.createElement('script');
             s.async = true;
@@ -23,12 +30,10 @@
         });
         pending = [];
     }
-    function whenIdle() {
-        if ('requestIdleCallback' in window) window.requestIdleCallback(flush, { timeout: 3000 });
-        else setTimeout(flush, 1500);
-    }
-    if (document.readyState === 'complete') whenIdle();
-    else window.addEventListener('load', whenIdle, { once: true });
+    triggers.forEach(function (name) { window.addEventListener(name, flush, { passive: true, once: true }); });
+    function afterLoad() { setTimeout(flush, 8000); }
+    if (document.readyState === 'complete') afterLoad();
+    else window.addEventListener('load', afterLoad, { once: true });
 
     window.dataLayer = window.dataLayer || [];
     function gtag() { window.dataLayer.push(arguments); }
