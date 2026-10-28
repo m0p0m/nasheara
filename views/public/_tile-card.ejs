@@ -1,0 +1,24 @@
+<%
+  // One product shown as a specimen on the tile wall. Expects: p, i, headingTag, sizes
+  const tileNote = [p.material, p.dimensions].filter(Boolean).join(' · ');
+  const tileNo = (i + 1).toLocaleString(locale === 'en' ? 'en' : (locale === 'ar' ? 'ar-EG' : 'fa-IR'), { minimumIntegerDigits: 2 });
+  const tileImg = p.mainImage || '/icons/naghshe-ara-logo.png';
+%>
+<a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>" class="tile-card" data-reveal style="--reveal-delay:<%= (i % 4) * 80 %>ms">
+    <div class="tile-card__face">
+        <img src="<%= img(tileImg, 480) %>"<%- responsive(tileImg, [320, 480, 640, 800], sizes) %> alt="<%= p.patternName || p.name %><%= p.category ? ' — ' + p.category : '' %>" width="800" height="800" loading="lazy" decoding="async">
+        <span class="tile-card__no" aria-hidden="true"><%= locale === 'en' ? 'N° ' : '' %><%= tileNo %></span>
+        <% if (p.isNew || p.isBestSeller || (typeof hasVideo === 'function' && hasVideo(p.video))) { %>
+        <span class="tile-card__badges">
+            <% if (p.isNew) { %><span class="tile-card__badge"><%= t('atelier.newBadge') %></span><% } %>
+            <% if (p.isBestSeller) { %><span class="tile-card__badge tile-card__badge--gold"><%= t('atelier.bestSeller') %></span><% } %>
+            <% if (typeof hasVideo === 'function' && hasVideo(p.video)) { %><span class="tile-card__badge" aria-label="<%= t('atelier.videoBadge') %>"><svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg><%= t('atelier.videoBadge') %></span><% } %>
+        </span>
+        <% } %>
+    </div>
+    <div class="tile-card__label">
+        <% if (p.category) { %><span class="tile-card__cat"><%= p.category %></span><% } %>
+        <<%= headingTag %> class="tile-card__name"><%= p.patternName || p.name %></<%= headingTag %>>
+        <% if (tileNote) { %><p class="tile-card__note"><%= tileNote %></p><% } %>
+    </div>
+</a>

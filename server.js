@@ -67,12 +67,12 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", ...analyticsSrc.script],
-            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", 'data:', 'blob:', ...analyticsSrc.img],
-            fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
+            fontSrc: ["'self'", 'data:'],
             connectSrc: ["'self'", ...analyticsSrc.connect],
             // Aparat players load only after a click (views/public/_video.ejs).
-            frameSrc: ['https://www.openstreetmap.org', 'https://www.aparat.com'],
+            frameSrc: ['https://balad.ir', 'https://www.aparat.com'],
             frameAncestors: ["'none'"]
         }
     },
@@ -112,6 +112,8 @@ app.locals.edCardClass = (index, count) => {
     if (featured && count % 4 === 0 && index === count - 1) return 'ed-card--wide';
     return 'ed-card--small';
 };
+// Tile walls (product grids): four columns only when that fills every row, else three.
+app.locals.wallCols = count => (count % 4 === 0 && count % 3 !== 0 ? 'tile-wall--4' : 'tile-wall--3');
 app.locals.edCardSizes = cls => (cls === 'ed-card--small' ? '(min-width: 900px) 25vw, 50vw' : '(min-width: 900px) 50vw, 100vw');
 const videoLib = require('./lib/video');
 app.locals.videoNormalize = videoLib.normalize;
@@ -226,6 +228,9 @@ app.use((req, res, next) => {
         supportedLocales.map(language => [language, `${app.locals.siteUrl}/${language}${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`])
     );
     res.locals.alternateUrls['x-default'] = `${app.locals.siteUrl}/fa${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`;
+    // The language switcher always offers every version; pages may narrow
+    // alternateUrls (hreflang) to the languages they are really written in.
+    res.locals.langUrls = { ...res.locals.alternateUrls };
     // Never canonicalize a localized page to an unlocalized URL or to a filter
     // query. Both cases split Google’s indexing signals.
     res.locals.canonicalUrl = `${app.locals.siteUrl}/${locale}${pathWithoutLocale === '/' ? '/' : pathWithoutLocale}`;
@@ -271,6 +276,12 @@ app.get('/admin', (req, res) => {
 });
 
 // Admin routes
+// Any admin change (product, project, article, scene, testimonial…) drops the
+// public catalogue cache (lib/cache.js) so the site shows it right away.
+app.use('/admin', (req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') res.on('finish', require('./lib/cache').clear);
+    next();
+});
 app.use('/admin', adminRoutes);
 app.use('/admin/categories', categoryRoutes);
 app.use('/admin/products', productRoutes);
@@ -310,7 +321,7 @@ app.use((err, req, res, next) => {
         const message = messages[err.code] || 'بارگذاری فایل ناموفق بود.';
         if (req.accepts('html')) {
             return res.status(400).render('public/error', {
-                title: 'خطا در ارسال فرم',
+                title: res.locals.t ? res.locals.t('pages.errorTitle') : 'خطا در ارسال فرم',
                 layout: 'public/layout',
                 noindex: true,
                 currentPath: req.path,
@@ -324,7 +335,7 @@ app.use((err, req, res, next) => {
         const message = 'فقط تصویر با فرمت JPG، PNG، GIF یا WebP قابل بارگذاری است.';
         if (req.accepts('html')) {
             return res.status(400).render('public/error', {
-                title: 'خطا در ارسال فرم',
+                title: res.locals.t ? res.locals.t('pages.errorTitle') : 'خطا در ارسال فرم',
                 layout: 'public/layout',
                 noindex: true,
                 currentPath: req.path,
@@ -337,7 +348,7 @@ app.use((err, req, res, next) => {
     console.error('Unhandled server error:', err);
     if (req.accepts('html')) {
         return res.status(500).render('public/error', {
-            title: 'خطا در بارگذاری صفحه',
+            title: res.locals.t ? res.locals.t('pages.errorTitle') : 'خطا در بارگذاری صفحه',
             noindex: true,
             layout: 'public/layout',
             currentPath: req.path,

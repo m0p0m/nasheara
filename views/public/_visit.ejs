@@ -1,0 +1,41 @@
+<%
+  // Workshop pin from the Google Business listing (corner of alley 50, Jomhouri, Qom).
+  // The map itself is Balad: its tiles load inside Iran, where OpenStreetMap's are blocked.
+  const visitLat = 34.62332, visitLng = 50.87131;
+  const visitGoogle = 'https://maps.google.com/?cid=17908405994893156700';
+%>
+<div class="visit">
+    <div class="visit__info" data-reveal>
+        <dl class="visit__list">
+            <div class="visit__row">
+                <dt class="label-caps"><%= t('auto.k_95ba75af28fb') %></dt>
+                <dd><a href="tel:+989124519443" class="ltr-text visit__value">+98 912 451 9443</a></dd>
+            </div>
+            <div class="visit__row">
+                <dt class="label-caps"><%= t('auto.k_f1ad423d68cf') %></dt>
+                <dd><a href="mailto:info@nashearatasfiyeh.com" class="ltr-text visit__value">info@nashearatasfiyeh.com</a></dd>
+            </div>
+            <div class="visit__row">
+                <dt class="label-caps"><%= t('auto.k_efda82e0907c') %></dt>
+                <dd class="visit__value"><%= t('auto.k_f572ddf64198') %></dd>
+            </div>
+            <div class="visit__row">
+                <dt class="label-caps"><%= t('auto.k_73067610751c') %></dt>
+                <dd class="visit__value"><%= t('auto.k_f9208a21604c') %></dd>
+                <dd class="visit__note"><%= t('auto.k_c607363590f7') %></dd>
+            </div>
+        </dl>
+        <div class="flex flex-wrap gap-3 mt-10">
+            <a href="/<%= locale %>/consultation" class="btn btn-brass"><%= t('atelier.consultCta') %></a>
+            <a href="https://wa.me/989124519443" class="btn btn-outline" target="_blank" rel="noopener"><%= t('atelier.whatsappCta') %></a>
+        </div>
+    </div>
+    <figure class="visit__map" data-reveal style="--reveal-delay:120ms">
+        <iframe src="https://balad.ir/embed?lat=<%= visitLat %>&lng=<%= visitLng %>" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade" title="<%= t('auto.k_31e3205ec015') %>"></iframe>
+        <figcaption class="visit__mapbar">
+            <span><%= t('auto.k_f572ddf64198') %></span>
+            <a href="<%= visitGoogle %>" target="_blank" rel="noopener"><%= t('pages.directions') %></a>
+        </figcaption>
+    </figure>
+</div>

@@ -9,7 +9,7 @@
     var items = document.querySelectorAll('[data-reveal]');
     if (items.length === 0) return;
 
-    var fold = window.innerHeight * 0.92;
+    var fold = window.innerHeight;
     var pending = [];
     items.forEach(function (el) {
         if (el.getBoundingClientRect().top < fold) el.classList.add('is-visible');
@@ -24,7 +24,8 @@
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    // Start just before an item scrolls in, so a quick scroll never meets an empty section.
+    }, { threshold: 0, rootMargin: '0px 0px 12% 0px' });
 
     pending.forEach(function (el) { observer.observe(el); });
 })();

@@ -84,28 +84,22 @@ const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · ');
             <span class="eyebrow"><%= t('atelier.usedInThisProject') %></span>
             <h2 class="section__title"><%= t('atelier.related') %></h2>
         </div>
-        <div class="editorial-grid">
-            <% relatedProducts.forEach((rp, i) => { const cls = edCardClass(i, relatedProducts.length); %>
-                <a href="/<%= locale %>/product/<%= encodeURIComponent(rp.slug) %>"
-                    class="ed-card <%= cls %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
-                    <div class="ed-card__media">
-                        <img src="<%= img(rp.mainImage || '/placeholder.jpg', 480) %>"<%- responsive(rp.mainImage || '/placeholder.jpg', [320, 480, 640, 800, 1024], edCardSizes(cls)) %> alt="<%= rp.name %>" width="800" height="800" loading="lazy" decoding="async">
-                    </div>
-                    <div class="ed-card__body">
-                        <% if (rp.category) { %><div class="ed-card__cat"><%= rp.category %></div><% } %>
-                        <h3 class="ed-card__name"><%= rp.patternName || rp.name %></h3>
-                        <p class="ed-card__note"><%= noteOf(rp) %></p>
-                    </div>
-                </a>
-            <% }); %>
+        <div class="tile-wall <%= wallCols(relatedProducts.length) %>">
+            <% relatedProducts.forEach((p, i) => { %><%- include('_tile-card', { p, i, headingTag: 'h3', sizes: '(min-width: 900px) 30vw, 46vw' }) %><% }); %>
         </div>
     </div>
 </section>
 <% } %>
 
 <% } else { %>
-<section class="section section--tone-bone text-center" style="padding-top:12rem;padding-bottom:12rem">
-    <h1 class="text-3xl font-bold mb-6"><%= t('auto.k_e5e8c42f15c0') %></h1>
-    <a href="/<%= locale %>/projects" class="btn btn-brass"><%= t('atelier.casesEyebrow') %></a>
+<section class="empty-state">
+    <div class="container">
+        <div class="empty-state__box">
+            <h1 class="empty-state__title"><%= t('auto.k_e5e8c42f15c0') %></h1>
+            <div class="empty-state__actions">
+                <a href="/<%= locale %>/projects" class="btn btn-solid"><%= t('atelier.casesEyebrow') %></a>
+            </div>
+        </div>
+    </div>
 </section>
 <% } %>

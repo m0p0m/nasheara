@@ -2,60 +2,69 @@
 @import "./fonts.css";
 
 /* ==========================================================================
-   Design tokens — handmade patterned-tile atelier
+   Design tokens — the one source for colour, type, radius, motion and depth.
+   @theme feeds the Tailwind utilities (bg-jade, text-brass…); :root holds the
+   same palette for the component CSS plus the non-colour tokens. Change a
+   colour in both places, nowhere else.
    ========================================================================== */
 @theme {
-  --color-jade: #1F4A3D;
-  --color-jade-deep: #16382E;
-  --color-bone: #FAF6EE;
-  --color-brass: #B08D57;
+  --color-jade: #1D4438;
+  --color-jade-deep: #0F241E;
+  --color-night: #0B1B16;
+  --color-bone: #F8F4EC;
+  --color-paper: #FCFAF5;
+  --color-sand: #EFE7D7;
+  --color-brass: #B4925C;
+  --color-brass-ink: #7A5E30;   /* small brass text on light surfaces (>= 4.5:1) */
+  --color-brass-glow: #D6BD8A;  /* brass text on jade/dark surfaces */
   /* turquoise glaze (فیروزه‌ای): the calm, luminous colour of Persian tilework */
   --color-turquoise: #1F827C;
-  --color-turquoise-ink: #14615C; /* >= 4.5:1 on ivory and on the glaze wash */
+  --color-turquoise-ink: #14615C;
   --color-glaze: #E6F0EC;
-  /* darker variants for small text on light backgrounds (WCAG AA, >= 4.5:1 on bone) */
-  --color-brass-ink: #7F6335;
-  --color-brass-glow: #C4A26B; /* brass for text on jade/dark surfaces */
-  --color-stone-ink: #6F6B5E;
-  --color-ink: #181712;
+  --color-ink: #17150F;
   --color-stone: #8B8677;
+  --color-stone-ink: #6B665A;
 
-  /* legacy aliases so existing views + admin stay coherent */
-  --color-primary: #1F4A3D;
-  --color-secondary: #B08D57;
-  --color-cta: #B08D57;
-  --color-dark: #181712;
+  /* legacy names still used by admin templates */
+  --color-primary: #1D4438;
+  --color-secondary: #B4925C;
+  --color-cta: #B4925C;
+  --color-dark: #17150F;
   --color-gray-soft: #8B8677;
-  --color-bg-milky: #F6F2E9;
+  --color-bg-milky: #F8F4EC;
 
   --font-en-display: "Fraunces", Georgia, serif;
   --font-en-body: "Inter", system-ui, -apple-system, sans-serif;
   --font-fa-ar: "Vazirmatn", system-ui, -apple-system, sans-serif;
   --font-vazir: "Vazirmatn", system-ui, sans-serif;
-  --font-naskh: "Naskh", "Vazirmatn", serif;
+  --font-kufi: "Reem Kufi", "Vazirmatn", sans-serif;
 }
 
 :root {
-  /* Canonical palette */
-  --color-jade: #1F4A3D;
-  --color-jade-deep: #16382E;
-  --color-bone: #FAF6EE;
-  --color-brass: #B08D57;
+  /* Palette (same values as @theme) */
+  --color-jade: #1D4438;
+  --color-jade-deep: #0F241E;
+  --color-night: #0B1B16;
+  --color-bone: #F8F4EC;
+  --color-paper: #FCFAF5;
+  --color-sand: #EFE7D7;
+  --color-brass: #B4925C;
+  --color-brass-ink: #7A5E30;
+  --color-brass-glow: #D6BD8A;
   --color-turquoise: #1F827C;
   --color-turquoise-ink: #14615C;
   --color-glaze: #E6F0EC;
-  --color-ink: #181712;
+  --color-ink: #17150F;
   --color-stone: #8B8677;
+  --color-stone-ink: #6B665A;
 
-  /* Legacy aliases safely centralized to the same colors */
+  /* Aliases kept for older templates and the admin */
   --color-primary: var(--color-jade);
   --color-secondary: var(--color-brass);
   --color-cta: var(--color-brass);
   --color-dark: var(--color-ink);
   --color-gray-soft: var(--color-stone);
   --color-bg-milky: var(--color-bone);
-
-  /* Public design-system aliases expected by existing templates and compiled CSS */
   --primary: var(--color-jade);
   --primary-deep: var(--color-jade-deep);
   --secondary: var(--color-brass);
@@ -69,14 +78,18 @@
   --surface-soft: color-mix(in srgb, var(--color-bone) 92%, white);
   --border: var(--hairline);
 
+  /* Lines and radii */
   --hairline: rgba(176, 141, 87, 0.3);
   --hairline-strong: rgba(176, 141, 87, 0.5);
+  --gold-line: linear-gradient(90deg, transparent, var(--color-brass-glow), transparent);
   --r-sharp: 10px;
   --r-tight: 16px;
 
+  /* Motion */
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-luxe: cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* Typography and spacing tokens for consistency */
+  /* Type and spacing */
   --font-display: var(--font-en-display);
   --font-body: var(--font-en-body);
   --font-rubric: var(--font-fa-ar);
@@ -86,7 +99,11 @@
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --shadow-soft: 0 12px 30px rgba(24, 23, 18, 0.08);
+  --gap: 0.75rem;
+
+  /* Depth */
+  --shadow-soft: 0 30px 60px -40px rgba(15, 36, 30, 0.45);
+  --shadow-lift: 0 40px 70px -38px rgba(15, 36, 30, 0.55);
   --focus-ring: var(--color-brass);
 }
 
@@ -141,6 +158,7 @@
   html[lang="fa"] body,
   html[lang="ar"] body {
     font-family: var(--font-fa-ar);
+    font-weight: 380;
     letter-spacing: 0;
   }
 
@@ -158,7 +176,7 @@
   html[lang="fa"] h1, html[lang="fa"] h2, html[lang="fa"] h3,
   html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3 {
     font-family: var(--font-fa-ar);
-    font-weight: 800;
+    font-weight: 700;
   }
 
   html[lang="en"] h4, html[lang="en"] h5, html[lang="en"] h6 {
@@ -2047,18 +2065,6 @@
     color: var(--color-bone);
   }
 
-  /* ---------- Reveal on scroll ---------- */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(26px);
-    transition: opacity 0.8s var(--ease-soft), transform 0.8s var(--ease-soft);
-    transition-delay: var(--reveal-delay, 0ms);
-    will-change: opacity, transform;
-  }
-  [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
-  }
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -2069,10 +2075,6 @@
     }
     html {
       scroll-behavior: auto;
-    }
-    [data-reveal] {
-      opacity: 1;
-      transform: none;
     }
   }
 }
@@ -3062,22 +3064,22 @@
     transition: border-color 0.2s ease, transform 0.2s ease;
   }
   .city-card:hover, .city-card:focus-visible { border-color: var(--color-turquoise); transform: translateY(-2px); }
-  .city-card__name { font-family: var(--font-naskh); font-size: 1.35rem; color: var(--color-jade); }
+  .city-card__name { font-family: var(--font-fa-ar); font-weight: 700; font-size: 1.35rem; color: var(--color-jade); }
   .city-card__text { font-size: 0.85rem; color: var(--color-stone-ink); line-height: 1.8; }
   @media (prefers-reduced-motion: reduce) { .city-card { transition: none; } .city-card:hover { transform: none; } }
 }
 
 /* ==========================================================================
-   Warmth pass: naskh headings, turquoise glaze, arch (طاق) frames, promise
+   Warmth pass: kufi headings, turquoise glaze, arch (طاق) frames, promise
    strip, the ordering process, the chat button. One orchestrated entrance in
    the hero replaces the fade-in on every section, so content is there at once.
    ========================================================================== */
 @layer components {
-  /* ---------- Headings in the naskh hand of tile inscriptions ---------- */
+  /* ---------- Headings in Reem Kufi (same display face as Sayeh) ---------- */
   html[lang="fa"] :is(.hero__title, .section__title, .pdetail__title, .case__title, .empty-state__title, main h1),
   html[lang="ar"] :is(.hero__title, .section__title, .pdetail__title, .case__title, .empty-state__title, main h1) {
-    font-family: var(--font-naskh);
-    font-weight: 700;
+    font-family: var(--font-kufi);
+    font-weight: 500;
     letter-spacing: 0;
   }
   html[lang="fa"] .hero__title,
@@ -3408,22 +3410,18 @@
     }
   }
 
-  /* ---------- Motion: one entrance, in the hero ---------- */
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+  /* ---------- Motion: one entrance, in the hero ----------
+     Movement only, never opacity: the headline is the page's largest paint
+     (LCP) and must be on screen in the first frame. */
   .hero__content > * {
-    animation: hero-rise 0.9s var(--ease-soft) both;
+    animation: hero-rise 0.7s var(--ease-soft) both;
   }
-  .hero__content > :nth-child(2) { animation-delay: 0.1s; }
-  .hero__content > :nth-child(3) { animation-delay: 0.22s; }
-  .hero__content > :nth-child(4) { animation-delay: 0.34s; }
+  .hero__content > :nth-child(2) { animation-delay: 0.06s; }
+  .hero__content > :nth-child(3) { animation-delay: 0.12s; }
+  .hero__content > :nth-child(4) { animation-delay: 0.18s; }
   @keyframes hero-rise {
     from {
-      opacity: 0;
-      transform: translateY(18px);
+      transform: translateY(14px);
     }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -3638,23 +3636,7 @@
    that can play the workshop film, products shown on a calm gallery stage,
    and a gentle staggered entrance as sections scroll into view.
    ========================================================================== */
-:root {
-  --color-jade: #1D4438;
-  --color-jade-deep: #0F241E;
-  --color-bone: #F8F4EC;
-  --color-brass: #B4925C;
-  --color-brass-ink: #7A5E30;
-  --color-brass-glow: #D6BD8A;
-  --color-ink: #17150F;
-  --color-stone-ink: #6B665A;
-  --color-paper: #FCFAF5;
-  --color-sand: #EFE7D7;
-  --color-night: #0B1B16;
-  --gold-line: linear-gradient(90deg, transparent, var(--color-brass-glow), transparent);
-  --ease-luxe: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --shadow-soft: 0 30px 60px -40px rgba(15, 36, 30, 0.45);
-  --shadow-lift: 0 40px 70px -38px rgba(15, 36, 30, 0.55);
-}
+/* (its tokens now live in the Design tokens block at the top) */
 
 @layer components {
   body {
@@ -3819,9 +3801,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    animation: hero-drift 24s var(--ease-luxe) both;
   }
-  .hero__media video { animation: none; }
+  @media (min-width: 1024px) {
+    .hero__media img { animation: hero-drift 24s var(--ease-luxe) both; }
+  }
   @keyframes hero-drift {
     from { transform: scale(1.12); }
     to { transform: scale(1); }
@@ -3837,9 +3820,13 @@
     content: "";
     position: absolute;
     inset: 0;
+    display: none;
     opacity: 0.09;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  @media (min-width: 1024px) {
+    .hero__scrim::after { display: block; }
   }
   .hero__inner { padding-bottom: clamp(5rem, 11vh, 8rem); }
   .hero__title {
@@ -3849,17 +3836,11 @@
   html[lang="fa"] .hero__title,
   html[lang="ar"] .hero__title { line-height: 1.32; }
   .hero__accent {
-    background: linear-gradient(100deg, #E8D3A6, var(--color-brass-glow) 40%, #B08D57 75%, #E8D3A6);
-    background-size: 220% 100%;
+    background: linear-gradient(100deg, #E8D3A6, var(--color-brass-glow) 45%, #C9A66B);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     text-shadow: none;
-    animation: gold-shimmer 7s ease-in-out 1.2s infinite alternate;
-  }
-  @keyframes gold-shimmer {
-    from { background-position: 0% 50%; }
-    to { background-position: 100% 50%; }
   }
   .hero__sub {
     font-size: 1.08rem;
@@ -4052,7 +4033,8 @@
     position: absolute;
     top: -1.4rem;
     inset-inline-start: 1.5rem;
-    font: 700 4.5rem/1 var(--font-en-display);
+    /* a system serif: a decorative mark should not cost Persian/Arabic pages a font download */
+    font: 700 4.5rem/1 Georgia, "Times New Roman", serif;
     color: var(--color-brass-glow);
   }
   .quote__stars { color: var(--color-brass); letter-spacing: 0.2em; }
@@ -4073,17 +4055,16 @@
 
   /* ---------- Staggered entrance on scroll (reveal.js adds .reveal-on) ---------- */
   .reveal-on [data-reveal] {
-    transition: opacity 1s var(--ease-luxe), transform 1s var(--ease-luxe);
-    transition-delay: var(--reveal-delay, 0ms);
+    transition: opacity 0.5s var(--ease-luxe), transform 0.5s var(--ease-luxe);
+    transition-delay: min(var(--reveal-delay, 0ms), 240ms);
   }
   .reveal-on [data-reveal]:not(.is-visible) {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(16px);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero__media img,
-    .hero__accent,
     .hero__scroll i { animation: none; }
     .reveal-on [data-reveal]:not(.is-visible) { opacity: 1; transform: none; }
   }
@@ -4108,4 +4089,721 @@
     .ed-card--big .ed-card__media { border-radius: var(--r-tight); }
   }
   .pdetail__main { border-radius: var(--r-tight); box-shadow: var(--shadow-soft); border: 0; }
+}
+
+/* ==========================================================================
+   Tile wall pass (2026-10): products are specimens mounted on a hairline
+   grid, collections are glazed tiles each with its own inline pattern.
+   Pure CSS + inline SVG: no extra requests, motion is transform/opacity only.
+   ========================================================================== */
+@layer components {
+  /* Below-the-fold sections skip layout and paint until they near the viewport. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
+  /* ---------- Specimen grid ---------- */
+  .tile-wall {
+    --tw-line: color-mix(in srgb, var(--color-ink) 12%, transparent);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--tw-line);
+    border-inline-start: 1px solid var(--tw-line);
+  }
+  @media (min-width: 900px) { .tile-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1300px) { .tile-wall { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (min-width: 900px) { .tile-wall--home { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  /* six or nine on the home wall: three even columns, never a ragged last row */
+  @media (min-width: 900px) { .tile-wall--home.tile-wall--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .tile-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(0.7rem, 1.6vw, 1.4rem);
+    border-bottom: 1px solid var(--tw-line);
+    border-inline-end: 1px solid var(--tw-line);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    transition: background-color 0.5s var(--ease-luxe);
+  }
+  .tile-card:hover,
+  .tile-card:focus-visible { background: var(--color-bone); }
+  .tile-card:focus-visible { outline: 2px solid var(--color-brass); outline-offset: -2px; }
+
+  .tile-card__face {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--color-sand);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 18px 30px -24px rgba(15, 36, 30, 0.6);
+    transition: transform 0.6s var(--ease-luxe), box-shadow 0.6s var(--ease-luxe);
+  }
+  .tile-card__face img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.06);
+    transition: transform 1.1s var(--ease-luxe);
+  }
+  /* a glaze highlight that slides across on hover (one composited layer) */
+  .tile-card__face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.38) 48%, transparent 62%);
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+  .tile-card:hover .tile-card__face { transform: translateY(-4px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 28px 40px -26px rgba(15, 36, 30, 0.7); }
+  .tile-card:hover .tile-card__face img { transform: scale(1.12); }
+  .tile-card:hover .tile-card__face::after { transform: translateX(110%); transition: transform 1s var(--ease-luxe); }
+
+  .tile-card__no {
+    position: absolute;
+    top: 0.6rem;
+    inset-inline-start: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+    background: color-mix(in srgb, var(--color-paper) 82%, transparent);
+  }
+  .tile-card__badges {
+    position: absolute;
+    top: 0.6rem;
+    inset-inline-end: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+  }
+  .tile-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--color-paper);
+    background: var(--color-jade-deep);
+  }
+  .tile-card__badge--gold { color: var(--color-night); background: var(--color-brass-glow); }
+
+  .tile-card__label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.95rem 0.15rem 0.2rem;
+  }
+  .tile-card__cat {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-brass-ink);
+  }
+  .tile-card__name {
+    font-size: clamp(0.95rem, 1.3vw, 1.08rem);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+  html[lang="en"] .tile-card__name { font-family: var(--font-en-display); font-weight: 500; }
+  .tile-card__note {
+    font-size: 0.8rem;
+    color: var(--color-stone-ink);
+  }
+
+  /* ---------- Collections as glazed tiles ---------- */
+  .glaze-wall {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-sand) 70%, var(--color-stone) 30%);
+  }
+  @media (min-width: 900px) {
+    .glaze-wall { grid-template-columns: repeat(var(--glaze-cols, 4), minmax(0, 1fr)); }
+  }
+  .glaze-tile {
+    --glaze: var(--color-turquoise);
+    --glaze-line: #BFE3DD;
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 4px;
+    isolation: isolate;
+    color: var(--glaze-line);
+    background:
+      radial-gradient(120% 90% at 30% 15%, color-mix(in srgb, var(--glaze) 70%, white 30%), transparent 60%),
+      var(--glaze);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), inset 0 -18px 40px -20px rgba(0, 0, 0, 0.35);
+  }
+  .glaze-tile--hex { --glaze: #1F3B73; --glaze-line: #C9D6F2; }      /* lajvard */
+  .glaze-tile--lozi { --glaze: #A2512C; --glaze-line: #F2D2B6; }     /* terracotta */
+  .glaze-tile--flower { --glaze: #1D4438; --glaze-line: #D6BD8A; }   /* jade + gold */
+
+  .glaze-tile__pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.55;
+    transition: transform 1.2s var(--ease-luxe), opacity 0.6s var(--ease-luxe);
+  }
+  /* glossy sheen like a fired glaze */
+  .glaze-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(125deg, rgba(255, 255, 255, 0.22) 0%, transparent 38%, transparent 70%, rgba(255, 255, 255, 0.08) 100%);
+    pointer-events: none;
+  }
+  .glaze-tile:hover .glaze-tile__pattern { transform: scale(1.08) rotate(2deg); opacity: 0.75; }
+
+  /* the collection's own piece, set in the tile like a gem */
+  .glaze-tile__gem {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    z-index: 2;
+    width: 46%;
+    aspect-ratio: 1;
+    padding: 5px;
+    background: var(--color-paper);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    transform: translate(-50%, -50%);
+    transition: transform 0.8s var(--ease-luxe);
+  }
+  .glaze-tile__gem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  .glaze-tile:hover .glaze-tile__gem { transform: translate(-50%, -50%) scale(1.06); }
+
+  .glaze-tile__plate {
+    position: absolute;
+    inset-inline: 0.7rem;
+    bottom: 0.7rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--color-paper) 94%, transparent);
+    color: var(--color-ink);
+    box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.5);
+  }
+  .glaze-tile__name {
+    font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .glaze-tile__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-brass-ink);
+  }
+  html[dir="rtl"] .glaze-tile__meta svg { transform: scaleX(-1); }
+  .glaze-tile:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 3px; }
+  @media (max-width: 639px) {
+    .glaze-tile__gem { top: 33%; width: 40%; }
+    .glaze-tile__plate { inset-inline: 0.45rem; bottom: 0.45rem; padding: 0.5rem 0.65rem; }
+    .glaze-tile__name { font-size: 0.88rem; line-height: 1.45; }
+    .glaze-tile__meta { font-size: 0.72rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile-card__face,
+    .tile-card__face img,
+    .tile-card__face::after,
+    .glaze-tile__pattern,
+    .glaze-tile__gem { transition: none; }
+  }
+}
+
+/* ==========================================================================
+   Kufi pass: Reem Kufi only where a heading is display-sized, as on Sayeh.
+   Kufi needs size and air: weight 500, a little larger, tighter leading and
+   a soft jade instead of near-black. Card names, steps, footer and article
+   headings stay in Vazirmatn (base h1–h3 rule) so they read at small sizes.
+   ========================================================================== */
+@layer components {
+  html[lang="fa"] .hero__title,
+  html[lang="ar"] .hero__title {
+    font-size: clamp(2.8rem, 1.4rem + 5.4vw, 6.2rem);
+    line-height: 1.22;
+  }
+  html[lang="fa"] .section__title,
+  html[lang="ar"] .section__title {
+    font-size: clamp(2.2rem, 1.3rem + 3vw, 3.9rem);
+    line-height: 1.3;
+  }
+  html[lang="fa"] :is(.pdetail__title, .case__title, .empty-state__title, main h1),
+  html[lang="ar"] :is(.pdetail__title, .case__title, .empty-state__title, main h1) {
+    line-height: 1.3;
+  }
+  /* brand jade on light grounds (jade-deep reads as black); dark bands (.process) keep their own colour */
+  :where(html[lang="fa"], html[lang="ar"]) :is(.section__title, .pdetail__title, .case__title, .empty-state__title) {
+    color: var(--color-jade);
+  }
+  /* an h1 written inside article text is body copy, not a display title */
+  html[lang="fa"] .article-body h1,
+  html[lang="ar"] .article-body h1 {
+    font-family: var(--font-fa-ar);
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  /* the eyebrow sits closer, the lead a touch further, so the title owns the block */
+  :where(html[lang="fa"], html[lang="ar"]) .section__title { margin-top: 0.6rem; }
+  :where(html[lang="fa"], html[lang="ar"]) .section__lead { margin-top: 1.25rem; }
+}
+
+/* ==========================================================================
+   Unified pages: contact, consultation, articles, thank-you and the empty
+   states now use the same section head, hairlines and buttons as the rest
+   of the site instead of the old card-and-gradient template.
+   ========================================================================== */
+@layer components {
+  .page-top { padding-top: clamp(2rem, 5vw, 3.5rem); }
+
+  /* ---------- Contact: details beside the map ---------- */
+  .visit {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .visit { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+  }
+  .visit__list { display: grid; gap: 0; }
+  .visit__row {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 1.2rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .visit__row:last-child { border-bottom: 1px solid var(--hairline); }
+  .visit__value { font-weight: 600; font-size: 1.05rem; color: var(--color-ink); }
+  a.visit__value:hover { color: var(--color-brass-ink); }
+  .visit__note { font-size: 0.85rem; color: var(--color-stone-ink); }
+  .visit__map {
+    overflow: hidden;
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-tight);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-soft);
+  }
+  .visit__map iframe {
+    display: block;
+    width: 100%;
+    height: clamp(320px, 42vw, 480px);
+    border: 0;
+  }
+  .visit__mapbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+    padding: 0.9rem 1.1rem;
+    border-top: 1px solid var(--hairline);
+    font-size: 0.85rem;
+    color: var(--color-stone-ink);
+  }
+  .visit__mapbar a { color: var(--color-jade); font-weight: 600; }
+  .visit__mapbar a:hover { color: var(--color-brass-ink); }
+
+  /* ---------- Consultation: what happens next beside the form ---------- */
+  .consult {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+  /* phones: title, form, then the steps; desktop: title and steps beside the form */
+  @media (min-width: 1024px) {
+    .consult {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+      grid-template-areas: "intro card" "more card";
+      row-gap: 0;
+    }
+    .consult__intro { grid-area: intro; }
+    .consult__more { grid-area: more; }
+    .consult-card { grid-area: card; position: sticky; top: 6.5rem; }
+  }
+  .consult__subtitle {
+    margin-top: clamp(2.2rem, 4vw, 3rem);
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .consult__steps { display: grid; gap: 1.1rem; }
+  .consult__step { display: flex; gap: 1rem; align-items: flex-start; }
+  .consult__step .process__num { flex: none; margin-bottom: 0; }
+  .consult__step-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .consult__step-text { font-size: 0.9rem; line-height: 1.9; color: var(--color-stone-ink); max-width: 46ch; }
+  .consult__direct { margin-top: 2.2rem; padding-top: 1.4rem; }
+  .consult__link { color: var(--color-jade); font-weight: 600; }
+  .consult__link:hover { color: var(--color-brass-ink); }
+  .consult-card {
+    padding: clamp(1.5rem, 4vw, 2.6rem);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-tight);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-soft);
+  }
+  .consult-form { display: grid; gap: 1.5rem; }
+  .consult-form .field textarea { min-height: 6.5rem; }
+  .consult-form .btn { margin-top: 0.4rem; }
+  .consult-form__privacy { font-size: 0.78rem; text-align: center; color: var(--color-stone-ink); }
+
+  /* ---------- Article teasers (home + articles page) ---------- */
+  .article-grid {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+  }
+  @media (min-width: 640px) { .article-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .article-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .article-card { display: block; color: var(--color-ink); }
+  .article-card__media {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-tight);
+    background: var(--color-glaze);
+    margin-bottom: 1.2rem;
+  }
+  .article-card__media > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease-luxe);
+  }
+  .article-card:hover .article-card__media > img { transform: scale(1.04); }
+  .article-card__ph {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-bone) 70%, transparent) 0 22%, transparent 23%),
+      var(--color-glaze);
+  }
+  .article-card__ph img { width: 72px; height: 72px; object-fit: contain; opacity: 0.85; }
+  .article-card__date { display: block; font-size: 0.78rem; color: var(--color-stone-ink); margin-bottom: 0.4rem; }
+  .article-card__title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.7;
+    transition: color 0.3s var(--ease-soft);
+  }
+  .article-card:hover .article-card__title { color: var(--color-brass-ink); }
+  .article-card__text {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--color-stone-ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ---------- End of an article: one clear next step ---------- */
+  .article-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem 2rem;
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    padding: clamp(1.4rem, 3.5vw, 2.2rem);
+    border-radius: var(--r-tight);
+    background: var(--color-glaze);
+  }
+  .article-cta__title { font-size: 1.2rem; font-weight: 700; color: var(--color-jade); }
+  .article-cta__text { margin-top: 0.3rem; font-size: 0.92rem; color: var(--color-stone-ink); }
+  html[dir="ltr"] .icon-back { transform: scaleX(-1); }
+
+  /* ---------- Empty states (404, thank-you, missing items) ---------- */
+  .empty-state__mark {
+    display: grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin: 0 auto 1.2rem;
+    color: var(--color-jade-deep);
+    background: var(--color-brass-glow);
+    clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+  }
+  html[lang="fa"] .empty-state__code,
+  html[lang="ar"] .empty-state__code { font-family: var(--font-kufi); font-weight: 500; }
+
+  /* ---------- Products: search beside its button; pills pick the category ---------- */
+  @media (min-width: 760px) {
+    .filterbar { grid-template-columns: minmax(0, 1fr) auto; }
+  }
+  @media (max-width: 759px) {
+    .filterbar { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .filterbar .btn { padding-inline: 1.3rem; }
+    .pill-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 1.4rem; margin-inline: -1.25rem; padding-inline: 1.25rem; }
+    .pill-row::-webkit-scrollbar { display: none; }
+    .pill-row .pill { flex: none; }
+  }
+  @media (min-width: 900px) {
+    .tile-wall--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tile-wall--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  /* the buying guide is supporting copy, so its title is a size below the page title */
+  html[lang] .guide__text .section__title { font-size: clamp(1.8rem, 1.2rem + 1.8vw, 2.7rem); }
+
+  /* ---------- Testimonials: names and initials kept private ---------- */
+  .quote__avatar,
+  .quote__name {
+    filter: blur(5px);
+    user-select: none;
+  }
+}
+
+/* ==========================================================================
+   Mobile and page fixes (formerly responsive.css, a second render-blocking
+   request). Unlayered and last, exactly as when it was linked after style.css.
+   ========================================================================== */
+
+/* ===================== Mobile Menu ===================== */
+/* input.css handles visibility/opacity transitions for .mobile-menu.
+   responsive.css must NOT use display:none on .mobile-menu — it breaks the animation. */
+.mobile-menu__panel {
+  width: min(88vw, 360px);
+}
+
+/* ===================== Gallery (mobile) ===================== */
+/* input.css uses column-based masonry layout for .gallery.
+   On small screens we reduce to 1 column (same effect but explicit). */
+@media (max-width: 639px) {
+  .gallery {
+    column-count: 1;
+  }
+  .gallery__item {
+    border-radius: var(--r-sharp);
+  }
+}
+
+/* Medium screens: 2 columns */
+@media (min-width: 640px) and (max-width: 1099px) {
+  .gallery {
+    column-count: 2;
+  }
+}
+
+/* ===================== Swatches (mobile) ===================== */
+@media (max-width: 639px) {
+  .swatches {
+    grid-template-columns: 1fr;
+    gap: var(--gap);
+  }
+  .swatch-tray {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ===================== Product Detail (mobile) ===================== */
+@media (max-width: 1023px) {
+  .pdetail__media .pdetail__thumbs {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0;
+    scrollbar-width: none;
+  }
+  .pdetail__media .pdetail__thumbs::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ===================== Editorial Grid (mobile) ===================== */
+@media (max-width: 899px) {
+  .editorial-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap);
+  }
+}
+
+/* ===================== Case / Projects (mobile) ===================== */
+@media (max-width: 1023px) {
+  .case {
+    flex-direction: column;
+    gap: var(--gap);
+  }
+}
+
+/* ===================== Cards ===================== */
+.card-modern {
+  overflow: hidden;
+}
+
+/* Public article and consultation pages use the site's jade/brass palette. */
+.article-shell {
+  max-width: 52rem;
+  margin-inline: auto;
+}
+.article-body {
+  color: var(--color-ink);
+  font-size: clamp(1rem, 0.4vw + 0.9rem, 1.125rem);
+  line-height: 2.15;
+}
+.article-body > * + * { margin-top: 1.5rem; }
+.article-body h2, .article-body h3 { color: var(--color-jade-deep); line-height: 1.5; margin-top: 3rem; }
+.article-body h2 { font-size: clamp(1.45rem, 2vw, 2rem); font-weight: 800; border-inline-start: 3px solid var(--color-brass); padding-inline-start: 0.85rem; }
+.article-body h3 { font-size: clamp(1.2rem, 1.5vw, 1.5rem); font-weight: 700; }
+.article-body p, .article-body li { color: var(--color-ink); }
+.article-body ul, .article-body ol { padding-inline-start: 1.5rem; }
+.article-body ul { list-style: disc; }
+.article-body ol { list-style: decimal; }
+.article-body li + li { margin-top: 0.55rem; }
+.article-body a { color: var(--color-jade); font-weight: 700; text-decoration: underline; text-decoration-color: var(--color-brass); text-underline-offset: 0.24em; }
+.article-body a:hover { color: var(--color-brass); }
+.article-body blockquote { border-inline-start: 3px solid var(--color-brass); background: color-mix(in srgb, var(--color-brass) 7%, var(--color-bone)); padding: 1.1rem 1.25rem; font-weight: 600; }
+.article-body img { max-width: 100%; height: auto; border-radius: var(--r-tight); }
+.article-body pre { direction: ltr; overflow-x: auto; border-radius: var(--r-sharp); background: var(--color-jade-deep); color: var(--color-bone); padding: 1.25rem; text-align: left; }
+.article-body code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.88em; }
+.article-body :not(pre) > code { background: color-mix(in srgb, var(--color-brass) 12%, var(--color-bone)); padding: 0.15rem 0.35rem; border-radius: 0.2rem; }
+.article-body table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 0.9em; }
+.article-body th, .article-body td { border: 1px solid var(--hairline); padding: 0.7rem; text-align: start; white-space: nowrap; }
+.article-body th { background: color-mix(in srgb, var(--color-jade) 8%, var(--color-bone)); color: var(--color-jade-deep); }
+.article-editor { border: 1px solid var(--hairline); border-radius: var(--r-tight); padding: 0.8rem; background: var(--color-bone); }
+.article-editor__toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--hairline); }
+.article-editor .input-field { min-height: 24rem; }
+.article-editor__preview { min-height: 24rem; padding: 0.2rem; }
+.article-meta { color: var(--color-stone); font-size: 0.85rem; }
+.article-kicker { color: var(--color-brass); font-size: 0.8rem; font-weight: 700; }
+.consultation-page .card-modern { background: var(--color-bone); }
+.consultation-page .input-field, .consultation-page select, .consultation-page textarea { border-color: var(--hairline-strong) !important; border-radius: 0 !important; background: transparent !important; color: var(--color-ink) !important; }
+.consultation-page select, .consultation-page textarea { border-width: 0 0 1px !important; padding-inline: 0.1rem !important; }
+.consultation-page .input-field:focus, .consultation-page select:focus, .consultation-page textarea:focus { border-color: var(--color-brass) !important; box-shadow: none !important; }
+.consultation-page .contact-icon { background: var(--color-jade); border-radius: var(--r-sharp); }
+.consultation-page .contact-icon--brass { background: var(--color-brass); }
+.consultation-page .btn-cta { background: var(--color-jade); }
+.consultation-page .btn-cta:hover { background: var(--color-jade-deep); }
+.gallery__item { display: block; cursor: pointer; }
+.gallery__scrim, .gallery__caption { pointer-events: none; }
+
+/* ===================== Accessibility & Touch Targets ===================== */
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .site-nav__link {
+    padding-block: 0.6rem;
+  }
+  .mobile-menu__link {
+    padding-block: 1rem;
+  }
+}
+
+/* ===================== Larger Screens ===================== */
+@media (min-width: 1024px) {
+  .swatches {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  }
+  .editorial-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .swatches {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===================== Admin Sidebar RTL Fix ===================== */
+@media (max-width: 767px) {
+  .mobile-menu__panel {
+    border-inline-start: 1px solid var(--color-gray-200);
+    border-left: none;
+  }
+}
+
+/* ===================== Safe area padding for notch devices ===================== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .site-footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Product cards and the detail photo are styled in input.css (luxe pass):
+   staged product shots fill a 4:5 frame; the detail photo is shown whole. */
+.gallery__item:hover,
+.gallery__item:focus-visible { transform: none; box-shadow: none; }
+.gallery__item:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 4px; }
+.pdetail__main {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 20%, var(--color-paper), var(--color-sand));
+}
+.pdetail__main img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.pdetail__thumb img { object-fit: contain; background: #fffaf0; }
+.site-lang--mobile { gap: 0; padding: 0.1rem; }
+.site-lang--mobile a { min-width: 2rem; padding-inline: 0.35rem; text-align: center; }
+/* Product photos are staged shots with their own backdrop, so they fill the
+   card; letterboxing them left wide empty bands, worst on the large card. */
+.ed-card__media {
+  background: linear-gradient(145deg, #fffaf0, #f1e7d5);
+}
+.ed-card__media img {
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   Persian headings in Vazirmatn. Reem Kufi has no zero-width non-joiner
+   (U+200C, the Persian half-space), so words like «خانه‌تان» and «برمی‌گردیم»
+   joined wrongly, and its final «ه» reads as «ة» to Persian readers. Arabic
+   keeps Reem Kufi, which it was drawn for. Persian pages also skip that font.
+   ========================================================================== */
+@layer components {
+  html[lang="fa"] :is(.hero__title, .section__title, .pdetail__title, .case__title, .empty-state__title, main h1) {
+    font-family: var(--font-fa-ar);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  html[lang="fa"] .hero__title {
+    font-size: clamp(2.35rem, 1.2rem + 4.4vw, 4.9rem);
+    line-height: 1.38;
+  }
+  html[lang="fa"] .section__title {
+    font-size: clamp(1.75rem, 1.15rem + 2.1vw, 3rem);
+    line-height: 1.45;
+  }
+  html[lang="fa"] .guide__text .section__title { font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.4rem); }
+  html[lang="fa"] :is(.pdetail__title, .case__title, .empty-state__title, main h1) {
+    line-height: 1.45;
+  }
+  html[lang="fa"] .empty-state__code { font-family: var(--font-fa-ar); font-weight: 800; }
+
+  /* Phones: room under the footer so the floating WhatsApp button never covers its last line */
+  @media (max-width: 767px) {
+    .site-footer { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
+  }
 }

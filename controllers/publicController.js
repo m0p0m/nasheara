@@ -22,9 +22,10 @@ const getHomePage = async (req, res) => {
         // A category without its own cover falls back to any product image in it,
         // not just one of the 8 products shown on the home page.
         const categories = (await Category.getAll(req.locale)).map(cat => {
-            if (cat.mainImage) return cat;
-            const rep = allProducts.find(p => p.category === cat.name && p.mainImage);
-            return rep ? { ...cat, mainImage: rep.mainImage } : cat;
+            const inCat = allProducts.filter(p => p.category === cat.name);
+            if (cat.mainImage) return { ...cat, count: inCat.length };
+            const rep = inCat.find(p => p.mainImage);
+            return { ...cat, count: inCat.length, mainImage: rep ? rep.mainImage : cat.mainImage };
         });
         const filtered = query
             ? allProducts.filter(p =>
@@ -126,7 +127,7 @@ const getCategoryPage = async (req, res, next) => {
         const indexing = seo.localeIndexing(siteUrl, path, category, 'name', req.locale);
         res.render('public/products', {
             title: t('seo.productsCategoryTitle', { category: category.name }),
-            metaDescription: seo.clip(category.description || t('seo.productsCategoryDesc', { category: category.name })),
+            metaDescription: seo.describe(category.description, t('seo.productsCategoryDesc', { category: category.name })),
             canonicalUrl: `${siteUrl}/${req.locale}${path}`,
             ...indexing,
             // an empty category is a thin page; it is also left out of the sitemap
@@ -274,7 +275,7 @@ const getProjectDetail = async (req, res) => {
             title: project.location && !project.title.includes(project.location)
                 ? t('seo.projectTitleWithLocation', { title: project.title, location: project.location })
                 : t('seo.projectTitle', { title: project.title }),
-            metaDescription: seo.clip(project.description || t('seo.projectDesc', { title: project.title, location: project.location ? ` — ${project.location}` : '' })),
+            metaDescription: seo.describe(project.description, t('seo.projectDesc', { title: project.title, location: project.location ? ` — ${project.location}` : '' })),
             canonicalUrl: `${siteUrl}/${req.locale}/project/${encodeURIComponent(project.slug)}`,
             ...seo.localeIndexing(siteUrl, `/project/${encodeURIComponent(project.slug)}`, project, 'title', req.locale),
             ogImage: seo.absolute(siteUrl, project.coverImage || (project.galleryImages && project.galleryImages[0])),

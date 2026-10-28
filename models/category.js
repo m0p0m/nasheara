@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const prisma = require('../lib/prisma');
+const cache = require('../lib/cache');
 const slugify = require('../utils/slugify');
 const { buildTranslations, localizeRecord } = require('../utils/translations');
 
@@ -54,4 +55,4 @@ const remove = async id => {
     return result.count ? undefined : null;
 };
 
-module.exports = { getAll, findById, findBySlug, create, update, remove };
+module.exports = { getAll: cache.wrap('category.getAll', getAll), findById, findBySlug, create, update, remove };

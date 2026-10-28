@@ -1,0 +1,16 @@
+<%
+  // One article teaser (home + articles list). Expects: a, i
+  const dateLocale = locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-u-ca-gregory' : 'en-GB';
+%>
+<a href="/<%= locale %>/article/<%= a.slug %>" class="article-card group" data-reveal style="--reveal-delay:<%= (i % 3) * 110 %>ms">
+    <div class="article-card__media">
+        <% if (a.mainImage) { %>
+        <img src="<%= img(a.mainImage, 640) %>"<%- responsive(a.mainImage, [320, 480, 640, 800], '(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= a.title %>" width="1200" height="825" loading="lazy" decoding="async">
+        <% } else { %>
+        <span class="article-card__ph" aria-hidden="true"><img src="/icons/naghshe-ara-logo.png" alt="" width="72" height="72" loading="lazy"></span>
+        <% } %>
+    </div>
+    <time class="article-card__date" datetime="<%= new Date(a.createdAt).toISOString() %>"><%= new Date(a.createdAt).toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' }) %></time>
+    <h3 class="article-card__title"><%= a.title %></h3>
+    <% if (a.excerpt) { %><p class="article-card__text"><%= a.excerpt %></p><% } %>
+</a>

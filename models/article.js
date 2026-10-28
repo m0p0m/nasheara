@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const prisma = require('../lib/prisma');
+const cache = require('../lib/cache');
 const slugify = require('../utils/slugify');
 const { buildTranslations, localizeRecord } = require('../utils/translations');
 
@@ -66,4 +67,4 @@ const getPublished = async (limit = null, locale = 'fa') => (await prisma.articl
     where: { published: true }, orderBy: { createdAt: 'desc' }, ...(limit ? { take: limit } : {})
 })).map(article => localizeRecord(article, TRANSLATABLE_FIELDS, locale));
 
-module.exports = { getAll, findById, findBySlug, create, update, remove, getPublished };
+module.exports = { getAll, findById, findBySlug, create, update, remove, getPublished: cache.wrap('article.getPublished', getPublished) };

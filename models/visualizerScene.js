@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const { Prisma } = require('@prisma/client');
 const prisma = require('../lib/prisma');
+const cache = require('../lib/cache');
 
 // Corners of the tiled area as fractions of the photo, clockwise from top-left.
 const DEFAULT_QUAD = [[0.1, 0.25], [0.9, 0.25], [0.9, 0.7], [0.1, 0.7]];
@@ -102,4 +103,4 @@ const publicSpec = (scene, locale = 'fa') => ({
     lighting: scene.lighting
 });
 
-module.exports = { DEFAULT_QUAD, parseQuad, parsePolygon, getActive, getAll, findById, create, update, setActive, remove, publicSpec };
+module.exports = { DEFAULT_QUAD, parseQuad, parsePolygon, getActive: cache.wrap('scene.getActive', getActive), getAll, findById, create, update, setActive, remove, publicSpec };

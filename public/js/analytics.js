@@ -9,12 +9,26 @@
     var gaId = me && me.getAttribute('data-ga');
     var clarityId = me && me.getAttribute('data-clarity');
 
-    function load(src) {
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = src;
-        document.head.appendChild(s);
+    // The trackers are fetched only once the page has loaded and the browser is
+    // idle, so they never compete with the hero photo and fonts. Calls made
+    // before then wait in the gtag/clarity queues.
+    var pending = [];
+    function load(src) { pending.push(src); }
+    function flush() {
+        pending.forEach(function (src) {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = src;
+            document.head.appendChild(s);
+        });
+        pending = [];
     }
+    function whenIdle() {
+        if ('requestIdleCallback' in window) window.requestIdleCallback(flush, { timeout: 3000 });
+        else setTimeout(flush, 1500);
+    }
+    if (document.readyState === 'complete') whenIdle();
+    else window.addEventListener('load', whenIdle, { once: true });
 
     window.dataLayer = window.dataLayer || [];
     function gtag() { window.dataLayer.push(arguments); }

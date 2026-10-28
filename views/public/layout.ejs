@@ -4,147 +4,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%
+      const pageTitle = typeof title !== 'undefined' ? title : t('seo.homeTitle');
+      const pageDescription = typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : t('auto.k_6ee1d3a1f6a2');
+      const shareImage = typeof ogImage !== 'undefined' && ogImage ? ogImage : siteUrl + '/icons/og-default.jpg';
+      const ogLocales = { fa: 'fa_IR', en: 'en_US', ar: 'ar_AR' };
+      const jsonLd = data => JSON.stringify(data).replace(/</g, '\\u003c');
+    %>
+    <title><%= pageTitle %></title>
+    <meta name="description" content="<%= pageDescription %>">
+    <meta name="robots" content="<%= typeof noindex !== 'undefined' && noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1' %>">
+    <link rel="canonical" href="<%= canonicalUrl %>">
     <% Object.entries(alternateUrls).forEach(([language, url]) => { %>
     <link rel="alternate" hreflang="<%= language %>" href="<%= url %>">
     <% }); %>
-    <title><%= typeof title !== 'undefined' ? title : t('seo.homeTitle') %></title>
-    <meta name="description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_6ee1d3a1f6a2') %>">
-    <meta name="robots" content="<%= typeof noindex !== 'undefined' && noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1' %>">
-    <meta name="keywords"
-        content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : t('auto.k_c518bfdfd1b4') %>">
-    <meta name="author" content="<%= t('auto.k_e6736350dccf') %>">
 
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : t('auto.k_9bb88d484369') %>">
-    <meta property="og:description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_3f56b4ab4645') %>">
-    <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
-    <meta property="og:url"
-        content="<%= canonicalUrl %>">
-    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/logo-1024.png' %>">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="<%= typeof title !== 'undefined' ? title : t('auto.k_d26f50636237') %>">
-    <meta property="og:locale" content="<%= locale === 'fa' ? 'fa_IR' : (locale === 'en' ? 'en_US' : 'ar_SA') %>">
-    <% ['fa', 'en', 'ar'].filter(l => l !== locale).forEach(l => { %>
-    <meta property="og:locale:alternate" content="<%= l === 'fa' ? 'fa_IR' : (l === 'en' ? 'en_US' : 'ar_SA') %>">
-    <% }); %>
-    <meta property="og:site_name" content="<%= t('atelier.brandName') %>">
+    <!-- Render path: fonts and the hero photo start downloading with the stylesheet -->
+    <% if (locale === 'en') { %><link rel="preload" href="/fonts/inter/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/fraunces/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><% } else { %><link rel="preload" href="/fonts/vazirmatn/Vazirmatn-wght-subset.woff2" as="font" type="font/woff2" crossorigin><% } %>
+    <% if (locale === 'ar') { %><link rel="preload" href="/fonts/reem-kufi/reem-kufi-arabic-500-normal.woff2" as="font" type="font/woff2" crossorigin><% } %>
+    <% if (currentPath === '/') { %><link rel="preload" href="<%= img('/icons/1.png', 1280) %>" as="image" imagesrcset="<%= srcset('/icons/1.png', [800, 1280, 1600, 2048]) %>" imagesizes="100vw" fetchpriority="high"><% } %>
+    <link rel="stylesheet" href="<%= asset('/css/style.css') %>">
 
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : t('auto.k_9bb88d484369') %>">
-    <meta name="twitter:description"
-        content="<%= typeof metaDescription !== 'undefined' ? metaDescription : t('auto.k_d94f40d44584') %>">
-    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : siteUrl + '/icons/logo-1024.png' %>">
-
-    <link rel="canonical" href="<%= canonicalUrl %>">
-
-    <!-- Favicon and Logo -->
+    <meta name="theme-color" content="#0F241E">
+    <meta name="keywords" content="<%= typeof metaKeywords !== 'undefined' && metaKeywords ? metaKeywords : t('auto.k_c518bfdfd1b4') %>">
+    <meta name="author" content="<%= t('atelier.brandName') %>">
     <link rel="icon" href="/icons/favicon-64.png" sizes="64x64" type="image/png">
     <link rel="icon" href="/icons/favicon-192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 
-    <!-- Fonts: fa/ar use self-hosted Vazirmatn; en uses Fraunces (display) + Inter (body) -->
-    <% if (locale !== 'en') { %><link rel="preload" href="/fonts/vazirmatn/Vazirmatn-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/vazirmatn/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/naskh/NotoNaskhArabic-wght.woff2" as="font" type="font/woff2" crossorigin><% } %>
-    <% if (currentPath === '/') { %><link rel="preload" href="<%= img('/icons/1.png', 1600) %>" as="image" imagesrcset="<%= srcset('/icons/1.png', [800, 1280, 1600, 2048]) %>" imagesizes="100vw" fetchpriority="high"><% } %>
-    <% if (locale === 'en') { %><link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Loaded without blocking first paint: applied by site.js once parsed (font-display: swap covers the gap). -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" media="print" data-defer-style><% } %>
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content="<%= pageTitle %>">
+    <meta property="og:description" content="<%= pageDescription %>">
+    <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+    <meta property="og:url" content="<%= canonicalUrl %>">
+    <meta property="og:image" content="<%= shareImage %>">
+    <% if (shareImage.endsWith('/icons/og-default.jpg')) { %><meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630"><% } %>
+    <meta property="og:image:alt" content="<%= pageTitle %>">
+    <meta property="og:locale" content="<%= ogLocales[locale] %>">
+    <% Object.keys(ogLocales).filter(l => l !== locale && alternateUrls[l]).forEach(l => { %>
+    <meta property="og:locale:alternate" content="<%= ogLocales[l] %>">
+    <% }); %>
+    <meta property="og:site_name" content="<%= t('atelier.brandName') %>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= pageTitle %>">
+    <meta name="twitter:description" content="<%= pageDescription %>">
+    <meta name="twitter:image" content="<%= shareImage %>">
 
-    <!-- Structured Data for SEO -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": ["Organization", "LocalBusiness"],
-        "name": "<%= t('atelier.brandName') %>",
-        "alternateName": "<%= t('atelier.brandTag') %>",
-        "url": "<%= siteUrl %>",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "<%= siteUrl %>/icons/logo-1024.png",
-            "width": 1252,
-            "height": 1151
+    <!-- Structured data: the workshop as a local business, and the site -->
+    <script type="application/ld+json"><%- jsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'HomeAndConstructionBusiness',
+        '@id': siteUrl + '/#business',
+        name: t('atelier.brandName'),
+        alternateName: [t('atelier.brandTag'), 'Naghsh Ara', 'نقش آرا'].filter((v, i, a) => a.indexOf(v) === i),
+        url: siteUrl + '/' + locale + '/',
+        logo: { '@type': 'ImageObject', url: siteUrl + '/icons/logo-1024.png', width: 1024, height: 1089 },
+        image: siteUrl + '/icons/og-default.jpg',
+        description: t('auto.k_1a135a699aa6'),
+        telephone: '+98-912-451-9443',
+        email: 'info@nashearatasfiyeh.com',
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: t('auto.k_f572ddf64198'),
+            addressLocality: locale === 'en' ? 'Qom' : 'قم',
+            addressRegion: locale === 'en' ? 'Qom Province' : (locale === 'ar' ? 'محافظة قم' : 'استان قم'),
+            postalCode: '37158',
+            addressCountry: 'IR'
         },
-        "description": "<%= t('auto.k_1a135a699aa6') %>",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "قم، خیابان جمهوری، نبش کوچه ۵۰",
-            "addressLocality": "قم",
-            "addressRegion": "قم",
-            "postalCode": "37158",
-            "addressCountry": "IR"
-        },
-        "contactPoint": [
-            {
-                "@type": "ContactPoint",
-                "telephone": "+98-912-451-9443",
-                "contactType": "customer service",
-                "areaServed": "IR",
-                "availableLanguage": ["Persian"]
-            }
-        ],
-        "openingHoursSpecification": [
-            {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": [
-                    "Saturday",
-                    "Sunday",
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday"
-                ],
-                "opens": "08:00",
-                "closes": "18:00"
-            }
-        ],
-        "priceRange": "$$",
-        "sameAs": [
-            "https://www.instagram.com/nashearatasfiyeh",
-            "https://t.me/nashearatasfiyeh"
-        ],
-        "areaServed": [
-            { "@type": "Country", "name": "Iran" },
-            <%- ['Qom', 'Tehran', 'Karaj', 'Isfahan', 'Kashan', 'Mashhad', 'Shiraz', 'Tabriz', 'Yazd', 'Ahvaz', 'Rasht', 'Kerman', 'Hamadan', 'Urmia', 'Qazvin', 'Sari', 'Arak', 'Kermanshah', 'Bandar Abbas', 'Zanjan']
-                .map(city => `{ "@type": "City", "name": "${city}" }`).join(',\n            ') %>
-        ],
-        "knowsAbout": [
-            "<%= t('auto.k_e793d09fd794') %>",
-            "<%= t('auto.k_a2e513b6d526') %>",
-            "<%= t('auto.k_4e4b7698700b') %>",
-            "<%= t('auto.k_098f35f33ee7') %>",
-            "<%= t('auto.k_f456fa7cb896') %>"
-        ],
-        "makesOffer": [
-            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "<%= t('auto.k_7fae9146da8f') %>" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "<%= t('auto.k_819ba7cf5733') %>" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "<%= t('auto.k_4b4ff2dcc670') %>" } }
-        ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "<%= t('atelier.brandName') %>",
-        "url": "<%= siteUrl %>",
-        "inLanguage": ["fa-IR", "en", "ar"]
-    }
-    </script>
-
+        // Same pin and listing as the contact page map (views/public/_visit.ejs)
+        geo: { '@type': 'GeoCoordinates', latitude: 34.62332, longitude: 50.87131 },
+        hasMap: 'https://maps.google.com/?cid=17908405994893156700',
+        contactPoint: [{
+            '@type': 'ContactPoint',
+            telephone: '+98-912-451-9443',
+            contactType: 'customer service',
+            areaServed: 'IR',
+            availableLanguage: ['Persian', 'English', 'Arabic']
+        }],
+        openingHoursSpecification: [{
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+            opens: '08:00',
+            closes: '18:00'
+        }],
+        priceRange: '$$',
+        sameAs: ['https://www.instagram.com/nashearatasfiyeh', 'https://t.me/nashearatasfiyeh'],
+        areaServed: [{ '@type': 'Country', name: 'Iran' }].concat(['Qom', 'Tehran', 'Karaj', 'Isfahan', 'Kashan', 'Mashhad', 'Shiraz', 'Tabriz', 'Yazd', 'Ahvaz', 'Rasht', 'Kerman', 'Hamadan', 'Urmia', 'Qazvin', 'Sari', 'Arak', 'Kermanshah', 'Bandar Abbas', 'Zanjan']
+            .map(city => ({ '@type': 'City', name: city }))),
+        knowsAbout: ['auto.k_e793d09fd794', 'auto.k_a2e513b6d526', 'auto.k_4e4b7698700b', 'auto.k_098f35f33ee7', 'auto.k_f456fa7cb896'].map(key => t(key)),
+        makesOffer: ['auto.k_7fae9146da8f', 'auto.k_819ba7cf5733', 'auto.k_4b4ff2dcc670']
+            .map(key => ({ '@type': 'Offer', itemOffered: { '@type': 'Product', name: t(key) } }))
+    }) %></script>
+    <script type="application/ld+json"><%- jsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': siteUrl + '/' + locale + '/#website',
+        name: t('atelier.brandName'),
+        url: siteUrl + '/' + locale + '/',
+        inLanguage: { fa: 'fa-IR', en: 'en', ar: 'ar' }[locale],
+        publisher: { '@id': siteUrl + '/#business' },
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: { '@type': 'EntryPoint', urlTemplate: siteUrl + '/' + locale + '/products?q={search_term_string}' },
+            'query-input': 'required name=search_term_string'
+        }
+    }) %></script>
     <% if (typeof structuredData !== 'undefined' && Array.isArray(structuredData)) { structuredData.forEach(item => { %>
-    <script type="application/ld+json"><%- JSON.stringify(item).replace(/</g, '\u003c') %></script>
+    <script type="application/ld+json"><%- jsonLd(item) %></script>
     <% }); } %>
-
-    <link rel="stylesheet" href="<%= asset('/css/style.css') %>">
-    <link rel="stylesheet" href="<%= asset('/css/responsive.css') %>">
 </head>
 
 <body class="min-h-screen <%= locale === 'en' ? 'font-en' : 'font-fa-ar' %>" dir="<%= dir %>">
@@ -171,12 +140,12 @@
                 <div class="flex items-center gap-4">
                     <div class="site-lang site-lang--mobile md:hidden" aria-label="<%= t('language.switch') %>">
                         <% ['fa', 'en', 'ar'].forEach(lang => { %>
-                            <a href="<%= alternateUrls[lang] %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"><%= lang.toUpperCase() %></a>
+                            <a href="<%= langUrls[lang] %>" hreflang="<%= lang %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"<%- locale === lang ? ' aria-current="true"' : '' %>><%= lang.toUpperCase() %></a>
                         <% }); %>
                     </div>
                     <div class="site-lang hidden md:inline-flex" aria-label="<%= t('language.switch') %>">
                         <% ['fa', 'en', 'ar'].forEach(lang => { %>
-                            <a href="<%= alternateUrls[lang] %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"><%= lang.toUpperCase() %></a>
+                            <a href="<%= langUrls[lang] %>" hreflang="<%= lang %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"<%- locale === lang ? ' aria-current="true"' : '' %>><%= lang.toUpperCase() %></a>
                         <% }); %>
                     </div>
                     <a href="/<%= locale %>/consultation" class="btn btn-solid btn--sm hidden md:inline-flex">
@@ -209,7 +178,7 @@
             <div class="mt-8 space-y-6">
                 <div class="site-lang" aria-label="<%= t('language.switch') %>">
                     <% ['fa', 'en', 'ar'].forEach(lang => { %>
-                        <a href="<%= alternateUrls[lang] %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"><%= lang.toUpperCase() %></a>
+                        <a href="<%= langUrls[lang] %>" hreflang="<%= lang %>" lang="<%= lang %>" class="<%= locale === lang ? 'is-current' : '' %>"<%- locale === lang ? ' aria-current="true"' : '' %>><%= lang.toUpperCase() %></a>
                     <% }); %>
                 </div>
                 <a href="/<%= locale %>/consultation" class="btn btn-solid w-full"><%= t('atelier.consultCta') %></a>

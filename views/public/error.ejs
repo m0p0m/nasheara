@@ -2,10 +2,11 @@
     <div class="container">
         <div class="empty-state__box">
             <span class="empty-state__code">500</span>
-            <h1 class="empty-state__title">خطایی رخ داده است</h1>
-            <p class="empty-state__text"><%= typeof errorMessage !== 'undefined' ? errorMessage : 'امکان بارگذاری این صفحه در حال حاضر وجود ندارد.' %></p>
+            <h1 class="empty-state__title"><%= t('pages.errorTitle') %></h1>
+            <%# Server messages are written in Persian; other languages get the general text. %>
+            <p class="empty-state__text"><%= typeof errorMessage !== 'undefined' && locale === 'fa' ? errorMessage : t('pages.errorText') %></p>
             <div class="empty-state__actions">
-                <a href="/<%= locale %>/" class="btn btn-solid">بازگشت به خانه</a>
+                <a href="/<%= locale %>/" class="btn btn-solid"><%= t('pages.backHome') %></a>
             </div>
         </div>
     </div>

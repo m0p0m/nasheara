@@ -49,10 +49,8 @@ const submitConsultation = async (req, res) => {
 
         // Redirect to a thank you page or show a success message
         res.render('public/thank-you', { 
-            title: 'با تشکر - نقش آرا کاشی دست‌ساز',
+            title: res.locals.t('pages.thanksTitle'),
             noindex: true,
-            heading: 'درخواست شما ثبت شد',
-            message: 'درخواست شما دریافت شد. کارشناسان نقش آرا کاشی دست‌ساز به‌زودی برای ارائه مشاوره تخصصی با شما تماس خواهند گرفت.',
             layout: 'public/layout',
             currentPath: req.path
         });

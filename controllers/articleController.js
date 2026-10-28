@@ -202,33 +202,57 @@ const getArticleDetail = async (req, res) => {
             });
         }
         const articleHtml = renderArticleMarkdown(article.content);
-        const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+        const siteUrl = seo.siteUrlFrom(req);
+        const t = res.locals.t;
+        const brand = t('atelier.brandName');
+        const articlePath = `/article/${encodeURIComponent(article.slug)}`;
+        const articleUrl = `${siteUrl}/${req.locale}${articlePath}`;
+        // Without its own description an article fell back to the site-wide one,
+        // so every article showed Google the same snippet.
+        const plainText = String(article.content || '')
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+            .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+            .replace(/[#>*_`|-]+/g, ' ');
+        const description = seo.describe(article.metaDescription || article.excerpt, plainText);
+        const image = seo.absolute(siteUrl, article.mainImage);
         const articleStructuredData = {
             '@context': 'https://schema.org',
             '@type': 'Article',
+            '@id': `${articleUrl}#article`,
             headline: article.title,
-            description: article.metaDescription || article.excerpt || undefined,
-            image: article.mainImage ? `${siteUrl}${article.mainImage}` : undefined,
+            description: description || undefined,
+            image: image ? [image] : undefined,
             datePublished: article.createdAt,
             dateModified: article.updatedAt || article.createdAt,
-            mainEntityOfPage: `${siteUrl}/${req.locale}/article/${encodeURIComponent(article.slug)}`,
-            author: { '@type': 'Organization', name: 'نقش آرا' },
+            inLanguage: { fa: 'fa-IR', en: 'en', ar: 'ar' }[req.locale],
+            mainEntityOfPage: articleUrl,
+            author: { '@type': 'Organization', name: brand, url: `${siteUrl}/${req.locale}/` },
             publisher: {
                 '@type': 'Organization',
-                name: 'نقش آرا',
+                '@id': `${siteUrl}/#business`,
+                name: brand,
                 logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/logo-1024.png` }
             }
         };
+        const brandedTitle = text => (text.includes(brand) || text.length + brand.length > 62 ? text : `${text} | ${brand}`);
         res.render('public/article-detail', {
-            title: article.metaTitle || article.title,
-            metaDescription: article.metaDescription,
+            title: brandedTitle(article.metaTitle || article.title),
+            metaDescription: description,
             metaKeywords: article.metaKeywords,
-            canonicalUrl: `${siteUrl}/${req.locale}/article/${encodeURIComponent(article.slug)}`,
-            ...seo.localeIndexing(siteUrl, `/article/${encodeURIComponent(article.slug)}`, article, 'title', req.locale),
-            ogImage: article.mainImage ? `${siteUrl}${article.mainImage}` : undefined,
+            canonicalUrl: articleUrl,
+            ...seo.localeIndexing(siteUrl, articlePath, article, 'title', req.locale),
+            ogImage: image,
+            ogType: 'article',
+            structuredData: [
+                articleStructuredData,
+                seo.breadcrumbList(siteUrl, [
+                    { name: t('seo.home'), path: `/${req.locale}/` },
+                    { name: t('nav.articles'), path: `/${req.locale}/articles` },
+                    { name: article.title, path: `/${req.locale}${articlePath}` }
+                ])
+            ],
             article: article,
             articleHtml,
-            articleStructuredData,
             layout: 'public/layout',
             currentPath: req.path
         });

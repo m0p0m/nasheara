@@ -1,5 +1,3 @@
-<% const noteOf = p => [p.material, p.dimensions].filter(Boolean).join(' · '); %>
-
 <section class="section section--tone-bone" style="padding-top:clamp(2rem,5vw,3.5rem)">
     <div class="container">
         <!-- Header -->
@@ -21,15 +19,7 @@
                     <input class="field__input" type="text" id="q" name="q" value="<%= typeof q !== 'undefined' ? q : '' %>"
                         placeholder="<%= t('atelier.searchPatterns') %>">
                 </div>
-                <div class="field">
-                    <label class="field__label" for="category"><%= t('atelier.categories') %></label>
-                    <select id="category" name="category">
-                        <option value=""><%= t('atelier.allCategories') %></option>
-                        <% if (categories) { categories.forEach(c => { %>
-                            <option value="<%= c.name %>" <%= selectedCategory === c.name ? 'selected' : '' %>><%= c.name %></option>
-                        <% }); } %>
-                    </select>
-                </div>
+                <% if (selectedCategory) { %><input type="hidden" name="category" value="<%= selectedCategory %>"><% } %>
                 <button type="submit" class="btn btn-solid"><%= t('atelier.search') %></button>
             </div>
 
@@ -61,35 +51,16 @@
             <% } %>
         </form>
 
-        <!-- Masonry gallery -->
+        <!-- Tile wall -->
         <% if (products && products.length > 0) { %>
-            <div class="gallery">
+            <div class="tile-wall <%= wallCols(products.length) %>">
                 <% products.forEach((p, i) => { %>
-                    <a href="/<%= locale %>/product/<%= encodeURIComponent(p.slug) %>"
-                        class="gallery__item" data-reveal style="--reveal-delay:<%= (i % 4) * 90 %>ms"
-                        aria-label="<%= p.patternName || p.name %>">
-                        <% if (p.isNew) { %><span class="gallery__badge"><%= t('atelier.newBadge') %></span><% } %>
-                        <% if (hasVideo(p.video)) { %><span class="gallery__badge gallery__badge--video" aria-label="<%= t('atelier.videoBadge') %>"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg><%= t('atelier.videoBadge') %></span><% } %>
-                        <% if (p.isBestSeller) { %><span class="gallery__badge" style="inset-inline-start:auto;inset-inline-end:0.9rem"><%= t('atelier.bestSeller') %></span><% } %>
-                        <div class="gallery__media">
-                            <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= p.patternName || p.name %> — <%= p.category || t('atelier.brandTag') %>" width="800" height="800" loading="lazy" decoding="async">
-                        </div>
-                        <div class="gallery__scrim"></div>
-                        <div class="gallery__caption">
-                            <% if (p.category) { %><div class="gallery__cat"><%= p.category %></div><% } %>
-                            <h2 class="gallery__name"><%= p.patternName || p.name %></h2>
-                            <p class="gallery__note"><%= noteOf(p) %></p>
-                            <span class="gallery__action" aria-hidden="true"><%= t('atelier.viewDetails') %></span>
-                        </div>
-                    </a>
+                    <%- include('_tile-card', { p, i, headingTag: 'h2', sizes: '(min-width: 900px) 30vw, 46vw' }) %>
                 <% }); %>
             </div>
         <% } else { %>
             <div class="py-24 text-center">
-                <h2 class="text-2xl font-bold mb-3"><%= t('atelier.allPatterns') %></h2>
-                <p class="mb-8" style="color:var(--color-stone-ink)">
-                    <% if (q || selectedCategory) { %><%= t('atelier.emptyFiltered') %><% } else { %><%= t('atelier.emptyProducts') %><% } %>
-                </p>
+                <h2 class="text-2xl font-bold mb-8"><%= (q || selectedCategory) ? t('atelier.emptyFiltered') : t('atelier.emptyProducts') %></h2>
                 <% if (q || selectedCategory) { %>
                     <a href="/<%= locale %>/products" class="btn btn-brass"><%= t('atelier.clearFilters') %></a>
                 <% } else { %>

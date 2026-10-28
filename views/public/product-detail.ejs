@@ -94,7 +94,7 @@
                     <% } %>
                     <% const builtIn = new Set([t('atelier.patternName'), t('atelier.color'), t('atelier.material'), t('atelier.dimensions'), t('atelier.usageArea')]); %>
                     <% if (product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length) { %>
-                        <% Object.entries(product.specs).filter(([key]) => !builtIn.has(String(key).trim())).forEach(([key, value]) => { %>
+                        <% Object.entries(product.specs).filter(([key, value]) => !builtIn.has(String(key).trim()) && !(product.usageArea || []).includes(String(value).trim())).forEach(([key, value]) => { %>
                             <div class="spec__row">
                                 <dt class="spec__key"><%= key %></dt>
                                 <dd class="spec__val"><%= value %></dd>
@@ -131,10 +131,12 @@
                         <div class="font-semibold text-sm"><%= t('auto.k_db80b9884a5e') %></div>
                         <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= t('auto.k_9c428cc9b156') %></div>
                     </div>
+                    <% if (product.manufacturer) { %>
                     <div class="hairline-t pt-4">
                         <div class="font-semibold text-sm"><%= t('auto.k_41bd65830b61') %></div>
-                        <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= product.manufacturer || t('atelier.brandName') %></div>
+                        <div class="text-xs mt-1" style="color:var(--color-stone-ink)"><%= product.manufacturer %></div>
                     </div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -175,20 +177,8 @@
             <span class="eyebrow"><%= t('atelier.fromCollection') %></span>
             <h2 class="section__title"><%= t('atelier.related') %></h2>
         </div>
-        <div class="editorial-grid">
-            <% relatedProducts.forEach((rp, i) => { const cls = edCardClass(i, relatedProducts.length); %>
-                <a href="/<%= locale %>/product/<%= encodeURIComponent(rp.slug) %>"
-                    class="ed-card <%= cls %> group" data-reveal style="--reveal-delay:<%= i * 80 %>ms">
-                    <div class="ed-card__media">
-                        <img src="<%= img(rp.mainImage || '/icons/naghshe-ara-logo.png', 480) %>"<%- responsive(rp.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800, 1024], edCardSizes(cls)) %> alt="<%= rp.patternName || rp.name %>" width="800" height="800" loading="lazy" decoding="async">
-                    </div>
-                    <div class="ed-card__body">
-                        <% if (rp.category) { %><div class="ed-card__cat"><%= rp.category %></div><% } %>
-                        <h3 class="ed-card__name"><%= rp.patternName || rp.name %></h3>
-                        <p class="ed-card__note"><%= noteOf(rp) %></p>
-                    </div>
-                </a>
-            <% }); %>
+        <div class="tile-wall <%= wallCols(relatedProducts.length) %>">
+            <% relatedProducts.forEach((p, i) => { %><%- include('_tile-card', { p, i, headingTag: 'h3', sizes: '(min-width: 900px) 30vw, 46vw' }) %><% }); %>
         </div>
     </div>
 </section>
@@ -197,9 +187,15 @@
 <%- include('_buy-guide', { compact: true }) %>
 
 <% } else { %>
-<section class="section section--tone-bone text-center" style="padding-top:12rem;padding-bottom:12rem">
-    <h1 class="text-3xl font-bold mb-4"><%= t('auto.k_fd2028ee66ca') %></h1>
-    <p class="mb-8" style="color:var(--color-stone-ink)"><%= t('auto.k_da0fa8186da7') %></p>
-    <a href="/<%= locale %>/products" class="btn btn-brass"><%= t('atelier.allPatterns') %></a>
+<section class="empty-state">
+    <div class="container">
+        <div class="empty-state__box">
+            <h1 class="empty-state__title"><%= t('auto.k_fd2028ee66ca') %></h1>
+            <p class="empty-state__text"><%= t('auto.k_da0fa8186da7') %></p>
+            <div class="empty-state__actions">
+                <a href="/<%= locale %>/products" class="btn btn-solid"><%= t('atelier.allPatterns') %></a>
+            </div>
+        </div>
+    </div>
 </section>
 <% } %>

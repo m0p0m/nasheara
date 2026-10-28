@@ -2,16 +2,19 @@
 <% const localeCode = locale === 'fa' ? 'fa-IR' : locale === 'ar' ? 'ar-u-ca-gregory' : 'en-GB'; %>
 <% const readingMinutes = Math.max(1, Math.ceil((article.content || '').replace(/[#*_`>\[\]()]/g, '').trim().split(/\s+/).filter(Boolean).length / 180)); %>
 <% const labels = locale === 'fa' ? { article: 'مقاله', minutes: 'دقیقه مطالعه', back: 'بازگشت به مقالات' } : locale === 'ar' ? { article: 'مقال', minutes: 'دقائق للقراءة', back: 'العودة إلى المقالات' } : { article: 'Article', minutes: 'min read', back: 'Back to articles' }; %>
-<script type="application/ld+json"><%- JSON.stringify(articleStructuredData).replace(/</g, '\\u003c') %></script>
-<section class="section section--tone-bone" style="padding-top:clamp(7rem,13vw,10rem)">
+<%
+  // The editor often repeats the title as the first heading of the body; the page already shows it.
+  const bodyHtml = String(articleHtml || '').replace(/^\s*<h1[^>]*>([\s\S]*?)<\/h1>\s*/, (m, inner) => inner.replace(/<[^>]+>/g, '').trim() === String(article.title).trim() ? '' : m);
+%>
+<section class="section section--tone-bone page-top">
   <div class="container px-4">
     <header class="article-shell text-center" data-reveal>
-      <p class="article-kicker mb-5"><%= labels.article %></p>
-      <h1 class="section__title" style="font-size:clamp(2rem,5vw,4.25rem)"><%= article.title %></h1>
+      <span class="eyebrow eyebrow--plain justify-center"><%= labels.article %></span>
+      <h1 class="section__title mx-auto"><%= article.title %></h1>
       <% if (article.excerpt) { %><p class="section__lead mt-6"><%= article.excerpt %></p><% } %>
       <div class="article-meta mt-7 flex flex-wrap justify-center gap-x-5 gap-y-2">
         <time datetime="<%= new Date(article.createdAt).toISOString() %>"><%= new Date(article.createdAt).toLocaleDateString(localeCode, { year: 'numeric', month: 'long', day: 'numeric' }) %></time>
-        <span><%= readingMinutes %> <%= labels.minutes %></span>
+        <span><%= readingMinutes.toLocaleString(localeCode) %> <%= labels.minutes %></span>
       </div>
     </header>
   </div>
@@ -23,22 +26,32 @@
       <% if (article.mainImage) { %>
       <figure class="mb-10 overflow-hidden" style="border-radius:var(--r-tight)" data-reveal>
         <img src="<%= img(article.mainImage, 1280) %>"<%- responsive(article.mainImage, [800, 1280, 1600], '(min-width: 1024px) 60vw, 100vw') %> alt="<%= article.title %>" class="w-full h-auto object-cover" loading="eager" fetchpriority="high" decoding="async">
-        <figcaption class="article-meta mt-3"><%= article.title %></figcaption>
       </figure>
       <% } %>
 
       <article class="article-body" data-reveal>
-        <%- articleHtml %>
+        <%- bodyHtml %>
       </article>
 
-      <div class="mt-12 pt-8" style="border-top:1px solid var(--hairline)">
+      <aside class="article-cta" data-reveal>
+        <div>
+          <h2 class="article-cta__title"><%= t('pages.articleCtaTitle') %></h2>
+          <p class="article-cta__text"><%= t('pages.articleCtaText') %></p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="/<%= locale %>/consultation" class="btn btn-brass"><%= t('atelier.consultCta') %></a>
+          <a href="/<%= locale %>/products" class="btn btn-outline"><%= t('auto.k_683dfe4e3a38') %></a>
+        </div>
+      </aside>
+
+      <div class="mt-10">
         <a href="/<%= locale %>/articles"
-          class="btn btn-outline">
+          class="btn btn-outline btn--sm">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-arrow-right">
-            <path d="m12 19 7-7 7-7"></path>
-            <path d="M19 12H5"></path>
+            class="icon-back" aria-hidden="true">
+            <path d="m12 5 7 7-7 7"></path>
+            <path d="M5 12h14"></path>
           </svg>
           <%= labels.back %>
         </a>
@@ -47,24 +60,14 @@
   </div>
 </section>
 <% } else { %>
-<section class="py-24 bg-white">
-  <div class="container mx-auto px-4">
-    <div class="text-center py-20">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[var(--bg-milky)] mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-alert-circle text-primary">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
+<section class="empty-state">
+  <div class="container">
+    <div class="empty-state__box">
+      <h1 class="empty-state__title"><%= t('auto.k_d34e25288c89') %></h1>
+      <p class="empty-state__text"><%= t('auto.k_408028b2f208') %></p>
+      <div class="empty-state__actions">
+        <a href="/<%= locale %>/articles" class="btn btn-solid"><%= t('auto.k_d42bd70857ab') %></a>
       </div>
-      <h2 class="text-3xl font-bold text-slate-900 mb-4"><%= t('auto.k_d34e25288c89') %></h2>
-      <p class="text-slate-500 mb-8"><%= t('auto.k_408028b2f208') %></p>
-      <a href="/<%= locale %>/articles"
-        class="inline-flex items-center gap-2 bg-primary text-white btn-primary flex ">
-        <%= t('auto.k_d42bd70857ab') %>
-      </a>
     </div>
   </div>
 </section>

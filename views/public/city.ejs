@@ -56,20 +56,8 @@
             <span class="eyebrow"><%= t('nav.products') %></span>
             <h2 class="section__title">طرح‌های کاشی و بلوک برای <%= city.name %></h2>
         </div>
-        <div class="gallery">
-            <% products.forEach(p => { %>
-                <a href="/fa/product/<%= encodeURIComponent(p.slug) %>" class="gallery__item" aria-label="<%= p.name %>">
-                    <div class="gallery__media">
-                        <img src="<%= img(p.mainImage || '/icons/naghshe-ara-logo.png', 640) %>"<%- responsive(p.mainImage || '/icons/naghshe-ara-logo.png', [320, 480, 640, 800], '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw') %> alt="<%= p.name %> — <%= p.category || 'نقش آرا' %>" width="800" height="800" loading="lazy" decoding="async">
-                    </div>
-                    <div class="gallery__scrim"></div>
-                    <div class="gallery__caption">
-                        <% if (p.category) { %><div class="gallery__cat"><%= p.category %></div><% } %>
-                        <h3 class="gallery__name"><%= p.patternName || p.name %></h3>
-                        <p class="gallery__note"><%= noteOf(p) %></p>
-                    </div>
-                </a>
-            <% }); %>
+        <div class="tile-wall <%= wallCols(products.length) %>">
+            <% products.forEach((p, i) => { %><%- include('_tile-card', { p, i, headingTag: 'h3', sizes: '(min-width: 900px) 30vw, 46vw' }) %><% }); %>
         </div>
         <div class="mt-8"><a href="/fa/products" class="btn btn-outline"><%= t('atelier.allPatterns') %></a></div>
     </div>

@@ -1,4 +1,5 @@
 const prisma = require('../lib/prisma');
+const cache = require('../lib/cache');
 
 const clampRating = value => Math.min(5, Math.max(1, parseInt(value, 10) || 5));
 
@@ -29,4 +30,4 @@ const setPublished = (id, published) => prisma.testimonial.update({ where: { id 
 
 const remove = id => prisma.testimonial.deleteMany({ where: { id } });
 
-module.exports = { getPublished, getAll, findById, create, update, setPublished, remove };
+module.exports = { getPublished: cache.wrap('testimonial.getPublished', getPublished), getAll, findById, create, update, setPublished, remove };

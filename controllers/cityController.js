@@ -16,8 +16,12 @@ const cityFaq = city => [
     { q: 'امکان سفارش رنگ یا ابعاد اختصاصی وجود دارد؟', a: 'برای بسیاری از طرح‌ها بله. رنگ لعاب، ابعاد و متراژ موردنظرتان را در فرم مشاوره بنویسید تا امکان‌پذیری و زمان تولید اعلام شود.' }
 ];
 
+// City pages exist only in Persian: /en/… and /ar/… addresses point there for good.
+const toPersian = (req, res) => res.redirect(301, `/fa${req.path}`);
+
 // GET /:locale/cities
 const getCities = async (req, res) => {
+    if (req.locale !== 'fa') return toPersian(req, res);
     const siteUrl = seo.siteUrlFrom(req);
     res.render('public/cities', {
         title: 'ارسال کاشی دست‌ساز و بلوک سرامیکی به شهرهای ایران | نقش آرا',
@@ -39,6 +43,7 @@ const getCity = async (req, res, next) => {
     try {
         const city = bySlug(req.params.slug);
         if (!city) return next();
+        if (req.locale !== 'fa') return toPersian(req, res);
         const [products, projects] = await Promise.all([Product.getAll('fa'), Project.getAll('fa')]);
         const siteUrl = seo.siteUrlFrom(req);
         const path = `/city/${encodeURIComponent(city.slug)}`;

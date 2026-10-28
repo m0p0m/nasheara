@@ -1,53 +1,51 @@
+/* Body (fa/ar): Vazirmatn, one variable file covering weights 100–900. SIL OFL.
+   Subset to Persian/Arabic, basic Latin and punctuation (84 KB instead of 111 KB):
+   pyftsubset Vazirmatn-wght.woff2 --layout-features='*' --flavor=woff2 --unicodes="U+0000-00FF,
+   U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0600-06FF,U+0750-077F,U+08A0-08FF,U+200C-200F,
+   U+2010-2027,U+2030-205E,U+20AC,U+2122,U+2190-2193,U+2212,U+FB50-FDFF,U+FE70-FEFC,U+FEFF,U+FFFD" */
 @font-face {
   font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-Thin.woff2') format('woff2');
-  font-weight: 100; font-style: normal; font-display: swap;
+  src: url('/fonts/vazirmatn/Vazirmatn-wght-subset.woff2') format('woff2');
+  font-weight: 100 900; font-style: normal; font-display: swap;
 }
+/* Headings (fa/ar): Reem Kufi, the same display face as the Sayeh site.
+   Weights 500 and 700, Arabic and Latin subsets. SIL OFL. */
 @font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-ExtraLight.woff2') format('woff2');
-  font-weight: 200; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-Light.woff2') format('woff2');
-  font-weight: 300; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-Regular.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-Medium.woff2') format('woff2');
+  font-family: 'Reem Kufi';
+  src: url('/fonts/reem-kufi/reem-kufi-arabic-500-normal.woff2') format('woff2');
   font-weight: 500; font-style: normal; font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFC;
 }
 @font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-SemiBold.woff2') format('woff2');
-  font-weight: 600; font-style: normal; font-display: swap;
+  font-family: 'Reem Kufi';
+  src: url('/fonts/reem-kufi/reem-kufi-latin-500-normal.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-Bold.woff2') format('woff2');
+  font-family: 'Reem Kufi';
+  src: url('/fonts/reem-kufi/reem-kufi-arabic-700-normal.woff2') format('woff2');
   font-weight: 700; font-style: normal; font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFC;
 }
 @font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-ExtraBold.woff2') format('woff2');
-  font-weight: 800; font-style: normal; font-display: swap;
+  font-family: 'Reem Kufi';
+  src: url('/fonts/reem-kufi/reem-kufi-latin-700-normal.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* English: Fraunces (display) and Inter (body), self-hosted variable fonts,
+   Latin subset (@fontsource-variable 5.2.5). SIL OFL. Google Fonts was a
+   third-party request that is slow or blocked for many visitors in Iran. */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/fraunces/fraunces-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 900; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn-Black.woff2') format('woff2');
-  font-weight: 900; font-style: normal; font-display: swap;
-}
-/* Headings (fa/ar): Noto Naskh Arabic, the naskh hand of tile inscriptions.
-   Variable weight 400–700, Arabic-script subset only (Latin falls back). SIL OFL. */
-@font-face {
-  font-family: 'Naskh';
-  src: url('/fonts/naskh/NotoNaskhArabic-wght.woff2') format('woff2');
-  font-weight: 400 700; font-style: normal; font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+2010-2011, U+FB50-FDFF, U+FE70-FEFC;
+  font-family: 'Inter';
+  src: url('/fonts/inter/inter-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 900; font-style: normal; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
