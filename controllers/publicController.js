@@ -452,11 +452,123 @@ const getSitemapSection = async (req, res, next) => {
     }
 };
 
+// AI assistants and answer engines, named one by one: a crawler that finds its
+// own name follows only that group, so each one is told plainly it may read the
+// whole site (except the admin). Search crawlers (Googlebot, Bingbot…) use `*`.
+const AI_CRAWLERS = [
+    // OpenAI (ChatGPT search, browsing, training)
+    'OAI-SearchBot', 'ChatGPT-User', 'GPTBot',
+    // Anthropic (Claude)
+    'Claude-SearchBot', 'Claude-User', 'ClaudeBot', 'anthropic-ai',
+    // Perplexity
+    'PerplexityBot', 'Perplexity-User',
+    // Google Gemini / AI Overviews, Apple Intelligence, Microsoft Copilot runs on Bingbot
+    'Google-Extended', 'GoogleOther', 'Applebot', 'Applebot-Extended',
+    // Meta AI, Amazon (Alexa/Rufus), DuckDuckGo assist, Mistral, Cohere, You.com, Common Crawl
+    'Meta-ExternalAgent', 'Meta-ExternalFetcher', 'FacebookBot', 'Amazonbot', 'DuckAssistBot',
+    'MistralAI-User', 'cohere-ai', 'cohere-training-data-crawler', 'YouBot', 'CCBot'
+];
+
 const getRobots = (req, res) => {
-    const baseUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
-    res.type('text/plain').send(
-        `User-agent: *\nAllow: /\nDisallow: /admin\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nSitemap: ${baseUrl}/sitemap.xml\n`
-    );
+    const baseUrl = seo.siteUrlFrom(req);
+    const lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /admin',
+        '',
+        ...AI_CRAWLERS.map(name => `User-agent: ${name}`),
+        'Allow: /',
+        'Disallow: /admin',
+        '',
+        `# A plain-text guide to this business for AI assistants: ${baseUrl}/llms.txt`,
+        `Sitemap: ${baseUrl}/sitemap.xml`,
+        ''
+    ];
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.type('text/plain').send(lines.join('\n'));
+};
+
+// GET /llms.txt — the llmstxt.org format: who we are, what we make and where
+// each page is, in plain Markdown, so AI assistants (ChatGPT, Claude,
+// Perplexity, Gemini…) can describe and recommend the workshop accurately.
+const getLlmsTxt = async (req, res) => {
+    try {
+        const baseUrl = seo.siteUrlFrom(req);
+        const { i18next } = require('../config/i18n');
+        const en = i18next.getFixedT('en', 'common');
+        const fa = i18next.getFixedT('fa', 'common');
+        const [productsEn, productsFa, categoriesEn, articles, projects] = await Promise.all([
+            Product.getAll('en'), Product.getAll('fa'), Category.getAll('en'), Article.getPublished(null, 'fa'), Project.getAll('en')
+        ]);
+        // Link the English page when the record is translated, else the Persian one.
+        const pageUrl = (record, field, path) => `${baseUrl}/${seo.translatedLocales(record, field).includes('en') ? 'en' : 'fa'}${path}`;
+        const line = (...parts) => parts.filter(Boolean).join(' — ');
+
+        const out = [];
+        out.push(`# ${en('atelier.brandName')} (نقش آرا)`, '');
+        out.push(`> ${en('guide.p1')}`, '');
+        out.push(en('guide.p2'), '', en('guide.p3'), '');
+        out.push('## Key facts', '');
+        out.push(
+            '- Business: handmade glazed ceramic breeze blocks and handmade Persian tiles, made in our own workshop',
+            `- Location: ${en('auto.k_f572ddf64198')}, Iran (map: https://maps.google.com/?cid=17908405994893156700)`,
+            '- Phone / WhatsApp: +98 912 451 9443',
+            '- Email: info@nashearatasfiyeh.com',
+            '- Hours: Saturday–Thursday, 08:00–18:00 (Iran time)',
+            '- Ships to: every city in Iran',
+            '- Languages: Persian (فارسی), English, Arabic (العربية)',
+            '- Free consultation on pattern, glaze colour, size and quantity before ordering',
+            `- Persian name: نقش آرا — ${fa('atelier.footerAbout')}`,
+            ''
+        );
+        out.push('## Product lines', '');
+        const isBlock = slug => /block|بلوک/i.test(slug || '');
+        for (const category of categoriesEn.slice().sort((a, b) => Number(isBlock(b.slug)) - Number(isBlock(a.slug)))) {
+            const count = productsEn.filter(p => p.categorySlug === category.slug).length;
+            if (!count) continue;
+            // the Persian description is the fallback; show only an English one
+            const description = category.translations && category.translations.en && category.translations.en.description;
+            out.push(`- [${category.name}](${pageUrl(category, 'name', `/category/${encodeURIComponent(category.slug)}`)}): ${count} designs${description ? ` — ${seo.clip(description, 200)}` : ''}`);
+        }
+        out.push('', '## Designs', '');
+        // blocks first: they are the line the business is pushing
+        for (const p of productsEn.slice().sort((a, b) => Number(isBlock(b.categorySlug)) - Number(isBlock(a.categorySlug)))) {
+            const persian = productsFa.find(f => f.id === p.id);
+            const name = p.patternName || p.name;
+            const faName = persian && (persian.patternName || persian.name);
+            const usage = Array.isArray(p.usageArea) ? p.usageArea.join(', ') : '';
+            out.push(`- [${name}${faName && faName !== name ? ` (${faName})` : ''}](${pageUrl(p, 'name', `/product/${encodeURIComponent(p.slug)}`)}): ${line(p.category, p.material, p.dimensions, p.color, usage)}`);
+        }
+        if (projects.length) {
+            out.push('', '## Installed projects', '');
+            for (const project of projects) {
+                out.push(`- [${project.title}${project.location ? `, ${project.location}` : ''}](${pageUrl(project, 'title', `/project/${encodeURIComponent(project.slug)}`)})`);
+            }
+        }
+        if (articles.length) {
+            out.push('', '## Guides (Persian)', '');
+            for (const article of articles) {
+                out.push(`- [${article.title}](${baseUrl}/fa/article/${encodeURIComponent(article.slug)})${article.excerpt ? `: ${seo.clip(article.excerpt, 160)}` : ''}`);
+            }
+        }
+        out.push('', '## Frequently asked questions', '');
+        for (const i of [1, 2, 3, 4, 5]) out.push(`### ${en(`guide.faq${i}q`)}`, '', en(`guide.faq${i}a`), '');
+        out.push('## Pages', '');
+        out.push(
+            `- [Free consultation](${baseUrl}/en/consultation): request a call back about your project`,
+            `- [Room visualizer](${baseUrl}/en/visualizer): see a tile or block design on a real wall before ordering`,
+            `- [All designs](${baseUrl}/en/products)`,
+            `- [Contact and address](${baseUrl}/en/contact)`,
+            `- [Persian site (main language)](${baseUrl}/fa/) · [Arabic site](${baseUrl}/ar/)`,
+            `- [Sitemap](${baseUrl}/sitemap.xml)`,
+            ''
+        );
+        res.set('Cache-Control', 'public, max-age=3600');
+        res.type('text/plain; charset=utf-8').send(out.join('\n'));
+    } catch (error) {
+        console.error('Failed to build llms.txt:', error);
+        res.status(500).type('text/plain').send('llms.txt is not available right now.');
+    }
 };
 
 // Display contact page
@@ -516,5 +628,6 @@ module.exports = {
     getSitemap,
     getSitemapSection,
     getRobots,
+    getLlmsTxt,
     getContactPage
 };

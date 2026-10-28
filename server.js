@@ -76,7 +76,10 @@ app.use(helmet({
             frameAncestors: ["'none'"]
         }
     },
-    crossOriginOpenerPolicy: { policy: 'same-origin' },
+    // 'same-origin' made Chrome swap processes on every navigation, and
+    // Lighthouse/PageSpeed then failed with NO_NAVSTART on about every other
+    // run. 'same-origin-allow-popups' keeps the opener protection without it.
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
     crossOriginResourcePolicy: { policy: 'same-origin' },
     dnsPrefetchControl: true,
     frameguard: { action: 'deny' },
@@ -92,7 +95,7 @@ app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), autoplay=(), clipboard-write=(), fullscreen=(self)');
     next();
 });
@@ -252,6 +255,7 @@ app.get('/', (req, res) => res.redirect(301, '/fa/'));
 app.get('/sitemap.xml', publicController.getSitemap);
 app.get('/sitemaps/:file', publicController.getSitemapSection);
 app.get('/robots.txt', publicController.getRobots);
+app.get('/llms.txt', publicController.getLlmsTxt);
 app.use(require('./lib/redirects')(supportedLocales));
 app.use((req, res, next) => {
     const isLegacyPublicPath = /^\/(products|projects|articles|contact|consultation)(\/|$)/.test(req.path)

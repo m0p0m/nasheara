@@ -1,0 +1,33 @@
+# On cPanel, Passenger lets Apache/LiteSpeed serve files in public/ directly,
+# so Node's express.static cache headers (server.js) never reach them. These
+# rules give the same lifetimes. CSS and JS are always linked with ?v=<mtime>
+# (app.locals.asset), and font files never change, so they can be cached for
+# a year; images under /icons and /uploads keep a month.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|woff2?|ttf|otf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(woff2?|ttf|otf|eot)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+    <FilesMatch "\.(png|jpe?g|webp|avif|gif|svg|ico|mp4|webm|pdf)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+    <FilesMatch "\.(css|js|woff2?|png|jpe?g|webp|avif|gif|svg|ico|mp4|webm)$">
+        Header set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+</IfModule>
+
+# Fallback where mod_headers is missing
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+</IfModule>

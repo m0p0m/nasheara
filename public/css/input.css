@@ -3460,6 +3460,16 @@
     .vz__panel { grid-area: panel; }
   }
   @media (max-width: 1023px) {
+    /* One column no wider than the screen. Without it the sideways-scrolling
+       tile list stretched the column (and the page) to 900px on phones, so
+       the options sat off screen and only the picture was visible. */
+    .vz {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .vz > *,
+    .vz__group {
+      min-width: 0;
+    }
     /* the picture stays pinned under the header while options are changed */
     .vz__stage {
       position: sticky;
@@ -4633,6 +4643,11 @@
   .pdetail__media .pdetail__thumbs::-webkit-scrollbar {
     display: none;
   }
+  /* a fixed, tappable size: with 11 photos flex shrank them to 25px squares */
+  .pdetail__media .pdetail__thumbs .pdetail__thumb {
+    flex: 0 0 4.25rem;
+    width: 4.25rem;
+  }
 }
 
 /* ===================== Editorial Grid (mobile) ===================== */
@@ -4805,9 +4820,10 @@
   /* Sections after the first are laid out only as they near the screen. The
      first layout of the long home page (and the one after the font swap)
      covered every section and was the biggest main-thread cost on phones.
-     `auto` remembers each section's real height once it has been shown. */
-  main > section ~ section,
-  .site-footer {
+     `auto` remembers each section's real height once it has been shown.
+     (Not the footer: it is short, and skipped it read as light-on-light text
+     to the accessibility check.) */
+  main > section ~ section {
     content-visibility: auto;
     contain-intrinsic-size: auto 720px;
   }

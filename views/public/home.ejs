@@ -86,7 +86,7 @@
                             data-cat="<%= p.category || t('atelier.fromCollection') %>"
                             aria-label="<%= p.name %>">
                             <% if (p.mainImage) { %>
-                                <img src="<%= img(p.mainImage, 160) %>" alt="<%= p.name %>" width="160" height="160" loading="lazy" decoding="async">
+                                <img src="<%= img(p.mainImage, 160) %>" alt="" width="160" height="160" loading="lazy" decoding="async">
                             <% } else { %>
                                 <span class="swatch--blank">✦</span>
                             <% } %>
